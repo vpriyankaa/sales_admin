@@ -269,278 +269,253 @@ export default function Home() {
       {cart.length === 0 ? (
         <>
         <div>
-        <div className="max-w-4xl mx-auto bg-white rounded-[10px] shadow-1 p-6">
-          <h2 className="text-2xl font-bold text-center text-black mb-4">Create Order</h2>
-          <div className="space-y-6">
-            <div className="grid grid-cols-[150px_1fr] gap-4 items-center">
-              <h3 className="text-right text-heading-5 font-bold text-dark-4 dark:text-dark-600 dark:text-white">
-                Date:
-              </h3>
-              <div className="text-heading-6 w-3/4 font-medium text-dark-4">
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DateTimePicker
-                    value={date}
-                    onChange={(newValue: Date | null) => setDate(newValue)}
-                    views={["year", "month", "day", "hours", "minutes", "seconds"]}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        variant: "outlined",
-                        size: "small",
-                      } as TextFieldProps,
-                    }}
-                  />
-                </LocalizationProvider>
-              </div>
-            </div>
+        <div className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-4 sm:p-6">
+      <h2 className="text-xl sm:text-2xl font-bold text-center text-black mb-4 sm:mb-6">Create Order</h2>
 
-            <div className="grid grid-cols-[150px_1fr] gap-4 items-center">
-              <h3 className="text-right text-heading-5 font-bold text-dark-4 dark:text-dark-600 dark:text-white">
-                Customer:
-              </h3>
-              <div className="flex w-3/4 items-center gap-2">
-                <div className="flex-1 text-heading-6 font-medium text-dark-4">
-                  <div className="h-[60px]">
-                    <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
-                      <SelectTrigger
-                        id="customer"
-                        aria-label="Select customer"
-                        className={cn(
-                          "h-10",
-                          "hover:border-black mt-5",
-                          orderValidation.customer ? "border-red-500" : "",
-                        )}
-                      >
-                        <SelectValue placeholder="Select customer" />
-                      </SelectTrigger>
-                      <SelectContent className="z-[999] w-full bg-white shadow-md border rounded-md text-heading-6 font-bold text-dark">
-                        {customers.map((customer) => (
-                          <SelectItem key={customer.id} value={customer.id.toString()}>
-                            {customer.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {orderValidation.customer && (
-                      <p className="text-sm text-red-500 mt-1">{orderValidation.customer}</p>
-                    )}
-                  </div>
-                </div>
-                <Dialog open={isAddingCustomer} onOpenChange={setIsAddingCustomer}>
-                  <DialogTrigger asChild>
-                    <Button className="text-white" size="icon" aria-label="Add new customer">
-                      <Plus className="h-6 w-4" />
-                      <span className="sr-only items-center text-center">Add new customer</span>
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="bg-white dark:bg-white">
-                    <DialogHeader>
-                      <DialogTitle className="text-center text-dark">Add New Customer</DialogTitle>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      {/* NAME */}
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="name" className="text-right text-dark">
-                          Name <span className="text-red-500">*</span>
-                        </Label>
-
-                        <div className="col-span-3 space-y-1 text-dark">
-                          <Input
-                            id="name"
-                            value={newCustomer.name}
-                            onChange={(e) => {
-                              const value = e.target.value
-                              setNewCustomer({ ...newCustomer, name: value })
-
-                              if (formErrors.name) {
-                                setFormErrors({ ...formErrors, name: undefined })
-                              }
-                            }}
-                            className={formErrors.name ? "border-red-500" : ""}
-                            maxLength={20}
-                            required
-                          />
-                          {formErrors.name && <p className="text-sm text-red-500">{formErrors.name}</p>}
-                        </div>
-                      </div>
-
-                      {/* PHONE */}
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="phone" className="text-right text-dark">
-                          Phone <span className="text-red-500">*</span>
-                        </Label>
-                        <div className="col-span-3 space-y-1 text-dark">
-                          <Input
-                            id="phone"
-                            type="tel"
-                            inputMode="numeric"
-                            pattern="\d{10}"
-                            maxLength={10}
-                            value={newCustomer.phone}
-                            onChange={(e) => {
-                              const value = e.target.value.replace(/\D/g, "")
-                              setNewCustomer({ ...newCustomer, phone: value })
-
-                              if (formErrors.phone) {
-                                setFormErrors({ ...formErrors, phone: undefined })
-                              }
-                            }}
-                            className={formErrors.phone ? "border-red-500" : ""}
-                            required
-                          />
-                          {formErrors.phone && <p className="text-sm text-red-500">{formErrors.phone}</p>}
-                        </div>
-                      </div>
-
-                      {/* AADHAAR */}
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="adhaar" className="text-right text-dark">
-                          Aadhaar
-                        </Label>
-                        <div className="col-span-3 space-y-1 text-dark">
-                          <Input
-                            id="adhaar"
-                            inputMode="numeric"
-                            maxLength={14}
-                            value={newCustomer.adhaar}
-                            onChange={(e) => {
-                              const value = e.target.value.replace(/[^\d\s]/g, "")
-                              setNewCustomer({ ...newCustomer, adhaar: value })
-
-                              if (formErrors.adhaar) {
-                                setFormErrors({ ...formErrors, adhaar: undefined })
-                              }
-                            }}
-                            className={formErrors.adhaar ? "border-red-500" : ""}
-                          />
-                          {formErrors.adhaar && <p className="text-sm text-red-500">{formErrors.adhaar}</p>}
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-4 items-center gap-4 text-dark">
-                        <Label htmlFor="address" className="text-right text-dark">
-                          Address
-                        </Label>
-                        <Textarea
-                          id="address"
-                          value={newCustomer.address}
-                          onChange={(e) => setNewCustomer({ ...newCustomer, address: e.target.value })}
-                          className="col-span-3"
-                          rows={3}
-                        />
-                      </div>
-                    </div>
-                    <DialogFooter className="flex flex-col sm:flex-row-reverse sm:justify-center gap-2">
-                      <Button className="color:  bg-green-600 text-white" onClick={() => setIsAddingCustomer(false)}>
-                        Cancel
-                      </Button>
-                      <Button className="text-white " onClick={handleAddCustomer} disabled={isLoading}>
-                        {isLoading ? "Saving..." : "Save"}
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-[150px_1fr] gap-4 items-center">
-              <h3 className="text-right text-heading-5 font-bold text-dark-4 dark:text-dark-600 dark:text-white pb-4">
-                Product:
-              </h3>
-              <div className="text-heading-6 font-medium text-dark-4">
-                <div className="h-[60px] w-3/4">
-                  <Select
-                    value={selectedParticular}
-                    onValueChange={(value) => {
-                      setSelectedParticular(value);
-
-                      const selected = particulars.find((p) => p.id === value);
-                      const unitNames = units.map((u) => u.name);
-
-                      const productUnit =
-                        selected?.unit && unitNames.includes(selected.unit) ? selected.unit : "pc";
-
-                      if (selected) {
-                        const exists = cart.find((item) => item.product_id === selected.id);
-                        if (!exists) {
-                          setCart((prev) => [
-                            ...prev,
-                            {
-                              product_id: selected.id,
-                              product_name: selected.name,
-                              price: selected.price,
-                              quantity: 1,
-                              unit: productUnit,
-                            },
-                          ]);
-                        }
-                      }
-                    }}
-                  >
-                    <SelectTrigger
-                      id="particulars"
-                      aria-label="Select product"
-                      className={cn("h-10", "hover:border-black", orderValidation.cart ? "border-red-500" : "")}
-                    >
-                      <span className="text-muted-foreground">Select product</span>
-                    </SelectTrigger>
-
-                    <SelectContent className="z-[999] w-full bg-white shadow-md border rounded-md text-heading-6 font-medium text-dark-">
-                      {particulars.map((particular) => (
-                        <SelectItem key={particular.id} value={particular.id}>
-                          {particular.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {orderValidation.cart && <p className="text-sm text-red-500 mt-1">{orderValidation.cart}</p>}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end mt-8">
-              <Button
-                type="submit"
-                className="text-white bg-blue-600 hover:bg-blue-700"
-                onClick={() => {
-                  if (!selectedCustomer) {
-                    setOrderValidation({ customer: "Please select a customer" });
-                    return;
-                  }
-                  if (!selectedParticular) {
-                    setOrderValidation({ cart: "Please select any product" });
-                    return;
-                  }
-
-                  if (selectedParticular) {
-                    const selected = particulars.find((p) => p.id === selectedParticular);
-                    if (selected) {
-                      const unitNames = units.map((u) => u.name);
-                      const productUnit =
-                        selected.unit && unitNames.includes(selected.unit) ? selected.unit : "pc";
-
-                      setCart([
-                        {
-                          product_id: selected.id,
-                          product_name: selected.name,
-                          price: selected.price,
-                          quantity: 1,
-                          unit: productUnit,
-                        },
-                      ]);
-                    } else {
-                      setOrderValidation({ cart: "Please select a product" });
-                    }
-                  } else {
-                    setOrderValidation({ cart: "Please select a product" });
-                  }
+      <div className="space-y-4 sm:space-y-6">
+        {/* Date Field - Mobile Responsive */}
+        <div className="space-y-2 sm:grid sm:grid-cols-[150px_1fr] sm:gap-4 sm:items-center sm:space-y-0">
+          <Label className="text-sm sm:text-right font-bold text-gray-700">Date:</Label>
+          <div className="w-full sm:w-3/4">
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DateTimePicker
+                value={date}
+                onChange={(newValue: Date | null) => setDate(newValue)}
+                views={["year", "month", "day", "hours", "minutes", "seconds"]}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    variant: "outlined",
+                    size: "small",
+                  } as TextFieldProps,
                 }}
-              >
-                {isSubmitting ? "Processing..." : "Place Order"}
-              </Button>
-            </div>
+              />
+            </LocalizationProvider>
           </div>
         </div>
+
+        {/* Customer Field - Mobile Responsive */}
+        <div className="space-y-2 sm:grid sm:grid-cols-[150px_1fr] sm:gap-4 sm:items-start sm:space-y-0">
+          <Label className="text-sm sm:text-right font-bold text-gray-700 sm:mt-2">Customer:</Label>
+          <div className="space-y-2 sm:w-3/4">
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
+                  <SelectTrigger
+                    className={cn(
+                      "h-10 w-full",
+                      "hover:border-black",
+                      orderValidation.customer ? "border-red-500" : "",
+                    )}
+                  >
+                    <SelectValue placeholder="Select customer" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[999] w-full bg-white shadow-md border rounded-md">
+                    {customers.map((customer) => (
+                      <SelectItem key={customer.id} value={customer.id.toString()}>
+                        {customer.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <Dialog open={isAddingCustomer} onOpenChange={setIsAddingCustomer}>
+                <DialogTrigger asChild>
+                  <Button size="icon" className="shrink-0" aria-label="Add new customer">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="bg-white w-[95vw] max-w-md max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="text-center text-gray-900">Add New Customer</DialogTitle>
+                  </DialogHeader>
+
+                  <div className="space-y-4 py-4">
+                    {/* NAME - Mobile Responsive */}
+                    <div className="space-y-2">
+                      <Label htmlFor="name" className="text-sm font-medium text-gray-700">
+                        Name <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="name"
+                        value={newCustomer.name}
+                        onChange={(e) => {
+                          const value = e.target.value
+                          setNewCustomer({ ...newCustomer, name: value })
+                          if (formErrors.name) {
+                            setFormErrors({ ...formErrors, name: undefined })
+                          }
+                        }}
+                        className={formErrors.name ? "border-red-500" : ""}
+                        maxLength={20}
+                        required
+                      />
+                      {formErrors.name && <p className="text-sm text-red-500">{formErrors.name}</p>}
+                    </div>
+
+                    {/* PHONE - Mobile Responsive */}
+                    <div className="space-y-2">
+                      <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
+                        Phone <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        inputMode="numeric"
+                        pattern="\d{10}"
+                        maxLength={10}
+                        value={newCustomer.phone}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, "")
+                          setNewCustomer({ ...newCustomer, phone: value })
+                          if (formErrors.phone) {
+                            setFormErrors({ ...formErrors, phone: undefined })
+                          }
+                        }}
+                        className={formErrors.phone ? "border-red-500" : ""}
+                        required
+                      />
+                      {formErrors.phone && <p className="text-sm text-red-500">{formErrors.phone}</p>}
+                    </div>
+
+                    {/* AADHAAR - Mobile Responsive */}
+                    <div className="space-y-2">
+                      <Label htmlFor="adhaar" className="text-sm font-medium text-gray-700">
+                        Aadhaar
+                      </Label>
+                      <Input
+                        id="adhaar"
+                        inputMode="numeric"
+                        maxLength={14}
+                        value={newCustomer.adhaar}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/[^\d\s]/g, "")
+                          setNewCustomer({ ...newCustomer, adhaar: value })
+                          if (formErrors.adhaar) {
+                            setFormErrors({ ...formErrors, adhaar: undefined })
+                          }
+                        }}
+                        className={formErrors.adhaar ? "border-red-500" : ""}
+                      />
+                      {formErrors.adhaar && <p className="text-sm text-red-500">{formErrors.adhaar}</p>}
+                    </div>
+
+                    {/* ADDRESS - Mobile Responsive */}
+                    <div className="space-y-2">
+                      <Label htmlFor="address" className="text-sm font-medium text-gray-700">
+                        Address
+                      </Label>
+                      <Textarea
+                        id="address"
+                        value={newCustomer.address}
+                        onChange={(e) => setNewCustomer({ ...newCustomer, address: e.target.value })}
+                        rows={3}
+                        className="resize-none"
+                      />
+                    </div>
+                  </div>
+
+                  <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2">
+                    <Button variant="outline" onClick={() => setIsAddingCustomer(false)} className="w-full sm:w-auto">
+                      Cancel
+                    </Button>
+                    <Button onClick={handleAddCustomer} disabled={isLoading} className="w-full sm:w-auto">
+                      {isLoading ? "Saving..." : "Save"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            {orderValidation.customer && <p className="text-sm text-red-500">{orderValidation.customer}</p>}
+          </div>
+        </div>
+
+        {/* Product Field - Mobile Responsive */}
+        <div className="space-y-2 sm:grid sm:grid-cols-[150px_1fr] sm:gap-4 sm:items-start sm:space-y-0">
+          <Label className="text-sm sm:text-right font-bold text-gray-700 sm:mt-2">Product:</Label>
+          <div className="space-y-2 sm:w-3/4">
+            <Select
+              value={selectedParticular}
+              onValueChange={(value) => {
+                setSelectedParticular(value)
+                const selected = particulars.find((p) => p.id === value)
+                const unitNames = units.map((u) => u.name)
+                const productUnit = selected?.unit && unitNames.includes(selected.unit) ? selected.unit : "pc"
+
+                if (selected) {
+                  const exists = cart.find((item) => item.product_id === selected.id)
+                  if (!exists) {
+                    setCart((prev) => [
+                      ...prev,
+                      {
+                        product_id: selected.id,
+                        product_name: selected.name,
+                        price: selected.price,
+                        quantity: 1,
+                        unit: productUnit,
+                      },
+                    ])
+                  }
+                }
+              }}
+            >
+              <SelectTrigger
+                className={cn("h-10 w-full", "hover:border-black", orderValidation.cart ? "border-red-500" : "")}
+              >
+                <SelectValue placeholder="Select product" />
+              </SelectTrigger>
+              <SelectContent className="z-[999] w-full bg-white shadow-md border rounded-md">
+                {particulars.map((particular) => (
+                  <SelectItem key={particular.id} value={particular.id}>
+                    {particular.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {orderValidation.cart && <p className="text-sm text-red-500">{orderValidation.cart}</p>}
+          </div>
+        </div>
+
+        {/* Submit Button - Mobile Responsive */}
+        <div className="flex justify-end pt-4">
+          <Button
+            type="submit"
+            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={() => {
+              if (!selectedCustomer) {
+                setOrderValidation({ customer: "Please select a customer" })
+                return
+              }
+              if (!selectedParticular) {
+                setOrderValidation({ cart: "Please select any product" })
+                return
+              }
+
+              const selected = particulars.find((p) => p.id === selectedParticular)
+              if (selected) {
+                const unitNames = units.map((u) => u.name)
+                const productUnit = selected.unit && unitNames.includes(selected.unit) ? selected.unit : "pc"
+
+                setCart([
+                  {
+                    product_id: selected.id,
+                    product_name: selected.name,
+                    price: selected.price,
+                    quantity: 1,
+                    unit: productUnit,
+                  },
+                ])
+              }
+            }}
+          >
+            {isSubmitting ? "Processing..." : "Place Order"}
+          </Button>
+        </div>
+      </div>
+    </div>
         </div>
         </>
       ) : (
