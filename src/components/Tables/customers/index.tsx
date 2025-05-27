@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { CustomersSkeleton} from "./skeleton";
 
 
 interface Customer {
@@ -37,8 +38,8 @@ export function Customers() {
   const [isLoading, setIsLoading] = useState(false)
 
   const UNIT_OPTIONS = ["pcs", "kg", "ltr", "dozen", "pack", "box"];
-  const [itemsPerPage, setItemsPerPage] = useState(5)
-  const [itemsPerPageInput, setItemsPerPageInput] = useState("5");
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [itemsPerPageInput, setItemsPerPageInput] = useState("10");
   const [formErrors, setFormErrors] = useState<{
     name?: string
     phone?: string
@@ -164,34 +165,26 @@ const [customers, setCustomers] = useState<Customer[]>([])
 
   return (
 
+  <>
+  {paginatedData.length === 0 ? (
+    <CustomersSkeleton />
+  ) : (
     <>
-
       <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
         <div className="px-6 py-4 sm:px-6 sm:py-5 xl:px-8.5">
-          <h2 className="text-2xl font-bold text-dark dark:text-white">
-            Customers
-          </h2>
+          <h2 className="text-2xl font-bold text-dark dark:text-white">Customers</h2>
         </div>
 
-
-
         <div className="flex justify-end mb-5 mr-2">
-          <Button
-            type="button"
-            className="text-white"
-            onClick={() => setIsAddingCustomer(true)}
-          >
+          <Button type="button" className="text-white" onClick={() => setIsAddingCustomer(true)}>
             Add Customer
           </Button>
         </div>
 
-
         <Table>
           <TableHeader>
             <TableRow className="border-none uppercase [&>th]:text-center">
-              <TableHead className="!text-left pl-6">
-                Customer Name
-              </TableHead>
+              <TableHead className="!text-left pl-6">Customer Name</TableHead>
               <TableHead className="!text-left">Phone</TableHead>
               <TableHead className="!text-left">Aadhaar</TableHead>
               <TableHead className="!text-left">Address</TableHead>
@@ -200,24 +193,17 @@ const [customers, setCustomers] = useState<Customer[]>([])
 
           <TableBody>
             {paginatedData.map((customer) => (
-              <TableRow
-                className="text-base font-medium text-dark dark:text-white"
-                key={customer.id}
-              >
-                <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">
-                  {customer.name} ({customer.phone})
-                </TableCell>
+              <TableRow className="text-base font-medium text-dark dark:text-white" key={customer.id}>
+                <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{customer.name}</TableCell>
                 <TableCell>{customer.phone}</TableCell>
-                <TableCell>{customer.adhaar ? customer.adhaar : '-'}</TableCell>
-                <TableCell>{customer.address ? customer.address : '-'}</TableCell>
+                <TableCell>{customer.adhaar || "-"}</TableCell>
+                <TableCell>{customer.address || "-"}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
 
-
         <div className="flex items-center justify-end gap-4 p-4">
-
           <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Items per page:</span>
           <Input
             type="number"
@@ -235,11 +221,9 @@ const [customers, setCustomers] = useState<Customer[]>([])
           >
             &lt;
           </button>
-
           <span className="text-sm font-bold text-gray-700 dark:text-gray-300">
             Page {currentPage} of {totalPages}
           </span>
-
           <button
             onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
@@ -248,121 +232,106 @@ const [customers, setCustomers] = useState<Customer[]>([])
             &gt;
           </button>
         </div>
-
       </div>
 
+      {/* Add Customer Dialog */}
+      <Dialog open={isAddingCustomer} onOpenChange={setIsAddingCustomer}>
+        <DialogContent className="bg-white dark:bg-white">
+          <DialogHeader>
+            <DialogTitle className="text-center text-dark">Add New Customer</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            {/* NAME */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right text-dark">
+                Name <span className="text-red-500">*</span>
+              </Label>
+              <div className="col-span-3 space-y-1 text-dark">
+                <Input
+                  id="name"
+                  value={newCustomer.name}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setNewCustomer({ ...newCustomer, name: value });
+                    if (formErrors.name) setFormErrors({ ...formErrors, name: undefined });
+                  }}
+                  className={formErrors.name ? "border-red-500" : ""}
+                  maxLength={20}
+                  required
+                />
+                {formErrors.name && <p className="text-sm text-red-500">{formErrors.name}</p>}
+              </div>
+            </div>
 
-        <Dialog open={isAddingCustomer} onOpenChange={setIsAddingCustomer}>
-                   
-                    <DialogContent className="bg-white dark:bg-white">
-                      <DialogHeader>
-                        <DialogTitle className="text-center text-dark">Add New Customer</DialogTitle>
-                      </DialogHeader>
-                      <div className="grid gap-4 py-4">
-                        {/* NAME */}
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="name" className="text-right text-dark">
-                            Name <span className="text-red-500">*</span>
-                          </Label>
+            {/* PHONE */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="phone" className="text-right text-dark">
+                Phone <span className="text-red-500">*</span>
+              </Label>
+              <div className="col-span-3 space-y-1 text-dark">
+                <Input
+                  id="phone"
+                  type="tel"
+                  inputMode="numeric"
+                  pattern="\d{10}"
+                  maxLength={10}
+                  value={newCustomer.phone}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, "");
+                    setNewCustomer({ ...newCustomer, phone: value });
+                    if (formErrors.phone) setFormErrors({ ...formErrors, phone: undefined });
+                  }}
+                  className={formErrors.phone ? "border-red-500" : ""}
+                  required
+                />
+                {formErrors.phone && <p className="text-sm text-red-500">{formErrors.phone}</p>}
+              </div>
+            </div>
 
-                          <div className="col-span-3 space-y-1 text-dark">
-                            <Input
-                              id="name"
-                              value={newCustomer.name}
-                              onChange={(e) => {
-                                const value = e.target.value
-                                setNewCustomer({ ...newCustomer, name: value })
+            {/* AADHAAR */}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="adhaar" className="text-right text-dark">Aadhaar</Label>
+              <div className="col-span-3 space-y-1 text-dark">
+                <Input
+                  id="adhaar"
+                  inputMode="numeric"
+                  maxLength={14}
+                  value={newCustomer.adhaar}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[^\d\s]/g, "");
+                    setNewCustomer({ ...newCustomer, adhaar: value });
+                    if (formErrors.adhaar) setFormErrors({ ...formErrors, adhaar: undefined });
+                  }}
+                  className={formErrors.adhaar ? "border-red-500" : ""}
+                />
+                {formErrors.adhaar && <p className="text-sm text-red-500">{formErrors.adhaar}</p>}
+              </div>
+            </div>
 
-                                if (formErrors.name) {
-                                  setFormErrors({ ...formErrors, name: undefined })
-                                }
-                              }}
-                              className={formErrors.name ? "border-red-500" : ""}
-                              maxLength={20}
-                              required
-                            />
-                            {formErrors.name && <p className="text-sm text-red-500">{formErrors.name}</p>}
-                          </div>
-                        </div>
+            {/* ADDRESS */}
+            <div className="grid grid-cols-4 items-center gap-4 text-dark">
+              <Label htmlFor="address" className="text-right text-dark">Address</Label>
+              <Textarea
+                id="address"
+                value={newCustomer.address}
+                onChange={(e) => setNewCustomer({ ...newCustomer, address: e.target.value })}
+                className="col-span-3"
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter className="flex flex-col sm:flex-row-reverse sm:justify-center gap-2">
+            <Button className="bg-green-600 text-white" onClick={() => setIsAddingCustomer(false)}>
+              Cancel
+            </Button>
+            <Button className="text-white" onClick={handleAddCustomer} disabled={isLoading}>
+              {isLoading ? "Saving..." : "Save"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-                        {/* PHONE */}
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="phone" className="text-right text-dark">
-                            Phone <span className="text-red-500">*</span>
-                          </Label>
-                          <div className="col-span-3 space-y-1 text-dark">
-                            <Input
-                              id="phone"
-                              type="tel"
-                              inputMode="numeric"
-                              pattern="\d{10}"
-                              maxLength={10}
-                              value={newCustomer.phone}
-                              onChange={(e) => {
-                                const value = e.target.value.replace(/\D/g, "")
-                                setNewCustomer({ ...newCustomer, phone: value })
-
-                                if (formErrors.phone) {
-                                  setFormErrors({ ...formErrors, phone: undefined })
-                                }
-                              }}
-                              className={formErrors.phone ? "border-red-500" : ""}
-                              required
-                            />
-                            {formErrors.phone && <p className="text-sm text-red-500">{formErrors.phone}</p>}
-                          </div>
-                        </div>
-
-                        {/* AADHAAR */}
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="adhaar" className="text-right text-dark">
-                            Aadhaar
-                          </Label>
-                          <div className="col-span-3 space-y-1 text-dark">
-                            <Input
-                              id="adhaar"
-                              inputMode="numeric"
-                              maxLength={14}
-                              value={newCustomer.adhaar}
-                              onChange={(e) => {
-                                const value = e.target.value.replace(/[^\d\s]/g, "")
-                                setNewCustomer({ ...newCustomer, adhaar: value })
-
-                                if (formErrors.adhaar) {
-                                  setFormErrors({ ...formErrors, adhaar: undefined })
-                                }
-                              }}
-                              className={formErrors.adhaar ? "border-red-500" : ""}
-                            />
-                            {formErrors.adhaar && <p className="text-sm text-red-500">{formErrors.adhaar}</p>}
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-4 items-center gap-4 text-dark">
-                          <Label htmlFor="address" className="text-right text-dark">
-                            Address
-                          </Label>
-                          <Textarea
-                            id="address"
-                            value={newCustomer.address}
-                            onChange={(e) => setNewCustomer({ ...newCustomer, address: e.target.value })}
-                            className="col-span-3"
-                            rows={3}
-                          />
-                        </div>
-                      </div>
-                      <DialogFooter className="flex flex-col sm:flex-row-reverse sm:justify-center gap-2">
-                        <Button className="color:  bg-green-600 text-white" onClick={() => setIsAddingCustomer(false)}>
-                          Cancel
-                        </Button>
-                        <Button className="text-white " onClick={handleAddCustomer} disabled={isLoading}>
-                          {isLoading ? "Saving..." : "Save"}
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-
-
+      {/* Success Dialog */}
       {openAdd && (
         <Dialog open={openAdd} onOpenChange={setOpenAdd}>
           <DialogContent className="bg-white text-black">
@@ -371,16 +340,17 @@ const [customers, setCustomers] = useState<Customer[]>([])
             </DialogHeader>
             <div>Customer Added successfully!</div>
             <DialogFooter>
-              <Button className="w-full md:w-auto text-white mb-5 mr-2" onClick={() => setOpenAdd(false)}>Close</Button>
+              <Button className="w-full md:w-auto text-white mb-5 mr-2" onClick={() => setOpenAdd(false)}>
+                Close
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       )}
-
-
-
-
     </>
+  )}
+</>
+
 
   );
 }

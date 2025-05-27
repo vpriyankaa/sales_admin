@@ -23,7 +23,16 @@ const nextConfig = {
         port: ""
       }
     ]
-  }
-};
+  },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/sales/add',
+        permanent: true, // Set to true for a permanent redirect (HTTP 308)
+      },
+    ];
+  },
+}
 
 export default nextConfig;

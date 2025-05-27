@@ -16,6 +16,7 @@ import { getReports, changeOrderStatus } from "@/app/(home)/actions"
 import {
   Tooltip, TooltipTrigger, TooltipContent, TooltipProvider,
 } from "@/components/ui/tooltip"
+import {OrdersSkeleton} from './skeleton'
 
 type OrderItem = {
   product_name: string;
@@ -36,8 +37,8 @@ export function Orders({ className }: { className?: string }) {
 
   const [data, setData] = useState<any[]>([])
   const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(5)
-  const [itemsPerPageInput, setItemsPerPageInput] = useState("5")
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [itemsPerPageInput, setItemsPerPageInput] = useState("10")
 
   // State for status change modal
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -61,9 +62,9 @@ export function Orders({ className }: { className?: string }) {
   const [openAdd, setOpenAdd] = useState(false);
 
   const openStatusModal = (order: any) => {
-    setSelectedOrder(order)
-    setSelectedStatus(order.payment_status)
-    setIsModalOpen(true)
+    // setSelectedOrder(order)
+    // setSelectedStatus(order.payment_status)
+    // setIsModalOpen(true)
   }
 
 
@@ -108,10 +109,6 @@ export function Orders({ className }: { className?: string }) {
 
   };
 
-
-  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
-
-
   const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setItemsPerPageInput(e.target.value)
   }
@@ -131,6 +128,13 @@ export function Orders({ className }: { className?: string }) {
   const statusOptions = ["Cancel", "Trash"]
 
   return (
+
+    <>
+
+    {currentData.length === 0 ?(
+          <OrdersSkeleton />
+    ):(
+    
     <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
       <div className="px-2 py-4 sm:px-4 sm:py-5 xl:px-8.5 text-left">
         <h2 className="text-2xl font-bold text-dark dark:text-white">Reports</h2>
@@ -151,9 +155,9 @@ export function Orders({ className }: { className?: string }) {
         <TableBody>
           {currentData.map((order) => (
             <TableRow className="text-center text-base font-medium text-dark dark:text-white" key={order.id}>
-              <TableCell className="flex min-w-fit items-center gap-3">
+              <TableCell className="!text-left">
                 <div>
-                  {new Date(order.created_at).toLocaleDateString("en-US", {
+                  {new Date(order.date).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "short",
                     day: "numeric",
@@ -192,11 +196,11 @@ export function Orders({ className }: { className?: string }) {
 
                 {order.payment_status?.trim() ? (
                   <div
-                    className={`py-1 px-2 rounded-full text-sm font-semibold
+                    className={`py-1 rounded-md text-sm font-semibold
                     ${order.payment_status === "paid"
                         ? "bg-green-200 text-green-600"
                         : order.payment_status === "partiallypaid"
-                          ? "bg-yellow-200 text-yellow-600"
+                          ? "bg-yellow-200 text-yellow-900"
                           : order.payment_status === "credit"
                             ? "bg-blue-200 text-blue-600"
                             : "bg-gray-300 text-gray-700"
@@ -217,14 +221,33 @@ export function Orders({ className }: { className?: string }) {
 
               </TableCell>
               <TableCell>
-                {order.status === "created"
-                  ? "Created"
-                  : order.status === "cancelled"
-                    ? "Cancelled"
-                    : order.status === "trashed"
-                      ? "Trashed"
-                      : "-"}
 
+
+                 {order.status?.trim() ? (
+                  <div
+                    className={`py-1 px-2 rounded-full text-sm font-semibold
+                    ${order.status === "created"
+                        ? "text-green-900"
+                        : order.status === "cancelled"
+                          ? "text-orange-600"
+                          : order.status === "trashed"
+                            ? "text-red-600"
+                            : "text-gray-700"
+                      }`}
+                  >
+                    {order.status === "created"
+                      ? "Created"
+                      : order.status === "cancelled"
+                        ? "Cancelled"
+                        : order.status === "trashed"
+                          ? "Trashed"
+                          : order.status}
+                  </div>
+                ) : (
+                  <span>-</span>
+                )}
+
+               
               </TableCell>
               <TableCell>
 
@@ -234,13 +257,14 @@ export function Orders({ className }: { className?: string }) {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => openStatusModal(order)}
+                        // onClick={() => openStatusModal(order)}
+                        onClick={() => router.push(`/sales/add/${order.id}`)}
                         className="h-8 w-8"
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent className="bg-whitefont-medium text-blue-700">
+                    <TooltipContent className="bg-white font-medium text-blue-400">
                       Edit order status
                     </TooltipContent>
                   </Tooltip>
@@ -258,7 +282,7 @@ export function Orders({ className }: { className?: string }) {
                         <Eye className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent className="bg-white font-medium text-blue-700">
+                    <TooltipContent className="bg-white font-medium text-blue-400">
                       View status
                     </TooltipContent>
                   </Tooltip>
@@ -386,5 +410,8 @@ export function Orders({ className }: { className?: string }) {
       )}
 
     </div>
+    )}
+
+    </>
   )
 }

@@ -25,12 +25,22 @@ export function TopProductsSkeleton() {
           </TableRow>
         </TableHeader>
 
-        <TableBody>
-          {Array.from({ length: 5 }).map((_, i) => (
-            <TableRow key={i}>
-              <TableCell colSpan={100}>
-                <Skeleton className="h-8" />
+               <TableBody>
+          {Array.from({ length: 10 }).map((_, i) => (
+            <TableRow key={i} className="border-b border-gray-200 dark:border-gray-700">
+              <TableCell className="text-center">
+                <Skeleton className="h-4 w-4 mx-auto" />
               </TableCell>
+              <TableCell className="text-center">
+                <Skeleton className="h-4 w-8 mx-auto" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-20" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-24" />
+              </TableCell>
+        
             </TableRow>
           ))}
         </TableBody>

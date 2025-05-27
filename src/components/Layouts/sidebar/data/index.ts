@@ -8,7 +8,7 @@ export const NAV_DATA = [
         id:"1",
         title: "Sales",
         icon: Icons.Sale,
-        url: "/",
+        url: "/sales/add",
         items: [
          
         ],

@@ -24,20 +24,41 @@ export function OrdersSkeleton() {
             <TableHead className="!text-right">Quantity</TableHead>
             <TableHead>Price</TableHead>
             <TableHead>Payment Status</TableHead>
+            <TableHead> Status</TableHead>
+            <TableHead>Action</TableHead>
           </TableRow>
         </TableHeader>
 
-         <TableBody>
-          {/* {Array.from({ length: 5 }).map((_, i) => ( */}
-            <TableRow>
-              <TableCell><Skeleton className="bg-gray-300 h-4 w-3/4" /></TableCell>
-              <TableCell><Skeleton className="bg-gray-300 h-4 w-5/6" /></TableCell>
-              <TableCell><Skeleton className="bg-gray-300 h-4 w-full" /></TableCell>
-              <TableCell className="!text-right"><Skeleton className="bg-gray-300 h-4 w-1/2 ml-auto" /></TableCell>
-              <TableCell><Skeleton className="bg-gray-300 h-4 w-2/3" /></TableCell>
-              <TableCell><Skeleton className=" bg-gray-300 h-4 w-4/5" /></TableCell>
+        <TableBody>
+          {Array.from({ length: 10 }).map((_, i) => (
+            <TableRow key={i} className="border-b border-gray-200 dark:border-gray-700">
+              <TableCell className="text-center">
+                <Skeleton className="h-4 w-4 mx-auto" />
+              </TableCell>
+              <TableCell className="text-center">
+                <Skeleton className="h-4 w-8 mx-auto" />
+              </TableCell>
+              <TableCell className="!text-right">
+                <Skeleton className="h-4 w-20" />
+              </TableCell>
+              <TableCell className="!text-right">
+                <Skeleton className="h-4 w-24" />
+              </TableCell>
+               <TableCell className="!text-right">
+                <Skeleton className="h-4 w-24" />
+              </TableCell>
+              <TableCell className="!text-right">
+                <Skeleton className="h-4 w-24" />
+              </TableCell>
+                 <TableCell className="!text-right">
+                <Skeleton className="h-4 w-24" />
+              </TableCell >
+                 <TableCell className="!text-right">
+                <Skeleton className="h-4 w-24" />
+              </TableCell>
+        
             </TableRow>
-          {/* ))} */}
+          ))}
         </TableBody>
       </Table>
     </div>

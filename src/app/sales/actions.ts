@@ -1,6 +1,7 @@
 "use server"
 
 import { createClient } from "@supabase/supabase-js"
+import {changeProductQuantity} from "@/utils/inventory"
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -119,7 +120,10 @@ export type OrderItem = {
   unit:string
 }
 
-export type OrderInput = {         
+export type OrderInput = {     
+  
+  id?: number;
+
   customer_id: string;
   customer_name: string;
   items: OrderItem[];
@@ -134,37 +138,155 @@ export type OrderInput = {
   remarks: string;
   payment_status:string;
   total_payable: number;
-  discount_amount?: number;
+  
 };
+
+
+// export async function addOrder(order: OrderInput): Promise<string> {
+//   if (!supabase) throw new Error('Supabase client not initialized');
+
+//   const { data, error } = await supabase
+//     .from('orders')
+//     .insert([
+//       {
+//         customer_id: order.customer_id,
+//         customer_name: order.customer_name,
+//         items: order.items,
+//         date:order.date,
+//         total_price:     order.total_price,
+//         discount_type:   order.discount_type,
+//         discount_value:  order.discount_value,
+//         total_payable:order.total_payable,
+//         paid_amount:     order.paid_amount,
+//         remaining_amount: order.remaining_amount,
+//         payment_method:  order.payment_method,
+//         payment_status:order.payment_status,  
+//         status:          order.status,
+//         remarks:         order.remarks,
+//       },
+//     ])
+//     .select('id')
+//     .single();
+
+//   if (error) throw error;
+//   return data.id;
+// }
 
 export async function addOrder(order: OrderInput): Promise<string> {
   if (!supabase) throw new Error('Supabase client not initialized');
 
+  // 1) ensure every item is in stock & reserve it
+  for (const item of order.items) {
+    
+
+    await changeProductQuantity(parseInt(item.product_id), -item.quantity);
+  }
+
+  // 2) insert the order
   const { data, error } = await supabase
     .from('orders')
-    .insert([
-      {
-        customer_id: order.customer_id,
-        customer_name: order.customer_name,
-        items: order.items,
-        date:order.date,
-        total_price:     order.total_price,
-        discount_type:   order.discount_type,
-        discount_value:  order.discount_value,
-        total_payable:order.total_payable,
-        paid_amount:     order.paid_amount,
-        remaining_amount: order.remaining_amount,
-        payment_method:  order.payment_method,
-        payment_status:order.payment_status,  
-        status:          order.status,
-        remarks:         order.remarks,
-      },
-    ])
+    .insert([{
+      customer_id: order.customer_id,
+      customer_name: order.customer_name,
+      items: order.items,
+      date: order.date,
+      total_price: order.total_price,
+      discount_type: order.discount_type,
+      discount_value: order.discount_value,
+      total_payable: order.total_payable,
+      paid_amount: order.paid_amount,
+      remaining_amount: order.remaining_amount,
+      payment_method: order.payment_method,
+      payment_status: order.payment_status,
+      status: order.status,
+      remarks: order.remarks,
+    }])
     .select('id')
     .single();
 
-  if (error) throw error;
+  if (error) {
+    // roll back reservation if order insert fails
+    for (const item of order.items) {
+      await changeProductQuantity(parseInt(item.product_id),  item.quantity);
+    }
+    throw error;
+  }
   return data.id;
+}
+
+
+export interface OrderUpdateInput {
+  customer_id?: string;
+  customer_name?: string;
+  items?: any; // Replace 'any' with the appropriate type
+  date?: string;
+  total_price?: number;
+  discount_type?: string;
+  discount_value?: number;
+  total_payable?: number;
+  paid_amount?: number;
+  remaining_amount?: number;
+  payment_method?: string;
+  payment_status?: string;
+  status?: string;
+  remarks?: string;
+}
+
+// export async function updateOrder(orderId : number , order: Partial<OrderInput>): Promise<void> {
+//   if (!supabase) throw new Error('Supabase client not initialized');
+
+//   const {...fieldsToUpdate } = order;
+
+//   const { error } = await supabase
+//     .from('orders')
+//     .update(fieldsToUpdate)
+//     .eq('id', orderId);
+
+//   if (error) throw error;
+// }
+
+
+export async function updateOrder(
+  orderId: number,
+  newOrder: OrderInput          // full payload for simplicity
+): Promise<void> {
+  if (!supabase) throw new Error('Supabase client not initialized');
+
+  // 1) fetch existing items
+  const { data: old, error: fetchErr } = await supabase
+    .from('orders')
+    .select('items')
+    .eq('id', orderId)
+    .single();
+  if (fetchErr) throw fetchErr;
+
+  const prevMap = new Map<string, number>(
+    old.items.map((i: any) => [i.product_id, i.quantity])
+  );
+
+  // 2) apply stock deltas
+  try {
+    // A) adjust for items that remain / changed
+    for (const item of newOrder.items) {
+      const oldQty = prevMap.get(item.product_id) ?? 0;
+      const delta  = item.quantity - oldQty;   // +ve means need more stock
+      if (delta !== 0) await changeProductQuantity(parseInt(item.product_id), -delta);
+      prevMap.delete(item.product_id);
+    }
+    // B) any products removed from order → return stock
+    for (const [prodId, qty] of prevMap) {
+      await changeProductQuantity(parseInt(prodId), qty);
+    }
+  } catch (stockErr) {
+    throw stockErr;   // insufficient stock rolls the whole update
+  }
+
+  // 3) finally update the order row
+  const { error: updErr } = await supabase
+    .from('orders')
+    .update(newOrder)
+    .eq('id', orderId);
+  if (updErr) throw updErr;
 }
 
 
@@ -204,6 +326,7 @@ export async function addProduct(productData: {
     throw error
   }
 }
+
 
 
 export async function getReports(){

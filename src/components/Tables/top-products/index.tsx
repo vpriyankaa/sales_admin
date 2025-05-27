@@ -20,10 +20,11 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {TopProductsSkeleton} from './skeleton'
+
 
 export function TopProducts() {
   const [data, setData] = useState<any[]>([]);
@@ -111,8 +112,8 @@ export function TopProducts() {
 
 
 
-  const [itemsPerPage, setItemsPerPage] = useState(5)
-  const [itemsPerPageInput, setItemsPerPageInput] = useState("5")
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [itemsPerPageInput, setItemsPerPageInput] = useState("10")
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -143,6 +144,10 @@ export function TopProducts() {
   return (
 
     <>
+
+    { paginatedData.length === 0 && (
+      <TopProductsSkeleton />
+    )}
 
       <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
         <div className="px-6 py-4 sm:px-6 sm:py-5 xl:px-8.5">
