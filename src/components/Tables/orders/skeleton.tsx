@@ -11,9 +11,11 @@ import {
 export function OrdersSkeleton() {
   return (
     <div className="rounded-[10px] bg-white text-#3b82f6 px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
-      <h2 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">
-       Orders Placed
-      </h2>
+        <div className="px-2 py-4 sm:px-4 sm:py-5 xl:px-8.5 text-left">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-dark dark:text-white">Reports</h2>
+            </div>
+          </div>
 
       <Table>
         <TableHeader>

@@ -570,7 +570,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
                               {/* body */}
                               {isOpen && (
-                                <div className="pl-3 bg-gray-100 dark:bg-gray-800 text-sm space-y-3">
+                                <div className="pl-3 dark:bg-gray-800 text-sm space-y-3">
                                   <p className="text-gray-800 dark:text-gray-300">
                                     <span className="font-semibold">Comments:</span>{" "}
                                     {log.comments || "No comments."}
