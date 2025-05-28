@@ -156,7 +156,7 @@ export function Vendors() {
       name: newVendor.name,
       phone: Number.parseInt(newVendor.phone),
       products: vendorProducts.map((product) => ({
-        product_id: String(product.product_id),
+        product_id: Number(product.product_id),
         product_name: product.product_name,
        
       })),

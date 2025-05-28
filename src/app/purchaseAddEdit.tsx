@@ -138,11 +138,17 @@ const vendorFormSchema = z.object({
 
 type VendorFormData = z.infer<typeof vendorFormSchema>
 
+interface Props {
+  id: string;
+}
+
+
 export default function Home({ id }: Props) {
   // console.log("id", id);
   const searchParams = useSearchParams()
-  const orderId = searchParams.get("id")
-  const isEditMode = !!id
+    const orderId = searchParams.get("id")
+    const isEditMode = !!id
+  
 
   // State
   const [date, setDate] = useState<Date | null>(new Date())

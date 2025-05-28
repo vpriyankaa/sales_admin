@@ -1,15 +1,17 @@
-import  Home from "@/app/purchaseAddEdit";
+import Home from "@/app/purchaseAddEdit";
+import { Suspense } from 'react';
 
-
-
-const Sales = ({ params }: { params: { id: string } }) => {
+// For a regular page without dynamic params
+export default function PurchaseAdd() {
   return (
-    <>
-      <div className="space-y-10">
-          <Home id={params.id}/>
-      </div>
-    </>
+    <div className="space-y-10">
+      <Suspense fallback={<div>Loading...</div>}>
+      <Home id="" />
+      </Suspense>
+      
+    </div>
   );
-};
+}
 
-export default Sales;
+
+

@@ -1,15 +1,15 @@
-import  Home from "@/app/salesAddEdit";
+import Home from "@/app/salesAddEdit";
+import { Suspense } from 'react';
 
 
-
-const Sales = ({ params }: { params: { id: string } }) => {
+export default function AddPage() {
   return (
-    <>
-      <div className="space-y-10">
-          <Home id={params.id}/>
-      </div>
-    </>
+    <div className="space-y-10">
+      <Suspense fallback={<div>Loading...</div>}>
+        <Home id="" />
+      </Suspense>
+    </div>
   );
-};
+}
 
-export default Sales;
+
