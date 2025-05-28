@@ -1,4 +1,4 @@
-import Home from "@/app/purchaseAddEdit";
+import Home from "@/app/salesAddEdit";
 
 export default function Edit({ params }: { params: { id: string } }) {
   return (

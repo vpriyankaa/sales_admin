@@ -103,6 +103,25 @@ export function Alphabet(props: PropsType) {
   );
 }
 
+export function Vendor(props: PropsType) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={24}
+      height={24}
+      viewBox="0 0 24 24"
+      fill="none"
+      {...props}
+    >
+      <path
+        fill="currentColor"
+        d="M3 9.25v10.5c0 .966.784 1.75 1.75 1.75h14.5c.966 0 1.75-.784 1.75-1.75V9.25H3zm1.5 1.5h14v9H4.5v-9zM2.375 7.5l1.71-3.42A2 2 0 016.004 3h11.992a2 2 0 011.919 1.08l1.71 3.42a1 1 0 01-.894 1.47H3.27a1 1 0 01-.894-1.47zM6.004 4.5a.5.5 0 00-.46.27L4.176 7h15.648l-1.367-2.23a.5.5 0 00-.46-.27H6.004z"
+      />
+    </svg>
+  );
+}
+
+
 
 export function Sale(props: React.SVGProps<SVGSVGElement>) {
   return (

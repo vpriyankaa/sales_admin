@@ -9,7 +9,7 @@ export function Logo() {
         src={logo}
         fill
         className="dark:hidden"
-        alt="NextAdmin logo"
+        alt="Sammy Agency"
         role="presentation"
         quality={100}
       />
@@ -18,7 +18,7 @@ export function Logo() {
         src={darkLogo}
         fill
         className="hidden dark:block"
-        alt="NextAdmin logo"
+        alt="Sammy Agency"
         role="presentation"
         quality={100}
       />

@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -5,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { getPaymentMethods } from "@/app/(home)/actions"
+import { getPaymentMethods } from "@/app/actions"
 
 interface CartItem {
   product_id: string
@@ -32,7 +33,7 @@ export interface OrderSummaryData {
 
 interface OrderSummaryProps {
   cart: CartItem[]
-  selectedCustomer: string
+  selectedUser: string
   isSubmitting: boolean
   isEditMode: boolean
   editOrderSummary: OrderSummaryData | null
@@ -44,7 +45,7 @@ interface OrderSummaryProps {
 
 export function OrderSummary({
   cart,
-  selectedCustomer,
+  selectedUser,
   isSubmitting,
   isEditMode,
   editOrderSummary,
@@ -232,13 +233,15 @@ export function OrderSummary({
               }
             }}
           >
-            <SelectTrigger className={`w-36 h-9 text-black border font-bold ${errors.paymentMethod ? "border-red-500" : ""}`}>
+            <SelectTrigger
+              className={`w-36 h-9 text-black border font-bold ${errors.paymentMethod ? "border-red-500" : ""}`}
+            >
               <SelectValue placeholder="Select" />
             </SelectTrigger>
             <SelectContent className="bg-white text-black font-bold">
               {paymentMethods.map((method) => (
                 <SelectItem key={method.id} value={method.name}>
-                  {method.name}
+                  {method.name.charAt(0).toUpperCase() + method.name.slice(1).toLowerCase()}
                 </SelectItem>
               ))}
             </SelectContent>

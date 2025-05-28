@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getParticulars, addProduct } from "@/app/(home)/actions";
+import { getProducts, addProduct, getUnits } from "@/app/actions";
 import {
   Dialog,
   DialogContent,
@@ -23,13 +23,30 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {TopProductsSkeleton} from './skeleton'
+import { TopProductsSkeleton } from './skeleton'
+
+type Unit = {
+  id: number;
+  name: string;
+};
 
 
 export function TopProducts() {
   const [data, setData] = useState<any[]>([]);
 
-  const UNIT_OPTIONS = ["pcs", "kg", "ltr", "dozen", "pack", "box"];
+
+  const [units, setUnits] = useState<Unit[]>([]);
+
+  useEffect(() => {
+    const fetchUnits = async () => {
+      const data = await getUnits();
+      setUnits(data);
+    };
+
+    fetchUnits();
+  }, []);
+
+
 
 
   const [open, setOpen] = useState(false);
@@ -52,7 +69,7 @@ export function TopProducts() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await getParticulars();
+      const res = await getProducts();
       setData(res);
     };
     fetchData();
@@ -103,7 +120,7 @@ export function TopProducts() {
         unit: "",
       });
 
-      const refreshed = await getParticulars();
+      const refreshed = await getProducts();
       setData(refreshed);
     } catch (err) {
       console.error(err);
@@ -145,9 +162,9 @@ export function TopProducts() {
 
     <>
 
-    { paginatedData.length === 0 && (
-      <TopProductsSkeleton />
-    )}
+      {paginatedData.length === 0 && (
+        <TopProductsSkeleton />
+      )}
 
       <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
         <div className="px-6 py-4 sm:px-6 sm:py-5 xl:px-8.5">
@@ -199,7 +216,7 @@ export function TopProducts() {
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogContent className="bg-white dark:bg-white">
             <DialogHeader>
-              <DialogTitle className="text-dark text-center">Add New Product</DialogTitle>
+              <DialogTitle className="text-dark font-bold text-center">Add New Product</DialogTitle>
             </DialogHeader>
 
             <div className="grid gap-4 py-4">
@@ -249,9 +266,9 @@ export function TopProducts() {
                       <SelectValue placeholder="Select unit" />
                     </SelectTrigger>
                     <SelectContent className="bg-white text-dark">
-                      {UNIT_OPTIONS.map((unit) => (
-                        <SelectItem key={unit} value={unit}>
-                          {unit}
+                      {units.map((unit) => (
+                        <SelectItem key={unit.id} value={unit.name}>
+                          {unit.name.charAt(0).toUpperCase() + unit.name.slice(1)}
                         </SelectItem>
                       ))}
                     </SelectContent>
