@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useEffect, useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { getProducts, addVendor, getVendors } from "@/app/actions"
@@ -10,8 +9,15 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Textarea } from "@/components/ui/textarea"
 import { VendorsSkeleton } from "./skeleton"
 import { Badge } from "@/components/ui/badge"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Loader2 } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 type Product = {
   id: number
@@ -30,30 +36,65 @@ type Vendor = {
   id: number
   name: string
   phone: string
+  aadhaar?: string
+  address?: string
   products: VendorProduct[]
 }
+
+const vendorFormSchema = z.object({
+  name: z
+    .string()
+    .min(2, "Name is Required")
+    .regex(/^[A-Za-z\s]+$/, "Name should contain only letters and spaces"),
+  phone: z
+    .number({
+      required_error: "Phone is required",
+      invalid_type_error: "Phone must be a number",
+    })
+    .int("Phone must be a whole number")
+    .positive("Phone must be a positive number")
+    .min(1000000000, "Phone must be a 10-digit number")
+    .max(9999999999, "Phone must be a 10-digit number"),
+  aadhaar: z
+    .string()
+    .optional()
+    .refine((val) => {
+      if (!val || val.trim() === "") return true
+      const digits = val.replace(/\s+/g, "")
+      return /^\d{12}$/.test(digits)
+    }, "Aadhaar must be a 12-digit number"),
+  address: z.string().optional(),
+  products: z
+    .array(
+      z.object({
+        product_id: z.number(),
+        product_name: z.string(),
+      }),
+    )
+    .min(1, "Please select any product"),
+})
+
+type VendorFormData = z.infer<typeof vendorFormSchema>
 
 export function Vendors() {
   const [vendors, setVendors] = useState<Vendor[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
-
   const [open, setOpen] = useState(false)
   const [openAdd, setOpenAdd] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const [newVendor, setNewVendor] = useState({
-    name: "",
-    phone: "",
-    selectedProducts: [] as number[],
+  const vendorForm = useForm<VendorFormData>({
+    resolver: zodResolver(vendorFormSchema),
+    defaultValues: {
+      name: "",
+      phone: undefined,
+      aadhaar: "",
+      address: "",
+      products: [],
+    },
+    mode: "onChange",
   })
-
-  const [productDetails, setProductDetails] = useState<{ [key: number]: { quantity: number; price: number } }>({})
-
-  const [formErrors, setFormErrors] = useState<{
-    name?: string
-    phone?: string
-    products?: string
-  }>({})
 
   // Fetch vendors and products
   useEffect(() => {
@@ -71,119 +112,70 @@ export function Vendors() {
     fetchData()
   }, [])
 
-
-
-  console.log("vendors",vendors);
-
   const handleProductSelection = (productId: number, checked: boolean) => {
+    const currentProducts = vendorForm.getValues("products")
+
     if (checked) {
-      setNewVendor((prev) => ({
-        ...prev,
-        selectedProducts: [...prev.selectedProducts, productId],
-      }))
-      // Initialize with default values
-      setProductDetails((prev) => ({
-        ...prev,
-        [productId]: { quantity: 1, price: 0 },
-      }))
+      const product = products.find((p) => p.id === productId)
+      if (product) {
+        const newProducts = [
+          ...currentProducts,
+          {
+            product_id: productId,
+            product_name: product.name,
+          },
+        ]
+        vendorForm.setValue("products", newProducts)
+      }
     } else {
-      setNewVendor((prev) => ({
-        ...prev,
-        selectedProducts: prev.selectedProducts.filter((id) => id !== productId),
-      }))
-      setProductDetails((prev) => {
-        const newDetails = { ...prev }
-        delete newDetails[productId]
-        return newDetails
-      })
+      const newProducts = currentProducts.filter((p) => p.product_id !== productId)
+      vendorForm.setValue("products", newProducts)
     }
+
+    // Trigger validation for products field
+    vendorForm.trigger("products")
   }
 
-  const handleProductDetailChange = (productId: number, field: "quantity" | "price", value: number) => {
-    setProductDetails((prev) => ({
-      ...prev,
-      [productId]: {
-        ...prev[productId],
-        [field]: value,
-      },
-    }))
-  }
-
-  const handleAddVendor = async () => {
-    const errors: typeof formErrors = {}
-
-    if (!newVendor.name.trim()) {
-      errors.name = "Vendor name is required"
-    }
-
-    if (!newVendor.phone.trim()) {
-      errors.phone = "Phone number is required"
-    }
-
-    if (newVendor.selectedProducts.length === 0) {
-      errors.products = "At least one product must be selected"
-    }
-
-    // Validate product details
-    // for (const productId of newVendor.selectedProducts) {
-    //   const details = productDetails[productId]
-    //   if (!details || details.quantity <= 0 || details.price <= 0) {
-    //     errors.products = "All selected products must have valid quantity and price"
-    //     break
-    //   }
-    // }
-
-    if (Object.keys(errors).length > 0) {
-      setFormErrors(errors)
-      return
-    }
+  const handleAddVendor = async (data: VendorFormData) => {
+    setIsSubmitting(true)
 
     try {
-      // Prepare products array
-      const vendorProducts: VendorProduct[] = newVendor.selectedProducts.map((productId) => {
-        const product = products.find((p) => p.id === productId)
-        const details = productDetails[productId]
-        return {
-          product_id: productId,
-          product_name: product?.name || "",
-       
-        }
-      })
-
-      
-
       const vendorData = {
-      name: newVendor.name,
-      phone: Number.parseInt(newVendor.phone),
-      products: vendorProducts.map((product) => ({
-        product_id: Number(product.product_id),
-        product_name: product.product_name,
-       
-      })),
-    };
+        name: data.name,
+        phone: data.phone,
+        aadhaar: data.aadhaar?.trim() || undefined,
+        address: data.address?.trim() || undefined,
+        products: data.products.map((product) => ({
+          product_id: product.product_id,
+          product_name: product.product_name,
+        })),
+      }
 
       await addVendor(vendorData)
 
+      // Close dialog and show success
       setOpen(false)
       setOpenAdd(true)
 
       // Reset form
-      setFormErrors({})
-      setNewVendor({
-        name: "",
-        phone: "",
-        selectedProducts: [],
-      })
-      setProductDetails({})
+      vendorForm.reset()
 
       // Refresh vendors list
       const refreshedVendors = await getVendors()
       setVendors(refreshedVendors)
     } catch (err) {
       console.error("Error adding vendor:", err)
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
+  const handleDialogClose = () => {
+    setOpen(false)
+    vendorForm.reset()
+  }
+
+  // Pagination state
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [itemsPerPageInput, setItemsPerPageInput] = useState("10")
   const [currentPage, setCurrentPage] = useState(1)
@@ -227,6 +219,8 @@ export function Vendors() {
             <TableRow className="border-none uppercase [&>th]:text-center">
               <TableHead className="!text-left pl-6">Vendor Name</TableHead>
               <TableHead className="!text-left">Phone</TableHead>
+              <TableHead className="!text-left">Aadhaar</TableHead>
+              <TableHead className="!text-left">Address</TableHead>
               <TableHead className="!text-left p-6">Products</TableHead>
             </TableRow>
           </TableHeader>
@@ -236,6 +230,8 @@ export function Vendors() {
               <TableRow className="text-base font-medium text-dark dark:text-white" key={vendor.id}>
                 <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{vendor.name}</TableCell>
                 <TableCell>{vendor.phone}</TableCell>
+                <TableCell>{vendor.aadhaar || "-"}</TableCell>
+                <TableCell className="max-w-xs truncate">{vendor.address || "-"}</TableCell>
                 <TableCell>
                   <div className="flex justify-start flex-wrap gap-1">
                     {vendor.products?.map((product, index) => (
@@ -251,186 +247,230 @@ export function Vendors() {
         </Table>
 
         {/* Add Vendor Dialog */}
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={handleDialogClose}>
           <DialogContent className="bg-white dark:bg-white max-w-2xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-dark font-bold text-center">Add New Vendor</DialogTitle>
             </DialogHeader>
 
-            <div className="grid gap-4 py-4">
-              {/* Vendor Name */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="vendor_name" className="text-right text-dark">
-                  Name <span className="text-red-500">*</span>
-                </Label>
-                <div className="col-span-3 space-y-1 text-dark">
-                  <Input
-                    id="vendor_name"
-                    value={newVendor.name}
-                    onChange={(e) => {
-                      setNewVendor({ ...newVendor, name: e.target.value })
-                      if (formErrors.name) {
-                        setFormErrors((prev) => ({ ...prev, name: undefined }))
-                      }
-                    }}
-                    className={formErrors.name ? "border-red-500" : ""}
-                  />
-                  {formErrors.name && <p className="text-sm text-red-500">{formErrors.name}</p>}
-                </div>
-              </div>
-
-              {/* Phone */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="vendor_phone" className="text-right text-dark">
-                  Phone <span className="text-red-500">*</span>
-                </Label>
-                <div className="col-span-3 space-y-1 text-dark">
-                  <Input
-                    id="vendor_phone"
-                    type="tel"
-                    value={newVendor.phone}
-                    onChange={(e) => {
-                      setNewVendor({ ...newVendor, phone: e.target.value })
-                      if (formErrors.phone) {
-                        setFormErrors((prev) => ({ ...prev, phone: undefined }))
-                      }
-                    }}
-                    className={formErrors.phone ? "border-red-500" : ""}
-                  />
-                  {formErrors.phone && <p className="text-sm text-red-500">{formErrors.phone}</p>}
-                </div>
-              </div>
-
-              {/* Products Selection */}
-              <div className="grid grid-cols-4 items-start gap-4">
-                <Label className="text-right text-dark mt-2">
-                  Products <span className="text-red-500">*</span>
-                </Label>
-                <div className="col-span-3 space-y-3">
-                  <div className="max-h-60 overflow-y-auto border rounded-md p-3 space-y-3">
-                    {products.map((product) => (
-                      <div key={product.id} className="space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`product-${product.id}`}
-                            checked={newVendor.selectedProducts.includes(product.id)}
-                            onCheckedChange={(checked) => handleProductSelection(product.id, checked as boolean)}
-                          />
-                          <Label htmlFor={`product-${product.id}`} className="text-dark font-medium">
-                            {product.name} ({product.unit})
-                          </Label>
+            <Form {...vendorForm}>
+              <form onSubmit={vendorForm.handleSubmit(handleAddVendor)} className="space-y-6">
+                <div className="grid gap-4 py-4">
+                  {/* NAME */}
+                  <FormField
+                    control={vendorForm.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem className="grid grid-cols-4 items-center gap-4">
+                        <FormLabel className="text-right text-black">
+                          Name <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <div className="col-span-3">
+                          <FormControl>
+                            <Input {...field} maxLength={20} placeholder="Enter vendor name" />
+                          </FormControl>
+                          <FormMessage />
                         </div>
+                      </FormItem>
+                    )}
+                  />
 
-                        {/* {newVendor.selectedProducts.includes(product.id) && (
-                          <div className="ml-6 grid grid-cols-2 gap-2">
-                            <div>
-                              <Label className="text-xs text-gray-600">Quantity</Label>
-                              <Input
-                                type="number"
-                                min="1"
-                                value={productDetails[product.id]?.quantity || 1}
-                                onChange={(e) =>
-                                  handleProductDetailChange(
-                                    product.id,
-                                    "quantity",
-                                    Number.parseInt(e.target.value) || 1,
-                                  )
+                  {/* PHONE */}
+                  <FormField
+                    control={vendorForm.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem className="grid grid-cols-4 items-center gap-4">
+                        <FormLabel className="text-right text-black">
+                          Phone <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <div className="col-span-3">
+                          <FormControl>
+                            <Input
+                              type="tel"
+                              inputMode="numeric"
+                              maxLength={10}
+                              placeholder="Enter 10-digit phone number"
+                              value={field.value || ""}
+                              onChange={(e) => {
+                                const value = e.target.value.replace(/\D/g, "")
+                                if (value) {
+                                  field.onChange(Number(value))
+                                } else {
+                                  field.onChange(undefined)
                                 }
-                                className="h-8"
-                              />
-                            </div>
-                            <div>
-                              <Label className="text-xs text-gray-600">Price</Label>
-                              <Input
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                value={productDetails[product.id]?.price || 0}
-                                onChange={(e) =>
-                                  handleProductDetailChange(product.id, "price", Number.parseFloat(e.target.value) || 0)
-                                }
-                                className="h-8"
-                              />
-                            </div>
+                              }}
+                              onBlur={() => vendorForm.trigger("phone")}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* AADHAAR */}
+                  <FormField
+                    control={vendorForm.control}
+                    name="aadhaar"
+                    render={({ field }) => (
+                      <FormItem className="grid grid-cols-4 items-center gap-4">
+                        <FormLabel className="text-right text-black">Aadhaar</FormLabel>
+                        <div className="col-span-3">
+                          <FormControl>
+                            <Input
+                              {...field}
+                              inputMode="numeric"
+                              maxLength={14}
+                              placeholder="Enter Aadhaar number"
+                              onChange={(e) => {
+                                const value = e.target.value.replace(/[^\d\s]/g, "")
+                                field.onChange(value)
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* ADDRESS */}
+                  <FormField
+                    control={vendorForm.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem className="grid grid-cols-4 items-center gap-4">
+                        <FormLabel className="text-right text-black">Address</FormLabel>
+                        <div className="col-span-3">
+                          <FormControl>
+                            <Textarea {...field} rows={3} placeholder="Enter vendor address" />
+                          </FormControl>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* PRODUCTS */}
+                  <FormField
+                    control={vendorForm.control}
+                    name="products"
+                    render={({ field }) => (
+                      <FormItem className="grid grid-cols-4 items-start gap-4">
+                        <FormLabel className="text-right text-black mt-2">
+                          Products <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <div className="col-span-3 space-y-3">
+                          <div className="max-h-60 overflow-y-auto border rounded-md p-3 space-y-3">
+                            {products.map((product) => (
+                              <div key={product.id} className="space-y-2">
+                                <div className="flex items-center space-x-2">
+                                  <Checkbox
+                                    id={`product-${product.id}`}
+                                    checked={field.value.some((p) => p.product_id === product.id)}
+                                    onCheckedChange={(checked) =>
+                                      handleProductSelection(product.id, checked as boolean)
+                                    }
+                                  />
+                                  <Label htmlFor={`product-${product.id}`} className="text-dark font-medium">
+                                    {product.name} ({product.unit})
+                                  </Label>
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        )} */}
-                      </div>
-                    ))}
-                  </div>
-                  {formErrors.products && <p className="text-sm text-red-500">{formErrors.products}</p>}
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
                 </div>
-              </div>
-            </div>
 
-            <DialogFooter>
-              <Button
-                className="bg-gray-500 text-white"
-                onClick={() => {
-                  setOpen(false)
-                  setFormErrors({})
-                  setNewVendor({ name: "", phone: "", selectedProducts: [] })
-                  setProductDetails({})
-                }}
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleAddVendor}>
-                Save
-              </Button>
-            </DialogFooter>
+                <DialogFooter className="flex flex-col sm:flex-row-reverse sm:justify-center gap-2">
+                  <Button type="button" variant="outline" onClick={handleDialogClose} disabled={isSubmitting}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" className="text-white" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Save
+                      </>
+                    ) : (
+                      "Save"
+                    )}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
 
         {/* Pagination */}
-        <div className="flex items-center justify-end gap-4 p-4">
-          <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Items per page:</span>
-          <Input
-            type="number"
-            min={1}
-            value={itemsPerPageInput}
-            onChange={handleItemsPerPageChange}
-            onBlur={handleItemsPerPageSubmit}
-            onKeyDown={(e) => e.key === "Enter" && handleItemsPerPageSubmit()}
-            className="h-8 w-16 font-bold text-center"
-          />
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="px-3 py-1 rounded text-lg font-bold bg-gray-200 dark:bg-gray-700 disabled:opacity-50"
-          >
-            &lt;
-          </button>
-
-          <span className="text-sm font-bold text-gray-700 dark:text-gray-300">
-            Page {currentPage} of {totalPages}
-          </span>
-
-          <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 rounded text-lg font-bold bg-gray-200 dark:bg-gray-700 disabled:opacity-50"
-          >
-            &gt;
-          </button>
-        </div>
+      
+       <div className="flex items-center text-gray-700 justify-end p-4">
+                  <div className="flex items-center text-gray-700 gap-4">
+                    <span className="text-md text-gray-700 dark:text-gray-300">Items per page:</span>
+                    <Select
+                      value={itemsPerPage.toString()}
+                      onValueChange={(value) => {
+                        const num = parseInt(value)
+                        setItemsPerPage(num)
+                        setCurrentPage(1)
+                      }}
+      
+                    >
+                      <SelectTrigger className="w-24 h-8 text-gray-700 text-center">
+                        <SelectValue className="text-gray-700" />
+                      </SelectTrigger>
+                      <SelectContent className="text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                        {[10, 20, 30, 40, 50].map((n) => (
+                          <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+      
+      
+      
+                    <span className="text-md text-gray-700 dark:text-gray-300">
+                      Page {currentPage} of {totalPages}
+                    </span>
+      
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className="font-bold"
+                    >
+                      &lt;
+                    </button>
+      
+      
+      
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                      className="font-bold"
+                    >
+                      &gt;
+                    </button>
+                  </div>
+                </div>
       </div>
 
       {/* Success Dialog */}
-      {openAdd && (
-        <Dialog open={openAdd} onOpenChange={setOpenAdd}>
-          <DialogContent className="bg-white">
-            <DialogHeader>
-              <DialogTitle>Success</DialogTitle>
-            </DialogHeader>
-            <div>Vendor added successfully!</div>
-            <DialogFooter>
-              <Button className="w-full md:w-auto text-white mb-5 mr-2" onClick={() => setOpenAdd(false)}>
-                Close
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
+      <Dialog open={openAdd} onOpenChange={setOpenAdd}>
+        <DialogContent className="bg-white">
+          <DialogHeader>
+            <DialogTitle>Success</DialogTitle>
+          </DialogHeader>
+          <div>Vendor added successfully!</div>
+          <DialogFooter>
+            <Button className="w-full md:w-auto text-white mb-5 mr-2" onClick={() => setOpenAdd(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

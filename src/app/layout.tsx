@@ -14,11 +14,11 @@ import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: {
-    template: "Sammy Agency",
-    default: "Sammy Agency",
+    template: "Saamy Agency",
+    default: "Saamy Agency",
   },
   description:
-    "Sammy Agency",
+    "Saamy Agency",
 };
 
 export default function RootLayout({ children }: PropsWithChildren) {

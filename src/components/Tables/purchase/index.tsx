@@ -12,9 +12,9 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { getReports, changeOrderStatus, getCustomers, getProducts } from "@/app/actions"
+import { getPurchaseList, changeOrderStatus, getVendors, getProducts } from "@/app/actions"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
-import { OrdersSkeleton } from "./skeleton"
+import { PurchaseSkeleton } from "./skeleton"
 import { TextField } from '@mui/material';
 import { getTodayDateRange ,formatForDateTimeLocal} from '@/utils/timeframe-extractor'
 
@@ -37,30 +37,37 @@ interface Order {
 interface FilterState {
   dateFrom: string
   dateTo: string
-  customer: string
+  vendor: string
   product: string
 }
 
-export function Orders({ className }: { className?: string }) {
+export function Purchase({ className }: { className?: string }) {
   const router = useRouter()
 
   const [data, setData] = useState<any[]>([])
   const [filteredData, setFilteredData] = useState<any[]>([])
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
-  const [customers, setCustomers] = useState<any[]>([])
+  const [vendors, setVendors] = useState<any[]>([])
   const [products, setProducts] = useState<any[]>([])
+
 
   const { dateFrom, dateTo } = getTodayDateRange();
 
+
+
   // Filter states
   const [filters, setFilters] = useState<FilterState>({
+
     dateFrom: dateFrom.toISOString(), // or dateFrom.toLocaleDateString(), etc.
     dateTo: dateTo.toISOString(),
-    customer: "",
+    vendor: "",
     product: "",
   })
-  const [showFilters, setShowFilters] = useState(false)
+
+
+  // console.log("filters", filters);
+  // const [showFilters, setShowFilters] = useState(false)
 
   // State for status change modal
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -69,19 +76,19 @@ export function Orders({ className }: { className?: string }) {
 
   useEffect(() => {
     async function fetchData() {
-      const reports = await getReports()
-      const uniqueCustomers = await getCustomers()
+      const reports = await getPurchaseList()
+
+      const uniqueCustomers = await getVendors()
       const uniqueProducts = await getProducts()
 
-      console.log("uniqueCustomers", uniqueCustomers);
-      console.log("uniqueProducts", uniqueProducts);
+      // console.log("uniqueCustomers", uniqueCustomers);
+      // console.log("uniqueProducts", uniqueProducts);
 
-
-
-      setCustomers(uniqueCustomers)
-      setData(reports)
+      setVendors(uniqueCustomers)
       setProducts(uniqueProducts)
+      setData(reports)
       setFilteredData(reports)
+
     }
     fetchData()
   }, [])
@@ -98,9 +105,9 @@ export function Orders({ className }: { className?: string }) {
       filtered = filtered.filter((order) => new Date(order.date) <= new Date(filters.dateTo))
     }
 
-    // Customer filter
-    if (filters.customer && filters.customer !== "all") {
-      filtered = filtered.filter((order) => order.customer_name.includes(filters.customer))
+    // vendor filter
+    if (filters.vendor && filters.vendor !== "all") {
+      filtered = filtered.filter((order) => order.customer_name.includes(filters.vendor))
     }
 
     // Product filter
@@ -111,15 +118,20 @@ export function Orders({ className }: { className?: string }) {
     }
 
     setFilteredData(filtered)
-    setCurrentPage(1) // Reset to first page when filters change
+    setCurrentPage(1)
   }, [filters, data])
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
+
   const currentData = filteredData.slice(startIndex, startIndex + itemsPerPage)
+
   const [openOrderItems, setOpenOrderItems] = useState<null | any[]>(null)
 
   const [openAdd, setOpenAdd] = useState(false)
+
+
+  // console.log("currentData", currentData);
 
   const openStatusModal = (order: any) => {
     setSelectedOrder(order)
@@ -161,26 +173,33 @@ export function Orders({ className }: { className?: string }) {
 
   const clearFilters = () => {
     setFilters({
-      dateFrom: new Date().toISOString().split("T")[0], // Reset to current date
+      dateFrom: new Date().toISOString().split("T")[0],
       dateTo: "",
-      customer: "",
+      vendor: "",
       product: "",
     })
   }
 
+  
+
   const hasActiveFilters = Object.values(filters).some((value) => value !== "")
+
+  const uniqueCustomers = [...new Set(data.map((order) => order.customer_name))].sort()
+  const uniqueProducts = [
+    ...new Set(data.flatMap((order) => order.items.map((item: OrderItem) => item.product_name))),
+  ].sort()
 
   const statusOptions = ["Cancel", "Trash"]
 
   return (
     <>
       {data.length === 0 ? (
-        <OrdersSkeleton />
+        <PurchaseSkeleton />
       ) : (
         <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
           <div className="px-2 py-4 sm:px-4 sm:py-5 xl:px-8.5 text-left">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-dark dark:text-white">Sales Reports</h2>
+              <h2 className="text-2xl font-bold text-dark dark:text-white">Purchase Reports</h2>
             </div>
           </div>
 
@@ -188,51 +207,55 @@ export function Orders({ className }: { className?: string }) {
             <Card className="mb-4 sm:mx-4 xl:mx-8.5">
               <CardContent className="pt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                  {/* From Date */}
+                  
                   <div className="h-full">
-                    <TextField
-                      id="dateFrom"
-                      label="From Date"
-                      type="datetime-local"
-                      value={formatForDateTimeLocal(filters.dateFrom)} // Apply the helper function here
-                      onChange={(e) => handleFilterChange("dateFrom", e.target.value)}
-                      InputLabelProps={{
-                        shrink: true,
-                        style: { fontWeight: 'bold', color: 'gray'  },
-                      }}
-                      fullWidth
-                      variant="outlined"
-                      size="small"
-                    />
+                      <TextField
+                        id="dateFrom"
+                        label="From Date"
+                        type="datetime-local"
+                        value={formatForDateTimeLocal(filters.dateFrom)} // Apply the helper function here
+                        onChange={(e) => handleFilterChange("dateFrom", e.target.value)}
+                        InputLabelProps={{
+                          shrink: true,
+                          style: { fontWeight: 'bold', color: 'gray'  },
+                        }}
+                        fullWidth
+                        variant="outlined"
+                        size="small"
+                      />
+
                   </div>
 
                   {/* To Date */}
                   <div className="h-full">
+
                     <TextField
-                      id="dateTo"
-                      label="To Date"
-                      type="datetime-local"
-                      value={formatForDateTimeLocal(filters.dateTo)} // Apply the helper function here
-                      onChange={(e) => handleFilterChange("dateTo", e.target.value)}
-                      InputLabelProps={{
-                        shrink: true,
-                        style: { fontWeight: 'bold', color: 'gray'  },
-                      }}
-                      fullWidth
-                      variant="outlined"
-                      size="small"
-                    />
+              id="dateTo"
+              label="To Date"
+              type="datetime-local"
+              value={formatForDateTimeLocal(filters.dateTo)} // Apply the helper function here
+              onChange={(e) => handleFilterChange("dateTo", e.target.value)}
+              InputLabelProps={{
+                shrink: true,
+                style: { fontWeight: 'bold', color: 'gray'  },
+              }}
+              fullWidth
+              variant="outlined"
+              size="small"
+            />
+                    
                   </div>
 
-                  {/* Customer Filter */}
+
+                  {/* vendor Filter */}
                   <div className="h-full">
-                    <Select value={filters.customer} onValueChange={(value) => handleFilterChange("customer", value)}>
+                    <Select value={filters.vendor} onValueChange={(value) => handleFilterChange("vendor", value)}>
                       <SelectTrigger className="w-full h-[40px] text-sm font-semibold border rounded px-3">
-                        <SelectValue placeholder="Customer" />
+                        <SelectValue placeholder="Vendor" />
                       </SelectTrigger>
                       <SelectContent className="z-[999] text-gray-700 font-semibold w-full bg-white shadow-md border rounded-md">
-                        <SelectItem value="all">All Customers</SelectItem>
-                        {customers.map((c) => (
+                        <SelectItem value="all">All vendors</SelectItem>
+                        {vendors.map((c) => (
                           <SelectItem key={c.id} value={c.name}>
                             {c.name}
                           </SelectItem>
@@ -258,6 +281,7 @@ export function Orders({ className }: { className?: string }) {
                     </Select>
                   </div>
 
+
                   {/* Clear Button */}
                   {hasActiveFilters && (
                     <div>
@@ -280,7 +304,7 @@ export function Orders({ className }: { className?: string }) {
             <TableHeader>
               <TableRow className="border-none uppercase [&>th]:text-center">
                 <TableHead className="!text-left">Date</TableHead>
-                <TableHead>Customer Name</TableHead>
+                <TableHead>Vendor Name</TableHead>
                 <TableHead>Products</TableHead>
                 <TableHead>Quantity</TableHead>
                 <TableHead>Price</TableHead>
@@ -309,7 +333,7 @@ export function Orders({ className }: { className?: string }) {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="pl-5 sm:pl-6 xl:pl-7.5">{order.customer_name}</div>
+                      <div className="pl-5 sm:pl-6 xl:pl-7.5">{order.vendor_name}</div>
                     </TableCell>
                     <TableCell>
                       {order.items.slice(0, 2).map((item: OrderItem, index: number) => (
@@ -390,7 +414,7 @@ export function Orders({ className }: { className?: string }) {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => router.push(`/sales/edit/${order.id}`)}
+                              onClick={() => router.push(`/purchase/edit/${order.id}`)}
                               className="h-8 w-8"
                             >
                               <Pencil className="h-4 w-4" />

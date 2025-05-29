@@ -255,7 +255,7 @@ export async function addOrder(order: OrderInput): Promise<string> {
   const reserved: typeof order.items = [];
 
   try {
-    // Decrease/increase inventory for each item
+
     for (const item of order.items) {
       await changeProductQuantity(+item.product_id, item.quantity, order.type);
       reserved.push(item);
@@ -337,57 +337,12 @@ export interface OrderUpdateInput {
 // }
 
 
-// export async function updateOrder(
-//   orderId: number,
-//   newOrder: OrderInput          // full payload for simplicity
-// ): Promise<void> {
-//   if (!supabase) throw new Error('Supabase client not initialized');
-
-//   // 1) fetch existing items
-//   const { data: old, error: fetchErr } = await supabase
-//     .from('orders')
-//     .select('items')
-//     .eq('id', orderId)
-//     .single();
-//   if (fetchErr) throw fetchErr;
-
-//   const prevMap = new Map<string, number>(
-//     old.items.map((i: any) => [i.product_id, i.quantity])
-//   );
-
-//   // 2) apply stock deltas
-//   try {
-//     // A) adjust for items that remain / changed
-//     for (const item of newOrder.items) {
-//       const oldQty = prevMap.get(item.product_id) ?? 0;
-//       const delta  = item.quantity - oldQty;   // +ve means need more stock
-//       if (delta !== 0) await changeProductQuantity(parseInt(item.product_id), -delta ,order.type);
-//       prevMap.delete(item.product_id);
-//     }
-//     // B) any products removed from order → return stock
-//     for (const [prodId, qty] of prevMap) {
-//       await changeProductQuantity(parseInt(prodId), qty ,order.type);
-//     }
-//   } catch (stockErr) {
-//     throw stockErr;   // insufficient stock rolls the whole update
-//   }
-
-//   // 3) finally update the order row
-//   const { error: updErr } = await supabase
-//     .from('orders')
-//     .update(newOrder)
-//     .eq('id', orderId);
-//   if (updErr) throw updErr;
-// }
-
-
 export async function updateOrder(
   orderId: number,
-  newOrder: OrderInput // assumed to be strictly typed
+  order: OrderInput
 ): Promise<void> {
   if (!supabase) throw new Error("Supabase client not initialized");
 
-  // 1) Fetch existing order items
   const { data: old, error: fetchErr } = await supabase
     .from("orders")
     .select("items")
@@ -401,32 +356,37 @@ export async function updateOrder(
   );
 
   try {
-    // A) Handle updated or unchanged items
-    for (const item of newOrder.items) {
+    for (const item of order.items) {
       const oldQty = prevMap.get(item.product_id) ?? 0;
-      const delta = item.quantity - oldQty; // positive = added more items
+      const delta = item.quantity - oldQty;
 
       if (delta !== 0) {
-        const direction = newOrder.type === "sale" ? -delta : delta;
-        await changeProductQuantity(parseInt(item.product_id), direction, newOrder.type);
+        const direction = order.type === "sale" ? -delta : delta;
+        await changeProductQuantity(parseInt(item.product_id), direction, order.type);
       }
 
-      prevMap.delete(item.product_id); // mark as handled
+      prevMap.delete(item.product_id);
     }
 
-    // B) Handle removed items (restore their stock)
     for (const [prodId, qty] of prevMap) {
-      const direction = newOrder.type === "sale" ? qty : -qty;
-      await changeProductQuantity(parseInt(prodId), direction, newOrder.type);
+      const direction = order.type === "sale" ? qty : -qty;
+      await changeProductQuantity(parseInt(prodId), direction, order.type);
     }
   } catch (stockErr) {
-    throw stockErr; // short-circuit if any stock change fails
+    throw stockErr;
   }
 
-  // 3) Update the order
+  const cleanedOrder = {
+    ...order,
+    customer_id: order.customer_id?.trim() || null,
+    customer_name: order.customer_name?.trim() || null,
+    vendor_id: order.vendor_id?.trim() || null,
+    vendor_name: order.vendor_name?.trim() || null,
+  };
+
   const { error: updErr } = await supabase
     .from("orders")
-    .update(newOrder)
+    .update(cleanedOrder)
     .eq("id", orderId);
 
   if (updErr) throw updErr;
@@ -528,29 +488,55 @@ export async function addVendor(vendorData: {
 }
 
 
-export async function getReports(){
+export async function getReports() {
   if (!supabase) {
     console.warn("Supabase client not initialized. Returning mock data.")
     return []
   }
 
   try {
-     const { data, error } = await supabase.from("orders").select("*").order("id", { ascending: false });
-     
-    // console.log("products data" ,data );
-
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .or("type.is.null,type.eq.sale")
+      .order("id", { ascending: false })
 
     if (error) {
-      // console.error("Error fetching orders", error)
-      throw new Error("Failed to fetch orders");
+      throw new Error("Failed to fetch orders")
     }
 
     return data || []
   } catch (error) {
-    // console.error("Error in orders" ,error)
     return []
   }
 }
+
+export async function getPurchaseList() {
+  if (!supabase) {
+    console.warn("Supabase client not initialized. Returning mock data.")
+    return []
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("type", "purchase")
+      .order("id", { ascending: false })
+
+      // console.log("data",data);
+
+    if (error) {
+      throw new Error("Failed to fetch orders")
+    }
+
+    return data || []
+  } catch (error) {
+    return []
+  }
+}
+
+
 
 export async function getOrderLogsById(orderId: number) {
   if (!supabase) {

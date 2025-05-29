@@ -25,11 +25,11 @@ export function CustomersSkeleton() {
         <TableBody>
           {Array.from({ length: 10 }).map((_, i) => (
             <TableRow key={i} className="border-b border-gray-200 dark:border-gray-700">
-              <TableCell className="text-center">
-                <Skeleton className="h-4 w-4 mx-auto" />
+              <TableCell className="!text-left">
+                <Skeleton className="h-4 w-24" />
               </TableCell>
               <TableCell className="text-center">
-                <Skeleton className="h-4 w-8 mx-auto" />
+                <Skeleton className="h-4 w-20" />
               </TableCell>
               <TableCell className="!text-right">
                 <Skeleton className="h-4 w-20" />

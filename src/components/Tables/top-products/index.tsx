@@ -1,157 +1,136 @@
-"use client";
+"use client"
 
-
-
-import { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { getProducts, addProduct, getUnits } from "@/app/actions";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import type React from "react"
+import { useEffect, useState } from "react"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { getProducts, addProduct, getUnits } from "@/app/actions"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { TopProductsSkeleton } from './skeleton'
+import { TopProductsSkeleton } from "./skeleton"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Loader2 } from "lucide-react"
 
 type Unit = {
-  id: number;
-  name: string;
-};
+  id: number
+  name: string
+}
 
+type Product = {
+  id: number
+  name: string
+  quantity: number
+  price: number
+  unit: string
+}
+
+const productFormSchema = z.object({
+  product_name: z.string().min(1, "Product name is required").min(2, "Product name must be at least 2 characters"),
+  quantity: z
+    .number({
+      required_error: "Quantity is required",
+      invalid_type_error: "Quantity must be a number",
+    })
+    .int("Quantity must be a whole number")
+    .positive("Quantity must be greater than 0"),
+  price: z
+    .number({
+      required_error: "Price is required",
+      invalid_type_error: "Price must be a number",
+    })
+    .positive("Price must be greater than 0"),
+  unit: z.string().min(1, "Unit is required"),
+})
+
+type ProductFormData = z.infer<typeof productFormSchema>
 
 export function TopProducts() {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<Product[]>([])
+  const [units, setUnits] = useState<Unit[]>([])
+  const [open, setOpen] = useState(false)
+  const [openAdd, setOpenAdd] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [itemsPerPageInput, setItemsPerPageInput] = useState("10")
+  const [currentPage, setCurrentPage] = useState(1)
 
-
-  const [units, setUnits] = useState<Unit[]>([]);
+  const productForm = useForm<ProductFormData>({
+    resolver: zodResolver(productFormSchema),
+    defaultValues: {
+      product_name: "",
+      quantity: undefined,
+      price: undefined,
+      unit: "",
+    },
+    mode: "onChange",
+  })
 
   useEffect(() => {
     const fetchUnits = async () => {
-      const data = await getUnits();
-      setUnits(data);
-    };
-
-    fetchUnits();
-  }, []);
-
-
-
-
-  const [open, setOpen] = useState(false);
-
-  const [openAdd, setOpenAdd] = useState(false);
-
-  const [newProduct, setNewProduct] = useState({
-    product_id: "",
-    product_name: "",
-    quantity: 0,
-    price: 0,
-    unit: "",
-  });
-  const [formErrors, setFormErrors] = useState<{
-    product_name?: string;
-    quantity?: string;
-    price?: string;
-    unit?: string;
-  }>({});
+      const data = await getUnits()
+      setUnits(data)
+    }
+    fetchUnits()
+  }, [])
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await getProducts();
-      setData(res);
-    };
-    fetchData();
-  }, []);
-
-  const handleAddProduct = async () => {
-    const errors: typeof formErrors = {};
-
-    if (!newProduct.product_name.trim()) {
-      errors.product_name = "Product name is required";
+      const res = await getProducts()
+      setData(res)
     }
+    fetchData()
+  }, [])
 
-    if (!newProduct.quantity || newProduct.quantity <= 0) {
-      errors.quantity = "Quantity must be greater than 0";
-    }
-
-    if (!newProduct.unit.trim()) {
-      errors.unit = "Unit is required";
-    }
-
-    if (!newProduct.price || newProduct.price <= 0) {
-      errors.price = "Price must be greater than 0";
-    }
-
-    if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
-      return;
-    }
+  const handleAddProduct = async (formData: ProductFormData) => {
+    setIsLoading(true)
 
     try {
-      const id = await addProduct({
-        name: newProduct.product_name,
-        quantity: newProduct.quantity,
-        price: newProduct.price,
-        unit: newProduct.unit,
-      });
+      const productData = {
+        name: formData.product_name,
+        quantity: formData.quantity,
+        price: formData.price,
+        unit: formData.unit,
+      }
 
-      setOpen(false);
+      await addProduct(productData)
 
-      setOpenAdd(true);
+      setOpen(false)
+      setOpenAdd(true)
 
-      setFormErrors({});
-      setNewProduct({
-        product_id: "",
-        product_name: "",
-        quantity: 0,
-        price: 0,
-        unit: "",
-      });
+      // Reset form
+      productForm.reset()
 
-      const refreshed = await getProducts();
-      setData(refreshed);
+      // Refresh products list
+      const refreshed = await getProducts()
+      setData(refreshed)
     } catch (err) {
-      console.error(err);
+      console.error(err)
+      // You can add specific error handling here if needed
+    } finally {
+      setIsLoading(false)
     }
-  };
+  }
 
+  const handleDialogClose = () => {
+    setOpen(false)
+    productForm.reset()
+  }
 
-
-  const [itemsPerPage, setItemsPerPage] = useState(10)
-  const [itemsPerPageInput, setItemsPerPageInput] = useState("10")
-
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-  const paginatedData = data.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-
+  const totalPages = Math.ceil(data.length / itemsPerPage)
+  const paginatedData = data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
   const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setItemsPerPageInput(e.target.value)
   }
 
-
   const handleItemsPerPageSubmit = () => {
     const newItemsPerPage = Number.parseInt(itemsPerPageInput)
     if (!isNaN(newItemsPerPage) && newItemsPerPage >= 1) {
       setItemsPerPage(newItemsPerPage)
-
       setCurrentPage(1)
     } else {
       setItemsPerPageInput(itemsPerPage.toString())
@@ -159,26 +138,16 @@ export function TopProducts() {
   }
 
   return (
-
     <>
-
-      {paginatedData.length === 0 && (
-        <TopProductsSkeleton />
-      )}
+      {paginatedData.length === 0 && data.length === 0 && <TopProductsSkeleton />}
 
       <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
         <div className="px-6 py-4 sm:px-6 sm:py-5 xl:px-8.5">
-          <h2 className="text-2xl font-bold text-dark dark:text-white">
-            Products
-          </h2>
+          <h2 className="text-2xl font-bold text-dark dark:text-white">Products</h2>
         </div>
 
         <div className="flex justify-end mb-5 mr-2">
-          <Button
-            type="button"
-            className="text-white"
-            onClick={() => setOpen(true)}
-          >
+          <Button type="button" className="text-white" onClick={() => setOpen(true)}>
             Add Product
           </Button>
         </div>
@@ -186,9 +155,7 @@ export function TopProducts() {
         <Table>
           <TableHeader>
             <TableRow className="border-none uppercase [&>th]:text-center">
-              <TableHead className="!text-left pl-6">
-                Product Name
-              </TableHead>
+              <TableHead className="!text-left pl-6">Product Name</TableHead>
               <TableHead className="!text-left">Quantity</TableHead>
               <TableHead className="!text-left">Unit</TableHead>
               <TableHead className="!text-left">Price</TableHead>
@@ -197,224 +164,233 @@ export function TopProducts() {
 
           <TableBody>
             {paginatedData.map((product) => (
-              <TableRow
-                className="text-base font-medium text-dark dark:text-white"
-                key={product.id}
-              >
-                <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">
-                  {product.name}
-                </TableCell>
+              <TableRow className="text-base font-medium text-dark dark:text-white" key={product.id}>
+                <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{product.name}</TableCell>
                 <TableCell>{product.quantity}</TableCell>
                 <TableCell>{product.unit}</TableCell>
-                <TableCell>{product.price}</TableCell>
+                <TableCell>₹{product.price}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
 
-        {/* Dialog code here (unchanged) */}
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="bg-white dark:bg-white">
+        {/* Add Product Dialog */}
+        <Dialog open={open} onOpenChange={handleDialogClose}>
+          <DialogContent className="bg-white dark:bg-white max-w-2xl">
             <DialogHeader>
               <DialogTitle className="text-dark font-bold text-center">Add New Product</DialogTitle>
             </DialogHeader>
 
-            <div className="grid gap-4 py-4">
-              {/* Product Name */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="product_name" className="text-right text-dark">
-                  Name <span className="text-red-500">*</span>
-                </Label>
-                <div className="col-span-3 space-y-1 text-dark">
-                  <Input
-                    id="product_name"
-                    value={newProduct.product_name}
-                    onChange={(e) => {
-                      setNewProduct({ ...newProduct, product_name: e.target.value });
-                      if (formErrors.product_name) {
-                        setFormErrors((prev) => ({ ...prev, product_name: undefined }));
-                      }
-                    }}
-                    className={formErrors.product_name ? "border-red-500" : ""}
+            <Form {...productForm}>
+              <form onSubmit={productForm.handleSubmit(handleAddProduct)} className="space-y-6">
+                <div className="grid gap-4 py-4">
+                  {/* PRODUCT NAME */}
+                  <FormField
+                    control={productForm.control}
+                    name="product_name"
+                    render={({ field }) => (
+                      <FormItem className="grid grid-cols-4 items-center gap-4">
+                        <FormLabel className="text-right text-black">
+                          Name <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <div className="col-span-3">
+                          <FormControl>
+                            <Input {...field} placeholder="Enter product name" />
+                          </FormControl>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
                   />
 
-                  {formErrors.product_name && (
-                    <p className="text-sm text-red-500">
-                      {formErrors.product_name}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Unit */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="unit" className="text-right text-dark">
-                  Unit <span className="text-red-500">*</span>
-                </Label>
-                <div className="col-span-3 space-y-1 text-dark">
-                  <Select
-                    value={newProduct.unit}
-
-                    onValueChange={(value) => {
-                      setNewProduct({ ...newProduct, unit: value });
-                      if (formErrors.unit) {
-                        setFormErrors((prev) => ({ ...prev, unit: undefined }));
-                      }
-                    }}
-                  >
-                    <SelectTrigger className={formErrors.unit ? "border-red-500" : "text-dark"}>
-                      <SelectValue placeholder="Select unit" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white text-dark">
-                      {units.map((unit) => (
-                        <SelectItem key={unit.id} value={unit.name}>
-                          {unit.name.charAt(0).toUpperCase() + unit.name.slice(1)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {formErrors.unit && (
-                    <p className="text-sm text-red-500">{formErrors.unit}</p>
-                  )}
-
-                </div>
-              </div>
-
-              {/* Price */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="price" className="text-right text-dark">
-                  Price <span className="text-red-500">*</span>
-                </Label>
-                <div className="col-span-3 space-y-1 text-dark">
-                  <Input
-                    id="price"
-                    type="number"
-                    min={1}
-                    value={Number.isNaN(newProduct.price) ? "" : newProduct.price}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      const parsed = parseFloat(val);
-                      setNewProduct({
-                        ...newProduct,
-                        price: val === "" ? NaN : parsed
-                      });
-
-                      if (formErrors.price) {
-                        setFormErrors((prev) => ({ ...prev, price: undefined }));
-                      }
-                    }}
-                    className={formErrors.price ? "border-red-500" : "text-dark"}
+                  {/* UNIT */}
+                  <FormField
+                    control={productForm.control}
+                    name="unit"
+                    render={({ field }) => (
+                      <FormItem className="grid grid-cols-4 items-center gap-4">
+                        <FormLabel className="text-right text-black">
+                          Unit <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <div className="col-span-3">
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="text-dark">
+                                <SelectValue placeholder="Select unit" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="bg-white text-dark">
+                              {units.map((unit) => (
+                                <SelectItem key={unit.id} value={unit.name}>
+                                  {unit.name.charAt(0).toUpperCase() + unit.name.slice(1)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
                   />
 
-
-                  {formErrors.price && (
-                    <p className="text-sm text-red-500">{formErrors.price}</p>
-                  )}
-                </div>
-              </div>
-
-              {/* Quantity */}
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="quantity" className="text-right text-dark">
-                  Quantity <span className="text-red-500">*</span>
-                </Label>
-                <div className="col-span-3 space-y-1 text-dark">
-                  <Input
-                    id="quantity"
-                    type="number"
-                    min={1}
-                    value={newProduct.quantity}
-                    onChange={(e) => {
-                      setNewProduct({ ...newProduct, quantity: parseInt(e.target.value) });
-                      if (formErrors.quantity) {
-                        setFormErrors((prev) => ({ ...prev, quantity: undefined }));
-                      }
-                    }}
-                    className={formErrors.quantity ? "border-red-500" : ""}
+                  {/* PRICE */}
+                  <FormField
+                    control={productForm.control}
+                    name="price"
+                    render={({ field }) => (
+                      <FormItem className="grid grid-cols-4 items-center gap-4">
+                        <FormLabel className="text-right text-black">
+                          Price <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <div className="col-span-3">
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              placeholder="Enter price"
+                              value={field.value || ""}
+                              onChange={(e) => {
+                                const value = e.target.value
+                                if (value === "") {
+                                  field.onChange(undefined)
+                                } else {
+                                  const parsed = Number.parseFloat(value)
+                                  if (!isNaN(parsed)) {
+                                    field.onChange(parsed)
+                                  }
+                                }
+                              }}
+                              onBlur={() => productForm.trigger("price")}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
                   />
 
-
-                  {formErrors.quantity && (
-                    <p className="text-sm text-red-500">{formErrors.quantity}</p>
-                  )}
+                  {/* QUANTITY */}
+                  <FormField
+                    control={productForm.control}
+                    name="quantity"
+                    render={({ field }) => (
+                      <FormItem className="grid grid-cols-4 items-center gap-4">
+                        <FormLabel className="text-right text-black">
+                          Quantity <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <div className="col-span-3">
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min="1"
+                              placeholder="Enter quantity"
+                              value={field.value || ""}
+                              onChange={(e) => {
+                                const value = e.target.value
+                                if (value === "") {
+                                  field.onChange(undefined)
+                                } else {
+                                  const parsed = Number.parseInt(value)
+                                  if (!isNaN(parsed)) {
+                                    field.onChange(parsed)
+                                  }
+                                }
+                              }}
+                              onBlur={() => productForm.trigger("quantity")}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
                 </div>
-              </div>
 
-
-            </div>
-
-            <DialogFooter>
-              <Button className="color: bg-green-600 text-white"
-                onClick={() => {
-                  setOpen(false);
-                  setFormErrors({});
-                }}
-              >
-                Cancel
-              </Button>
-              <Button className="w-full md:w-auto text-white mb-5 mr-2"
-                onClick={handleAddProduct}>
-                Save
-              </Button>
-            </DialogFooter>
+                <DialogFooter className="flex flex-col sm:flex-row-reverse sm:justify-center gap-2">
+                  <Button type="button" variant="outline" onClick={handleDialogClose} disabled={isLoading}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" className="text-white" disabled={isLoading}>
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Save
+                      </>
+                    ) : (
+                      "Save"
+                    )}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
 
-        <div className="flex items-center justify-end gap-4 p-4">
-
-
-          <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Items per page:</span>
-          <Input
-            type="number"
-            min={1}
-            value={itemsPerPageInput}
-            onChange={handleItemsPerPageChange}
-            onBlur={handleItemsPerPageSubmit}
-            onKeyDown={(e) => e.key === "Enter" && handleItemsPerPageSubmit()}
-            className="h-8 w-16 font-bold text-center"
-          />
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="px-3 py-1 rounded text-lg font-bold bg-gray-200 dark:bg-gray-700 disabled:opacity-50"
-          >
-            &lt;
-          </button>
-
-          <span className="text-sm font-bold text-gray-700 dark:text-gray-300">
-            Page {currentPage} of {totalPages}
-          </span>
-
-          <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 rounded text-lg font-bold bg-gray-200 dark:bg-gray-700 disabled:opacity-50"
-          >
-            &gt;
-          </button>
-        </div>
-
+        {/* Pagination */}
+        <div className="flex items-center text-gray-700 justify-end p-4">
+                   <div className="flex items-center text-gray-700 gap-4">
+                     <span className="text-md text-gray-700 dark:text-gray-300">Items per page:</span>
+                     <Select
+                       value={itemsPerPage.toString()}
+                       onValueChange={(value) => {
+                         const num = parseInt(value)
+                         setItemsPerPage(num)
+                         setCurrentPage(1)
+                       }}
+       
+                     >
+                       <SelectTrigger className="w-24 h-8 text-gray-700 text-center">
+                         <SelectValue className="text-gray-700" />
+                       </SelectTrigger>
+                       <SelectContent className="text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                         {[10, 20, 30, 40, 50].map((n) => (
+                           <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                         ))}
+                       </SelectContent>
+                     </Select>
+       
+       
+       
+                     <span className="text-md text-gray-700 dark:text-gray-300">
+                       Page {currentPage} of {totalPages}
+                     </span>
+       
+                     <button
+                       onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                       disabled={currentPage === 1}
+                       className="font-bold"
+                     >
+                       &lt;
+                     </button>
+       
+       
+       
+                     <button
+                       onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                       disabled={currentPage === totalPages}
+                       className="font-bold"
+                     >
+                       &gt;
+                     </button>
+                   </div>
+                 </div>
       </div>
 
-
-      {openAdd && (
-        <Dialog open={openAdd} onOpenChange={setOpenAdd}>
-          <DialogContent className="bg-white">
-            <DialogHeader>
-              <DialogTitle>Success</DialogTitle>
-            </DialogHeader>
-            <div>Product Added successfully!</div>
-            <DialogFooter>
-              <Button className="w-full md:w-auto text-white mb-5 mr-2" onClick={() => setOpenAdd(false)}>Close</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
-
-
-
-
+      {/* Success Dialog */}
+      <Dialog open={openAdd} onOpenChange={setOpenAdd}>
+        <DialogContent className="bg-white">
+          <DialogHeader>
+            <DialogTitle>Success</DialogTitle>
+          </DialogHeader>
+          <div>Product added successfully!</div>
+          <DialogFooter>
+            <Button className="w-full md:w-auto text-white mb-5 mr-2" onClick={() => setOpenAdd(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
-
-  );
+  )
 }

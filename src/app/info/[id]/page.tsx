@@ -1465,7 +1465,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
               {/* Right Side - Payment Summary */}
 
               <div className="lg:col-span-1">
-                <div className="sticky top-4">
+                <div className="sticky top-4 rounded-[10px] bg-white dark:bg-gray-dark">
                   <Card>
                     <CardHeader className="pb-3">
                       <CardTitle className="text-lg font-semibold text-blue-700 dark:text-blue-400">

@@ -1,24 +1,21 @@
-"use client";
+"use client"
 
+import type React from "react"
 
-
-import { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { getCustomers ,addCustomer } from "@/app/actions";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useEffect, useState } from "react"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { getCustomers, addCustomer } from "@/app/actions"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { CustomersSkeleton} from "./skeleton";
-
+import { CustomersSkeleton } from "./skeleton"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Loader2 } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface Customer {
   id: string
@@ -28,327 +25,340 @@ interface Customer {
   address?: string
 }
 
+const customerFormSchema = z.object({
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .regex(/^[A-Za-z\s]+$/, "Name should contain only letters and spaces"),
+  phone: z
+    .string()
+    .min(1, "Phone is required")
+    .regex(/^\d{10}$/, "Phone must be a 10-digit number"),
+  aadhaar: z
+    .string()
+    .optional()
+    .refine((val) => {
+      if (!val || val.trim() === "") return true
+      const digits = val.replace(/\s+/g, "")
+      return /^\d{12}$/.test(digits)
+    }, "Aadhaar must be a 12-digit number"),
+  address: z.string().optional(),
+})
+
+type CustomerFormData = z.infer<typeof customerFormSchema>
 
 export function Customers() {
-  const [data, setData] = useState<any[]>([]);
-
-
+  const [data, setData] = useState<Customer[]>([])
   const [isLoading, setIsLoading] = useState(false)
-
-  const UNIT_OPTIONS = ["pcs", "kg", "ltr", "dozen", "pack", "box"];
   const [itemsPerPage, setItemsPerPage] = useState(10)
-  const [itemsPerPageInput, setItemsPerPageInput] = useState("10");
-  const [formErrors, setFormErrors] = useState<{
-    name?: string
-    phone?: string
-    adhaar?: string
-  }>({})
+  const [itemsPerPageInput, setItemsPerPageInput] = useState("10")
+  const [isAddingCustomer, setIsAddingCustomer] = useState(false)
+  const [openAdd, setOpenAdd] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
 
-  const [isAddingCustomer, setIsAddingCustomer] = useState(false);
-
-  
-
-  const [openAdd, setOpenAdd] = useState(false);
-const [customers, setCustomers] = useState<Customer[]>([])
-
+  const customerForm = useForm<CustomerFormData>({
+    resolver: zodResolver(customerFormSchema),
+    defaultValues: {
+      name: "",
+      phone: "",
+      aadhaar: "",
+      address: "",
+    },
+    mode: "onChange",
+  })
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await getCustomers();
-      setData(res);
-    };
-    fetchData();
-  }, []);
+      const res = await getCustomers()
+      setData(res)
+    }
+    fetchData()
+  }, [])
 
   const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setItemsPerPageInput(e.target.value)
   }
 
-   const [newCustomer, setNewCustomer] = useState({
-    name: "",
-    phone: "",
-    adhaar: "",
-    address: "",
-  })
-
-  // Handle items per page input submission
   const handleItemsPerPageSubmit = () => {
     const newItemsPerPage = Number.parseInt(itemsPerPageInput)
     if (!isNaN(newItemsPerPage) && newItemsPerPage >= 1) {
       setItemsPerPage(newItemsPerPage)
-      // Reset to page 1 when changing items per page
       setCurrentPage(1)
     } else {
-      // Reset to current value if invalid
       setItemsPerPageInput(itemsPerPage.toString())
     }
   }
 
+  const totalPages = Math.ceil(data.length / itemsPerPage)
+  const paginatedData = data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
+  const handleAddCustomer = async (formData: CustomerFormData) => {
+    setIsLoading(true)
 
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-  const paginatedData = data.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-
-    const handleAddCustomer = async () => {
-      const errors: { name?: string; phone?: string; adhaar?: string } = {}
-  
-      // ── Name: only letters & spaces, at least 2 chars
-      if (!newCustomer.name.trim()) {
-        errors.name = "Name is required"
-      } else if (!/^[A-Za-z\s]{2,}$/.test(newCustomer.name.trim())) {
-        errors.name = "Name should contain only letters & spaces"
+    try {
+      const customerData = {
+        name: formData.name,
+        phone: formData.phone,
+        adhaar: formData.aadhaar?.trim() || "",
+        address: formData.address?.trim() || "",
       }
-  
-      // ── Phone: exactly 10 digits
-      if (!newCustomer.phone.trim()) {
-        errors.phone = "Phone is required"
-      } else if (!/^\d{10}$/.test(newCustomer.phone.trim())) {
-        errors.phone = "Phone must be a 10‑digit number"
-      }
-  
-      // ── Aadhaar: optional, but if given must be 12 digits
-      if (newCustomer.adhaar.trim()) {
-        const digits = newCustomer.adhaar.replace(/\s+/g, "")
-        if (!/^\d{12}$/.test(digits)) {
-          errors.adhaar = "Aadhaar must be a 12‑digit number"
-        }
-      }
-  
-      // stop if any error
-      if (Object.keys(errors).length !== 0) {
-        setFormErrors(errors)
-        return
-      }
-  
-      setFormErrors({})
-      setIsLoading(true)
-  
-      try {
-        const newCustomerId = await addCustomer(newCustomer)
-  
-        //  console.log("newCustomerId",newCustomerId);
-  
-        const addedCustomer = {
-          ...newCustomer,
-          id: newCustomerId.toString(),
-        }
-  
 
-        if(newCustomerId){
-          setOpenAdd(true);
-          const res = await getCustomers();
-          setData(res);
-        }
-        // console.log("addedCustomer",addedCustomer);
-  
-        setCustomers([...customers, addedCustomer])
-        
-  
-        setNewCustomer({ name: "", phone: "", adhaar: "", address: "" })
+      const newCustomerId = await addCustomer(customerData)
+
+      if (newCustomerId) {
+        setOpenAdd(true)
         setIsAddingCustomer(false)
-      } catch (err) {
-        console.error(err)
-        setFormErrors({ phone: "Phone Number already exists" })
-      } finally {
-        setIsLoading(false)
-      }
-    }
 
+        // Reset form
+        customerForm.reset()
+
+        // Refresh customers list
+        const res = await getCustomers()
+        setData(res)
+      }
+    } catch (err) {
+      console.error(err)
+      // Set form error for phone field if it already exists
+      customerForm.setError("phone", {
+        type: "manual",
+        message: "Phone number already exists",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleDialogClose = () => {
+    setIsAddingCustomer(false)
+    customerForm.reset()
+  }
 
   return (
-
-  <>
-  {paginatedData.length === 0 ? (
-    <CustomersSkeleton />
-  ) : (
     <>
-      <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
-        <div className="px-6 py-4 sm:px-6 sm:py-5 xl:px-8.5">
-          <h2 className="text-2xl font-bold text-dark dark:text-white">Customers</h2>
-        </div>
-
-        <div className="flex justify-end mb-5 mr-2">
-          <Button type="button" className="text-white" onClick={() => setIsAddingCustomer(true)}>
-            Add Customer
-          </Button>
-        </div>
-
-        <Table>
-          <TableHeader>
-            <TableRow className="border-none uppercase [&>th]:text-center">
-              <TableHead className="!text-left pl-6">Customer Name</TableHead>
-              <TableHead className="!text-left">Phone</TableHead>
-              <TableHead className="!text-left">Aadhaar</TableHead>
-              <TableHead className="!text-left">Address</TableHead>
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            {paginatedData.map((customer) => (
-              <TableRow className="text-base font-medium text-dark dark:text-white" key={customer.id}>
-                <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{customer.name}</TableCell>
-                <TableCell>{customer.phone}</TableCell>
-                <TableCell>{customer.adhaar || "-"}</TableCell>
-                <TableCell>{customer.address || "-"}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-
-        <div className="flex items-center justify-end gap-4 p-4">
-          <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Items per page:</span>
-          <Input
-            type="number"
-            min={1}
-            value={itemsPerPageInput}
-            onChange={handleItemsPerPageChange}
-            onBlur={handleItemsPerPageSubmit}
-            onKeyDown={(e) => e.key === "Enter" && handleItemsPerPageSubmit()}
-            className="h-8 w-16 font-bold text-center"
-          />
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="px-3 py-1 rounded text-lg font-bold bg-gray-200 dark:bg-gray-700 disabled:opacity-50"
-          >
-            &lt;
-          </button>
-          <span className="text-sm font-bold text-gray-700 dark:text-gray-300">
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 rounded text-lg font-bold bg-gray-200 dark:bg-gray-700 disabled:opacity-50"
-          >
-            &gt;
-          </button>
-        </div>
-      </div>
-
-      {/* Add Customer Dialog */}
-      <Dialog open={isAddingCustomer} onOpenChange={setIsAddingCustomer}>
-        <DialogContent className="bg-white dark:bg-white">
-          <DialogHeader>
-            <DialogTitle className="text-center text-dark">Add New Customer</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            {/* NAME */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right text-dark">
-                Name <span className="text-red-500">*</span>
-              </Label>
-              <div className="col-span-3 space-y-1 text-dark">
-                <Input
-                  id="name"
-                  value={newCustomer.name}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setNewCustomer({ ...newCustomer, name: value });
-                    if (formErrors.name) setFormErrors({ ...formErrors, name: undefined });
-                  }}
-                  className={formErrors.name ? "border-red-500" : ""}
-                  maxLength={20}
-                  required
-                />
-                {formErrors.name && <p className="text-sm text-red-500">{formErrors.name}</p>}
-              </div>
+      {paginatedData.length === 0 && data.length === 0 ? (
+        <CustomersSkeleton />
+      ) : (
+        <>
+          <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
+            <div className="px-6 py-4 sm:px-6 sm:py-5 xl:px-8.5">
+              <h2 className="text-2xl font-bold text-dark dark:text-white">Customers</h2>
             </div>
 
-            {/* PHONE */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="phone" className="text-right text-dark">
-                Phone <span className="text-red-500">*</span>
-              </Label>
-              <div className="col-span-3 space-y-1 text-dark">
-                <Input
-                  id="phone"
-                  type="tel"
-                  inputMode="numeric"
-                  pattern="\d{10}"
-                  maxLength={10}
-                  value={newCustomer.phone}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, "");
-                    setNewCustomer({ ...newCustomer, phone: value });
-                    if (formErrors.phone) setFormErrors({ ...formErrors, phone: undefined });
-                  }}
-                  className={formErrors.phone ? "border-red-500" : ""}
-                  required
-                />
-                {formErrors.phone && <p className="text-sm text-red-500">{formErrors.phone}</p>}
-              </div>
+            <div className="flex justify-end mb-5 mr-2">
+              <Button type="button" className="text-white" onClick={() => setIsAddingCustomer(true)}>
+                Add Customer
+              </Button>
             </div>
 
-            {/* AADHAAR */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="adhaar" className="text-right text-dark">Aadhaar</Label>
-              <div className="col-span-3 space-y-1 text-dark">
-                <Input
-                  id="adhaar"
-                  inputMode="numeric"
-                  maxLength={14}
-                  value={newCustomer.adhaar}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/[^\d\s]/g, "");
-                    setNewCustomer({ ...newCustomer, adhaar: value });
-                    if (formErrors.adhaar) setFormErrors({ ...formErrors, adhaar: undefined });
-                  }}
-                  className={formErrors.adhaar ? "border-red-500" : ""}
-                />
-                {formErrors.adhaar && <p className="text-sm text-red-500">{formErrors.adhaar}</p>}
-              </div>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow className="border-none uppercase [&>th]:text-center">
+                  <TableHead className="!text-left pl-6">Customer Name</TableHead>
+                  <TableHead className="!text-left">Phone</TableHead>
+                  <TableHead className="!text-left">Aadhaar</TableHead>
+                  <TableHead className="!text-left">Address</TableHead>
+                </TableRow>
+              </TableHeader>
 
-            {/* ADDRESS */}
-            <div className="grid grid-cols-4 items-center gap-4 text-dark">
-              <Label htmlFor="address" className="text-right text-dark">Address</Label>
-              <Textarea
-                id="address"
-                value={newCustomer.address}
-                onChange={(e) => setNewCustomer({ ...newCustomer, address: e.target.value })}
-                className="col-span-3"
-                rows={3}
-              />
+              <TableBody>
+                {paginatedData.map((customer) => (
+                  <TableRow className="text-base font-medium text-dark dark:text-white" key={customer.id}>
+                    <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{customer.name}</TableCell>
+                    <TableCell>{customer.phone}</TableCell>
+                    <TableCell>{customer.adhaar || "-"}</TableCell>
+                    <TableCell className="max-w-xs truncate">{customer.address || "-"}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+
+          <div className="flex items-center text-gray-700 justify-end p-4">
+            <div className="flex items-center text-gray-700 gap-4">
+              <span className="text-md text-gray-700 dark:text-gray-300">Items per page:</span>
+              <Select
+                value={itemsPerPage.toString()}
+                onValueChange={(value) => {
+                  const num = parseInt(value)
+                  setItemsPerPage(num)
+                  setCurrentPage(1)
+                }}
+
+              >
+                <SelectTrigger className="w-24 h-8 text-gray-700 text-center">
+                  <SelectValue className="text-gray-700" />
+                </SelectTrigger>
+                <SelectContent className="text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                  {[10, 20, 30, 40, 50].map((n) => (
+                    <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+
+
+              <span className="text-md text-gray-700 dark:text-gray-300">
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="font-bold"
+              >
+                &lt;
+              </button>
+
+
+
+              <button
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="font-bold"
+              >
+                &gt;
+              </button>
             </div>
           </div>
-          <DialogFooter className="flex flex-col sm:flex-row-reverse sm:justify-center gap-2">
-            <Button className="bg-green-600 text-white" onClick={() => setIsAddingCustomer(false)}>
-              Cancel
-            </Button>
-            <Button className="text-white" onClick={handleAddCustomer} disabled={isLoading}>
-              {isLoading ? "Saving..." : "Save"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </div>
 
-      {/* Success Dialog */}
-      {openAdd && (
-        <Dialog open={openAdd} onOpenChange={setOpenAdd}>
-          <DialogContent className="bg-white text-black">
-            <DialogHeader>
-              <DialogTitle>Success</DialogTitle>
-            </DialogHeader>
-            <div>Customer Added successfully!</div>
-            <DialogFooter>
-              <Button className="w-full md:w-auto text-white mb-5 mr-2" onClick={() => setOpenAdd(false)}>
-                Close
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+          {/* Add Customer Dialog */}
+          <Dialog open={isAddingCustomer} onOpenChange={handleDialogClose}>
+            <DialogContent className="bg-white dark:bg-white max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-center text-dark font-bold">Add New Customer</DialogTitle>
+              </DialogHeader>
+
+              <Form {...customerForm}>
+                <form onSubmit={customerForm.handleSubmit(handleAddCustomer)} className="space-y-6">
+                  <div className="grid gap-4 py-4">
+                    {/* NAME */}
+                    <FormField
+                      control={customerForm.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem className="grid grid-cols-4 items-center gap-4">
+                          <FormLabel className="text-right text-black">
+                            Name <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <div className="col-span-3">
+                            <FormControl>
+                              <Input {...field} maxLength={20} placeholder="Enter customer name" />
+                            </FormControl>
+                            <FormMessage />
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* PHONE */}
+                    <FormField
+                      control={customerForm.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem className="grid grid-cols-4 items-center gap-4">
+                          <FormLabel className="text-right text-black">
+                            Phone <span className="text-red-500">*</span>
+                          </FormLabel>
+                          <div className="col-span-3">
+                            <FormControl>
+                              <Input
+                                {...field}
+                                type="tel"
+                                inputMode="numeric"
+                                maxLength={10}
+                                placeholder="Enter 10-digit phone number"
+                                onChange={(e) => {
+                                  const value = e.target.value.replace(/\D/g, "")
+                                  field.onChange(value)
+                                }}
+                                onBlur={() => customerForm.trigger("phone")}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* AADHAAR */}
+                    <FormField
+                      control={customerForm.control}
+                      name="aadhaar"
+                      render={({ field }) => (
+                        <FormItem className="grid grid-cols-4 items-center gap-4">
+                          <FormLabel className="text-right text-black">Aadhaar</FormLabel>
+                          <div className="col-span-3">
+                            <FormControl>
+                              <Input
+                                {...field}
+                                inputMode="numeric"
+                                maxLength={14}
+                                placeholder="Enter Aadhaar number"
+                                onChange={(e) => {
+                                  const value = e.target.value.replace(/[^\d\s]/g, "")
+                                  field.onChange(value)
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* ADDRESS */}
+                    <FormField
+                      control={customerForm.control}
+                      name="address"
+                      render={({ field }) => (
+                        <FormItem className="grid grid-cols-4 items-center gap-4">
+                          <FormLabel className="text-right text-black">Address</FormLabel>
+                          <div className="col-span-3">
+                            <FormControl>
+                              <Textarea {...field} rows={3} placeholder="Enter customer address" />
+                            </FormControl>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <DialogFooter className="flex flex-col sm:flex-row-reverse sm:justify-center gap-2">
+                    <Button type="button" variant="outline" onClick={handleDialogClose} disabled={isLoading}>
+                      Cancel
+                    </Button>
+                    <Button type="submit" className="text-white" disabled={isLoading}>
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Save
+                        </>
+                      ) : (
+                        "Save"
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+
+          {/* Success Dialog */}
+          <Dialog open={openAdd} onOpenChange={setOpenAdd}>
+            <DialogContent className="bg-white text-black">
+              <DialogHeader>
+                <DialogTitle>Success</DialogTitle>
+              </DialogHeader>
+              <div>Customer added successfully!</div>
+              <DialogFooter>
+                <Button className="w-full md:w-auto text-white mb-5 mr-2" onClick={() => setOpenAdd(false)}>
+                  Close
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </>
       )}
     </>
-  )}
-</>
-
-
-  );
+  )
 }

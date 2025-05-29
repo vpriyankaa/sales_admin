@@ -24,7 +24,23 @@ export function Sidebar() {
     // );
   };
 
- 
+  useEffect(() => {
+    // Keep collapsible open, when it's subpage is active
+    NAV_DATA.some((section) => {
+      return section.items.some((item) => {
+        return item.items.some((subItem) => {
+          if (subItem.url === pathname) {
+            if (!expandedItems.includes(item.title)) {
+              toggleExpanded(item.title);
+            }
+
+            // Break the loop
+            return true;
+          }
+        });
+      });
+    });
+  }, [pathname]);
 
   return (
     <>
@@ -73,7 +89,7 @@ export function Sidebar() {
           <div className="custom-scrollbar mt-6 flex-1 overflow-y-auto pr-3 min-[850px]:mt-10">
             {NAV_DATA.map((section) => (
               <div key={section.label} className="mb-6">
-                <h2 className="mb-5 text-sm font-medium text-dark-4 dark:text-dark-600">
+                <h2 className="mb-5 text-sm font-medium text-dark-4 dark:text-dark-6">
                   {section.label}
                 </h2>
 
@@ -106,7 +122,7 @@ export function Sidebar() {
                               />
                             </MenuItem>
 
-                            {/* {expandedItems.includes(item.title) && (
+                            {expandedItems.includes(item.title) && (
                               <ul
                                 className="ml-9 mr-0 space-y-1.5 pb-[15px] pr-0 pt-2"
                                 role="menu"
@@ -123,15 +139,15 @@ export function Sidebar() {
                                   </li>
                                 ))}
                               </ul>
-                            )} */}
+                            )}
                           </div>
                         ) : (
                           (() => {
                             const href =
                               "url" in item
                                 ? item.url + ""
-                                : "/" +"-"
-                                  ;
+                                : "/" +
+                                  item.title.toLowerCase().split(" ").join("-");
 
                             return (
                               <MenuItem

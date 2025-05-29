@@ -23,7 +23,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 
 // Types to match your backend
 export type productItem = {
@@ -82,8 +82,8 @@ interface Order {
 export interface OrderInput {
   customer_id: string
   customer_name: string
-  vendor_id: string,
-  vendor_name: string,
+  vendor_id: string
+  vendor_name: string
   date: Date
   items: CartItem[]
   total_price: number
@@ -95,7 +95,7 @@ export interface OrderInput {
   remaining_amount: number
   status: string
   paid_amount: number
-  type: "sale" | "purchase"; 
+  type: "sale" | "purchase"
   payment_status: string
 }
 
@@ -139,16 +139,14 @@ const vendorFormSchema = z.object({
 type VendorFormData = z.infer<typeof vendorFormSchema>
 
 interface Props {
-  id: string;
+  id: string
 }
-
 
 export default function Home({ id }: Props) {
   // console.log("id", id);
   const searchParams = useSearchParams()
-    const orderId = searchParams.get("id")
-    const isEditMode = !!id
-  
+  const orderId = searchParams.get("id")
+  const isEditMode = !!id
 
   // State
   const [date, setDate] = useState<Date | null>(new Date())
@@ -170,7 +168,7 @@ export default function Home({ id }: Props) {
       address: "",
       products: [],
     },
-    mode: "onChange", // Validate on change for better UX
+    mode: "onChange",
   })
 
   const [isLoading, setIsLoading] = useState(false)
@@ -226,7 +224,7 @@ export default function Home({ id }: Props) {
             // console.log("orderData",orderData);
 
             if (orderData) {
-              setSelectedVendor(orderData.customer_id.toString())
+              setSelectedVendor(orderData.vendor_id.toString())
               setDate(new Date(orderData.date))
               setCart(orderData.items || [])
 
@@ -449,7 +447,7 @@ export default function Home({ id }: Props) {
         discount_value: orderSummaryData.discountAmount,
         remaining_amount: remaining,
         status: "created",
-        type:"purchase",
+        type: "purchase",
         paid_amount: orderSummaryData.paidAmount,
         payment_status: payment_status,
       }
@@ -579,7 +577,6 @@ export default function Home({ id }: Props) {
                                   <div className="col-span-3">
                                     <FormControl>
                                       <Input {...field} maxLength={20} placeholder="Enter vendor name" />
-                                      
                                     </FormControl>
                                     <FormMessage />
                                   </div>
@@ -621,7 +618,7 @@ export default function Home({ id }: Props) {
                                         className={vendorForm.formState.errors.phone ? "border-red-500" : ""}
                                       />
                                     </FormControl>
-                                  
+
                                     <FormMessage />
                                   </div>
                                 </FormItem>
@@ -647,9 +644,8 @@ export default function Home({ id }: Props) {
                                           field.onChange(value)
                                         }}
                                       />
-                                      
                                     </FormControl>
-                                  
+
                                     <FormMessage />
                                   </div>
                                 </FormItem>
@@ -667,7 +663,6 @@ export default function Home({ id }: Props) {
                                     <FormControl>
                                       <Textarea {...field} rows={3} placeholder="Enter vendor address" />
                                     </FormControl>
-                                    
                                   </div>
                                 </FormItem>
                               )}
@@ -683,7 +678,6 @@ export default function Home({ id }: Props) {
                                     Products <span className="text-red-500">*</span>
                                   </FormLabel>
                                   <div className="col-span-3 space-y-3">
-                                    
                                     <div className="max-h-60 overflow-y-auto border rounded-md p-3 space-y-3">
                                       {products.map((product) => (
                                         <div key={product.id} className="space-y-2">
@@ -704,7 +698,7 @@ export default function Home({ id }: Props) {
                                         </div>
                                       ))}
                                     </div>
-                                  
+
                                     <FormMessage />
                                   </div>
                                 </FormItem>
@@ -738,8 +732,6 @@ export default function Home({ id }: Props) {
                               )}
                             </Button>
                           </DialogFooter>
-
-                    
                         </form>
                       </Form>
                     </DialogContent>
@@ -754,7 +746,7 @@ export default function Home({ id }: Props) {
                     <Select
                       value={selectedParticular}
                       onValueChange={(value) => {
-                        setSelectedParticular(value)
+                        // setSelectedParticular(value)
 
                         const selected = filteredProducts.find((p) => p.id === value)
                         const unitNames = units.map((u) => u.name)
@@ -762,7 +754,7 @@ export default function Home({ id }: Props) {
 
                         if (selected) {
                           const exists = cart.find((item) => item.product_id === selected.id)
-                          if (!exists) {
+                         
                             // Find vendor to get aadhaar and address
                             const vendor = vendors.find((v) => v.id.toString() === selectedUser)
                             const aadhaar = vendor?.aadhaar || ""
@@ -780,12 +772,13 @@ export default function Home({ id }: Props) {
                                 address,
                               },
                             ])
-                          }
+
+                          
                         }
                       }}
                     >
                       <SelectTrigger
-                        id="products"
+                        id="particulars"
                         aria-label="Select product"
                         className={cn(
                           "h-10",
@@ -797,7 +790,6 @@ export default function Home({ id }: Props) {
                       >
                         <SelectValue className="font-semibold text-black" placeholder="Select product" />
                       </SelectTrigger>
-                    
 
                       <SelectContent className="z-[999] text-black font-semibold w-full bg-white shadow-md border rounded-md">
                         {filteredProducts.map((product) => (
@@ -820,7 +812,7 @@ export default function Home({ id }: Props) {
                 style={{ maxHeight: "400px", overflowY: "auto" }}
               >
                 <Table>
-                  <TableHeader className="sticky top-0 bg-white z-10">
+                  <TableHeader className="sticky top-0 bg-white dark:bg-gray-dark z-10">
                     <TableRow className="border-none uppercase [&>th]:text-center">
                       <TableHead className="!text-left min-w-[100px]">Product</TableHead>
                       <TableHead className="min-w-[100px]">Quantity</TableHead>
