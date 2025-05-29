@@ -73,8 +73,8 @@ export function Orders({ className }: { className?: string }) {
       const uniqueCustomers = await getCustomers()
       const uniqueProducts = await getProducts()
 
-      console.log("uniqueCustomers", uniqueCustomers);
-      console.log("uniqueProducts", uniqueProducts);
+      // console.log("uniqueCustomers", uniqueCustomers);
+      // console.log("uniqueProducts", uniqueProducts);
 
 
 

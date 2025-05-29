@@ -418,6 +418,7 @@ export default function Home({ id }: Props) {
                           size: "small",
                         } as TextFieldProps,
                       }}
+                     
                     />
                   </LocalizationProvider>
                 </div>
@@ -649,7 +650,7 @@ export default function Home({ id }: Props) {
                 style={{ maxHeight: "400px", overflowY: "auto" }}
               >
                 <Table>
-                  <TableHeader className="sticky top-0 bg-white z-10">
+                  <TableHeader className="sticky top-0 bg-white dark:bg-gray-dark z-10">
                     <TableRow className="border-none uppercase [&>th]:text-center">
                       <TableHead className="!text-left min-w-[100px]">Product</TableHead>
                       <TableHead className="min-w-[100px]">Quantity</TableHead>
