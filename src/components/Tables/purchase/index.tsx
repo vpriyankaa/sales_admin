@@ -254,7 +254,7 @@ export function Purchase({ className }: { className?: string }) {
                         <SelectValue placeholder="Vendor" />
                       </SelectTrigger>
                       <SelectContent className="z-[999] text-gray-700 font-semibold w-full bg-white shadow-md border rounded-md">
-                        <SelectItem value="all">All vendors</SelectItem>
+                       
                         {vendors.map((c) => (
                           <SelectItem key={c.id} value={c.name}>
                             {c.name}
@@ -271,7 +271,7 @@ export function Purchase({ className }: { className?: string }) {
                         <SelectValue placeholder="Product" />
                       </SelectTrigger>
                       <SelectContent className="z-[999] text-gray-700 font-semibold w-full bg-white shadow-md border rounded-md">
-                        <SelectItem value="all">All Products</SelectItem>
+                       
                         {products.map((p) => (
                           <SelectItem key={p.id} value={p.name}>
                             {p.name}
