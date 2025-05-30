@@ -361,16 +361,24 @@ export async function updateOrder(
       const delta = item.quantity - oldQty;
 
       if (delta !== 0) {
-        const direction = order.type === "sale" ? -delta : delta;
-        await changeProductQuantity(parseInt(item.product_id), direction, order.type);
+        // Always pass positive quantity
+        await changeProductQuantity(
+          parseInt(item.product_id),
+          Math.abs(delta),
+          delta > 0 ? order.type : order.type === "sale" ? "purchase" : "sale" // reverse the type if reducing quantity
+        );
       }
 
       prevMap.delete(item.product_id);
     }
 
     for (const [prodId, qty] of prevMap) {
-      const direction = order.type === "sale" ? qty : -qty;
-      await changeProductQuantity(parseInt(prodId), direction, order.type);
+      // These items were removed — need to revert their effect
+      await changeProductQuantity(
+        parseInt(prodId),
+        qty,
+        order.type === "sale" ? "purchase" : "sale" // reverse the type to undo
+      );
     }
   } catch (stockErr) {
     throw stockErr;
@@ -391,6 +399,7 @@ export async function updateOrder(
 
   if (updErr) throw updErr;
 }
+
 
 
 
