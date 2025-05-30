@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { TextField } from '@mui/material';
 import { getTodayDateRange ,formatForDateTimeLocal} from '@/utils/timeframe-extractor'
 import { getReports, changeOrderStatus, getCustomers, getProducts } from "@/app/actions"
-
+import { Button } from "@/components/ui/button"
 
 interface FilterState {
   dateFrom: string
@@ -66,6 +66,17 @@ const [filteredData, setFilteredData] = useState<any[]>([])
     }))
   }
 
+  const clearFilters = () => {
+    setFilters({
+      dateFrom: new Date().toISOString().split("T")[0], // Reset to current date
+      dateTo: "",
+      customer: "",
+      product: "",
+    })
+  }
+
+  const hasActiveFilters = Object.values(filters).some((value) => value !== "")
+
   return (
     <div className="rounded-[10px] bg-white text-#3b82f6 px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
         <div className="px-2 py-4 sm:px-4 sm:py-5 xl:px-8.5 text-left">
@@ -77,9 +88,9 @@ const [filteredData, setFilteredData] = useState<any[]>([])
            <div className="mt-6">
             <Card className="mb-4 sm:mx-4 xl:mx-8.5">
               <CardContent className="pt-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
                   {/* From Date */}
-                  <div className="h-full">
+                  <div className="h-full w-full min-w-[220px]">
                     <TextField
                       id="dateFrom"
                       label="From Date"
@@ -97,7 +108,7 @@ const [filteredData, setFilteredData] = useState<any[]>([])
                   </div>
 
                   {/* To Date */}
-                  <div className="h-full">
+                  <div className="h-full w-full min-w-[220px]">
                     <TextField
                       id="dateTo"
                       label="To Date"
@@ -115,7 +126,7 @@ const [filteredData, setFilteredData] = useState<any[]>([])
                   </div>
 
                   {/* Customer Filter */}
-                  <div className="h-full">
+                  <div className="h-full w-full min-w-[220px]">
                     <Select value={filters.customer} onValueChange={(value) => handleFilterChange("customer", value)}>
                       <SelectTrigger className="w-full h-[40px] text-sm font-semibold border rounded px-3">
                         <SelectValue placeholder="Customer" />
@@ -132,7 +143,7 @@ const [filteredData, setFilteredData] = useState<any[]>([])
                   </div>
 
                   {/* Product Filter */}
-                  <div className="h-full">
+                  <div className="h-full w-full min-w-[220px]">
                     <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
                       <SelectTrigger className="w-full h-[40px] text-sm font-semibold border rounded px-3">
                         <SelectValue placeholder="Product" />
@@ -150,6 +161,18 @@ const [filteredData, setFilteredData] = useState<any[]>([])
 
                  
                 
+                 {hasActiveFilters && (
+                    <div>
+                      <Button
+                        variant="outline"
+                        onClick={clearFilters}
+                        className="bg-blue-500 text-white mt-1"
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  )}
+
                 </div>
 
               </CardContent>

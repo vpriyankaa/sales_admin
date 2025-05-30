@@ -99,7 +99,7 @@ export function Customers() {
       const customerData = {
         name: formData.name,
         phone: formData.phone,
-        adhaar: formData.aadhaar?.trim() || "",
+        aadhaar: formData.aadhaar?.trim() || "",
         address: formData.address?.trim() || "",
       }
 

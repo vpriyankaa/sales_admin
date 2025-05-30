@@ -699,6 +699,9 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                           <PaymentStatusBadge status={data.payment_status} />
                         </div>
 
+                       {
+                        data?.discount_type && data?.discount_value && data.discount_value !== 0 &&(
+                       
                         <div className="flex justify-between items-center">
                           <span className="text-black font-semibold text-sm">
                             Discount ({" "}
@@ -714,6 +717,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                               : "0"}
                           </span>
                         </div>
+                        )}
 
                         <div className="flex text-black justify-between items-center border-t pt-2">
                           <span className="text-black font-semibold text-sm">Total After Discount</span>

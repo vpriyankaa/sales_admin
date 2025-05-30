@@ -19,7 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { getTodayDateRange, formatForDateTimeLocal } from '@/utils/timeframe-extractor'
 import { TextField } from '@mui/material';
 import { getPurchaseList, changeOrderStatus, getVendors, getProducts } from "@/app/actions"
-
+import { Button } from "@/components/ui/button"
 
 
 interface FilterState {
@@ -71,6 +71,17 @@ export function PurchaseSkeleton() {
     fetchData()
   }, [])
 
+  const hasActiveFilters = Object.values(filters).some((value) => value !== "")
+  const clearFilters = () => {
+    setFilters({
+      dateFrom: new Date().toISOString().split("T")[0],
+      dateTo: "",
+      vendor: "",
+      product: "",
+    })
+  }
+
+
   const handleFilterChange = (key: keyof FilterState, value: string) => {
     setFilters((prev) => ({
       ...prev,
@@ -90,9 +101,9 @@ export function PurchaseSkeleton() {
       <div className="mt-6">
         <Card className="mb-4 sm:mx-4 xl:mx-8.5">
           <CardContent className="pt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
 
-              <div className="h-full">
+              <div className="h-full w-full min-w-[220px]">
                 <TextField
                   id="dateFrom"
                   label="From Date"
@@ -111,7 +122,7 @@ export function PurchaseSkeleton() {
               </div>
 
               {/* To Date */}
-              <div className="h-full">
+              <div className="h-full w-full min-w-[220px]">
 
                 <TextField
                   id="dateTo"
@@ -132,7 +143,7 @@ export function PurchaseSkeleton() {
 
 
               {/* vendor Filter */}
-              <div className="h-full">
+              <div className="h-full w-full min-w-[220px]">
                 <Select value={filters.vendor} onValueChange={(value) => handleFilterChange("vendor", value)}>
                   <SelectTrigger className="w-full h-[40px] text-sm font-semibold border rounded px-3">
                     <SelectValue placeholder="Vendor" />
@@ -149,7 +160,7 @@ export function PurchaseSkeleton() {
               </div>
 
               {/* Product Filter */}
-              <div className="h-full">
+              <div className="h-full w-full min-w-[220px]">
                 <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
                   <SelectTrigger className="w-full h-[40px] text-sm font-semibold border rounded px-3">
                     <SelectValue placeholder="Product" />
@@ -166,6 +177,17 @@ export function PurchaseSkeleton() {
               </div>
 
 
+                  {hasActiveFilters && (
+                    <div>
+                      <Button
+                        variant="outline"
+                        onClick={clearFilters}
+                        className="bg-blue-500 text-white mt-1"
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  )}
 
             </div>
 

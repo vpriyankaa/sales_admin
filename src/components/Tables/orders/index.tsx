@@ -187,9 +187,9 @@ export function Orders({ className }: { className?: string }) {
           <div className="mt-6">
             <Card className="mb-4 sm:mx-4 xl:mx-8.5">
               <CardContent className="pt-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
                   {/* From Date */}
-                  <div className="h-full">
+                  <div className="h-full w-full min-w-[220px]">
                     <TextField
                       id="dateFrom"
                       label="From Date"
@@ -207,7 +207,7 @@ export function Orders({ className }: { className?: string }) {
                   </div>
 
                   {/* To Date */}
-                  <div className="h-full">
+                  <div className="h-full w-full min-w-[220px]">
                     <TextField
                       id="dateTo"
                       label="To Date"
@@ -225,7 +225,7 @@ export function Orders({ className }: { className?: string }) {
                   </div>
 
                   {/* Customer Filter */}
-                  <div className="h-full">
+                  <div className="h-full w-full min-w-[220px]">
                     <Select value={filters.customer} onValueChange={(value) => handleFilterChange("customer", value)}>
                       <SelectTrigger className="w-full h-[40px] text-sm font-semibold border rounded px-3">
                         <SelectValue placeholder="Customer" />
@@ -242,7 +242,7 @@ export function Orders({ className }: { className?: string }) {
                   </div>
 
                   {/* Product Filter */}
-                  <div className="h-full">
+                  <div className="h-full w-full min-w-[220px]">
                     <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
                       <SelectTrigger className="w-full h-[40px] text-sm font-semibold border rounded px-3">
                         <SelectValue placeholder="Product" />
