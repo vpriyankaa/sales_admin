@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useEffect, useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { getCustomers, addCustomer, editCustomer } from "@/app/actions"
+import { getCustomers, addCustomer } from "@/app/actions"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,14 +14,14 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Loader2, Edit } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface Customer {
   id: string
   name: string
   phone: string
-  aadhaar?: string
+  adhaar?: string
   address?: string
 }
 
@@ -55,8 +55,6 @@ export function Customers() {
   const [isAddingCustomer, setIsAddingCustomer] = useState(false)
   const [openAdd, setOpenAdd] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
-  const [isEditingCustomer, setIsEditingCustomer] = useState(false)
-  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null)
 
   const customerForm = useForm<CustomerFormData>({
     resolver: zodResolver(customerFormSchema),
@@ -130,59 +128,8 @@ export function Customers() {
     }
   }
 
-  const handleeditCustomer = async (formData: CustomerFormData) => {
-    if (!editingCustomer) return
-
-    setIsLoading(true)
-
-    try {
-      const customerData = {
-        id: editingCustomer.id,
-        name: formData.name,
-        phone: Number(formData.phone),
-        aadhaar: formData.aadhaar?.trim() || "",
-        address: formData.address?.trim() || "",
-      }
-
-      
-      await editCustomer(customerData)
-      setIsEditingCustomer(false)
-      setEditingCustomer(null)
-
-      // Reset form
-      customerForm.reset()
-
-      // Refresh customers list
-      const res = await getCustomers()
-      setData(res)
-    } catch (err) {
-      console.error(err)
-      customerForm.setError("phone", {
-        type: "manual",
-        message: "Phone number already exists",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleEditCustomer = (customer: Customer) => {
-    setEditingCustomer(customer)
-    setIsEditingCustomer(true)
-
-    // Pre-populate form with customer data
-    customerForm.reset({
-      name: customer.name,
-      phone: customer.phone,
-      aadhaar: customer.aadhaar || "",
-      address: customer.address || "",
-    })
-  }
-
   const handleDialogClose = () => {
     setIsAddingCustomer(false)
-    setIsEditingCustomer(false)
-    setEditingCustomer(null)
     customerForm.reset()
   }
 
@@ -210,7 +157,6 @@ export function Customers() {
                   <TableHead className="!text-left">Phone</TableHead>
                   <TableHead className="!text-left">Aadhaar</TableHead>
                   <TableHead className="!text-left">Address</TableHead>
-                  <TableHead className="!text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
 
@@ -219,83 +165,71 @@ export function Customers() {
                   <TableRow className="text-base font-medium text-dark dark:text-white" key={customer.id}>
                     <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{customer.name}</TableCell>
                     <TableCell>{customer.phone}</TableCell>
-                    <TableCell>{customer.aadhaar || "-"}</TableCell>
+                    <TableCell>{customer.adhaar || "-"}</TableCell>
                     <TableCell className="max-w-xs truncate">{customer.address || "-"}</TableCell>
-                    <TableCell className="text-center">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditCustomer(customer)}
-                        className="h-8 w-8 p-0 hover:bg-gray-100"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
 
-            <div className="flex items-center text-gray-700 justify-end p-4">
-              <div className="flex items-center text-gray-700 gap-4">
-                <span className="text-md text-gray-700 dark:text-gray-300">Items per page:</span>
-                <Select
-                  value={itemsPerPage.toString()}
-                  onValueChange={(value) => {
-                    const num = Number.parseInt(value)
-                    setItemsPerPage(num)
-                    setCurrentPage(1)
-                  }}
-                >
-                  <SelectTrigger className="w-24 h-8 text-gray-700 text-center">
-                    <SelectValue className="text-gray-700" />
-                  </SelectTrigger>
-                  <SelectContent className="text-gray-700 font-semibold bg-white shadow-md border rounded-md">
-                    {[10, 20, 30, 40, 50].map((n) => (
-                      <SelectItem key={n} value={n.toString()}>
-                        {n}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+          <div className="flex items-center text-gray-700 justify-end p-4">
+            <div className="flex items-center text-gray-700 gap-4">
+              <span className="text-md text-gray-700 dark:text-gray-300">Items per page:</span>
+              <Select
+                value={itemsPerPage.toString()}
+                onValueChange={(value) => {
+                  const num = parseInt(value)
+                  setItemsPerPage(num)
+                  setCurrentPage(1)
+                }}
 
-                <span className="text-md text-gray-700 dark:text-gray-300">
-                  Page {currentPage} of {totalPages}
-                </span>
+              >
+                <SelectTrigger className="w-24 h-8 text-gray-700 text-center">
+                  <SelectValue className="text-gray-700" />
+                </SelectTrigger>
+                <SelectContent className="text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                  {[10, 20, 30, 40, 50].map((n) => (
+                    <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-                <button
-                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                  className="font-bold"
-                >
-                  &lt;
-                </button>
 
-                <button
-                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                  disabled={currentPage === totalPages}
-                  className="font-bold"
-                >
-                  &gt;
-                </button>
-              </div>
+
+              <span className="text-md text-gray-700 dark:text-gray-300">
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="font-bold"
+              >
+                &lt;
+              </button>
+
+
+
+              <button
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="font-bold"
+              >
+                &gt;
+              </button>
             </div>
+          </div>
           </div>
 
           {/* Add Customer Dialog */}
-          <Dialog open={isAddingCustomer || isEditingCustomer} onOpenChange={handleDialogClose}>
+          <Dialog open={isAddingCustomer} onOpenChange={handleDialogClose}>
             <DialogContent className="bg-white dark:bg-white max-w-2xl">
               <DialogHeader>
-                <DialogTitle className="text-center text-dark font-bold">
-                  {isEditingCustomer ? "Edit Customer" : "Add New Customer"}
-                </DialogTitle>
+                <DialogTitle className="text-center text-dark font-bold">Add New Customer</DialogTitle>
               </DialogHeader>
 
               <Form {...customerForm}>
-                <form
-                  onSubmit={customerForm.handleSubmit(isEditingCustomer ? handleeditCustomer : handleAddCustomer)}
-                  className="space-y-6"
-                >
+                <form onSubmit={customerForm.handleSubmit(handleAddCustomer)} className="space-y-6">
                   <div className="grid gap-4 py-4">
                     {/* NAME */}
                     <FormField
@@ -397,10 +331,8 @@ export function Customers() {
                       {isLoading ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          {isEditingCustomer ? "Update" : "Save"}
+                          Save
                         </>
-                      ) : isEditingCustomer ? (
-                        "Update"
                       ) : (
                         "Save"
                       )}

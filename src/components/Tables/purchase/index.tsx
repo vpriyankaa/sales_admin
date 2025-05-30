@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { Pencil, Eye } from "lucide-react"
+import { Edit, Eye } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -417,7 +417,7 @@ export function Purchase({ className }: { className?: string }) {
                               onClick={() => router.push(`/purchase/edit/${order.id}`)}
                               className="h-8 w-8"
                             >
-                              <Pencil className="h-4 w-4" />
+                              <Edit className="h-4 w-4" />
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent className="bg-white font-medium text-secondary">
@@ -432,7 +432,7 @@ export function Purchase({ className }: { className?: string }) {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => router.push(`/info/${order.id}`)}
+                              onClick={() => router.push(`/detail/${order.id}`)}
                               className="h-8 w-8"
                             >
                               <Eye className="h-4 w-4" />

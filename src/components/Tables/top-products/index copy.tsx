@@ -3,7 +3,7 @@
 import type React from "react"
 import { useEffect, useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { getProducts, addProduct, getUnits ,editProduct } from "@/app/actions"
+import { getProducts, addProduct, getUnits } from "@/app/actions"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,7 +13,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Loader2, Edit } from "lucide-react"
+import { Loader2 } from "lucide-react"
 
 type Unit = {
   id: number
@@ -58,21 +58,7 @@ export function TopProducts() {
   const [itemsPerPageInput, setItemsPerPageInput] = useState("10")
   const [currentPage, setCurrentPage] = useState(1)
 
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
-  const [openEdit, setOpenEdit] = useState(false)
-
   const productForm = useForm<ProductFormData>({
-    resolver: zodResolver(productFormSchema),
-    defaultValues: {
-      product_name: "",
-      quantity: undefined,
-      price: undefined,
-      unit: "",
-    },
-    mode: "onChange",
-  })
-
-  const editProductForm = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
       product_name: "",
@@ -134,54 +120,6 @@ export function TopProducts() {
     productForm.reset()
   }
 
-  const handleEditProduct = (product: Product) => {
-    setEditingProduct(product)
-    editProductForm.reset({
-      product_name: product.name,
-      quantity: product.quantity,
-      price: product.price,
-      unit: product.unit,
-    })
-    setOpenEdit(true)
-  }
-
-  const handleUpdateProduct = async (formData: ProductFormData) => {
-    if (!editingProduct) return
-
-    setIsLoading(true)
-
-    try {
-      const productData = {
-        id: editingProduct.id,
-        name: formData.product_name,
-        quantity: formData.quantity,
-        price: formData.price,
-        unit: formData.unit,
-      }
-
-      // You'll need to create an updateProduct action
-      await editProduct(productData)
-
-      setOpenEdit(false)
-      editProductForm.reset()
-      setEditingProduct(null)
-
-      // Refresh products list
-      const refreshed = await getProducts()
-      setData(refreshed)
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleEditDialogClose = () => {
-    setOpenEdit(false)
-    editProductForm.reset()
-    setEditingProduct(null)
-  }
-
   const totalPages = Math.ceil(data.length / itemsPerPage)
   const paginatedData = data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
@@ -221,7 +159,6 @@ export function TopProducts() {
               <TableHead className="!text-left">Quantity</TableHead>
               <TableHead className="!text-left">Unit</TableHead>
               <TableHead className="!text-left">Price</TableHead>
-              <TableHead className="!text-center">Action</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -232,11 +169,6 @@ export function TopProducts() {
                 <TableCell>{product.quantity}</TableCell>
                 <TableCell>{product.unit.charAt(0).toUpperCase() + product.unit.slice(1)}</TableCell>
                 <TableCell>₹{product.price}</TableCell>
-                <TableCell className="text-center">
-                  <Button variant="ghost" size="sm" onClick={() => handleEditProduct(product)} className="h-8 w-8 p-0">
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -395,204 +327,54 @@ export function TopProducts() {
           </DialogContent>
         </Dialog>
 
-        {/* Edit Product Dialog */}
-        <Dialog open={openEdit} onOpenChange={handleEditDialogClose}>
-          <DialogContent className="bg-white dark:bg-white max-w-2xl">
-            <DialogHeader>
-              <DialogTitle className="text-dark font-bold text-center">Edit Product</DialogTitle>
-            </DialogHeader>
-
-            <Form {...editProductForm}>
-              <form onSubmit={editProductForm.handleSubmit(handleUpdateProduct)} className="space-y-6">
-                <div className="grid gap-4 py-4">
-                  {/* PRODUCT NAME */}
-                  <FormField
-                    control={editProductForm.control}
-                    name="product_name"
-                    render={({ field }) => (
-                      <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">
-                          Name <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <div className="col-span-3">
-                          <FormControl>
-                            <Input {...field} placeholder="Enter product name" />
-                          </FormControl>
-                          <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* UNIT */}
-                  <FormField
-                    control={editProductForm.control}
-                    name="unit"
-                    render={({ field }) => (
-                      <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">
-                          Unit <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <div className="col-span-3">
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="text-dark">
-                                <SelectValue placeholder="Select unit" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="bg-white text-dark">
-                              {units.map((unit) => (
-                                <SelectItem key={unit.id} value={unit.name}>
-                                  {unit.name.charAt(0).toUpperCase() + unit.name.slice(1)}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* PRICE */}
-                  <FormField
-                    control={editProductForm.control}
-                    name="price"
-                    render={({ field }) => (
-                      <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">
-                          Price <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <div className="col-span-3">
-                          <FormControl>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              min="0"
-                              placeholder="Enter price"
-                              value={field.value || ""}
-                              onChange={(e) => {
-                                const value = e.target.value
-                                if (value === "") {
-                                  field.onChange(undefined)
-                                } else {
-                                  const parsed = Number.parseFloat(value)
-                                  if (!isNaN(parsed)) {
-                                    field.onChange(parsed)
-                                  }
-                                }
-                              }}
-                              onBlur={() => editProductForm.trigger("price")}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* QUANTITY */}
-                  <FormField
-                    control={editProductForm.control}
-                    name="quantity"
-                    render={({ field }) => (
-                      <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">
-                          Quantity <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <div className="col-span-3">
-                          <FormControl>
-                            <Input
-                              type="number"
-                              min="1"
-                              placeholder="Enter quantity"
-                              value={field.value || ""}
-                              onChange={(e) => {
-                                const value = e.target.value
-                                if (value === "") {
-                                  field.onChange(undefined)
-                                } else {
-                                  const parsed = Number.parseInt(value)
-                                  if (!isNaN(parsed)) {
-                                    field.onChange(parsed)
-                                  }
-                                }
-                              }}
-                              onBlur={() => editProductForm.trigger("quantity")}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <DialogFooter className="flex flex-col sm:flex-row-reverse sm:justify-center gap-2">
-                  <Button type="button" variant="outline" onClick={handleEditDialogClose} disabled={isLoading}>
-                    Cancel
-                  </Button>
-                  <Button type="submit" className="text-white" disabled={isLoading}>
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Update
-                      </>
-                    ) : (
-                      "Update"
-                    )}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
-
         {/* Pagination */}
         <div className="flex items-center text-gray-700 justify-end p-4">
-          <div className="flex items-center text-gray-700 gap-4">
-            <span className="text-md text-gray-700 dark:text-gray-300">Items per page:</span>
-            <Select
-              value={itemsPerPage.toString()}
-              onValueChange={(value) => {
-                const num = Number.parseInt(value)
-                setItemsPerPage(num)
-                setCurrentPage(1)
-              }}
-            >
-              <SelectTrigger className="w-24 h-8 text-gray-700 text-center">
-                <SelectValue className="text-gray-700" />
-              </SelectTrigger>
-              <SelectContent className="text-gray-700 font-semibold bg-white shadow-md border rounded-md">
-                {[10, 20, 30, 40, 50].map((n) => (
-                  <SelectItem key={n} value={n.toString()}>
-                    {n}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <span className="text-md text-gray-700 dark:text-gray-300">
-              Page {currentPage} of {totalPages}
-            </span>
-
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="font-bold"
-            >
-              &lt;
-            </button>
-
-            <button
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="font-bold"
-            >
-              &gt;
-            </button>
-          </div>
-        </div>
+                   <div className="flex items-center text-gray-700 gap-4">
+                     <span className="text-md text-gray-700 dark:text-gray-300">Items per page:</span>
+                     <Select
+                       value={itemsPerPage.toString()}
+                       onValueChange={(value) => {
+                         const num = parseInt(value)
+                         setItemsPerPage(num)
+                         setCurrentPage(1)
+                       }}
+       
+                     >
+                       <SelectTrigger className="w-24 h-8 text-gray-700 text-center">
+                         <SelectValue className="text-gray-700" />
+                       </SelectTrigger>
+                       <SelectContent className="text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                         {[10, 20, 30, 40, 50].map((n) => (
+                           <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                         ))}
+                       </SelectContent>
+                     </Select>
+       
+       
+       
+                     <span className="text-md text-gray-700 dark:text-gray-300">
+                       Page {currentPage} of {totalPages}
+                     </span>
+       
+                     <button
+                       onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                       disabled={currentPage === 1}
+                       className="font-bold"
+                     >
+                       &lt;
+                     </button>
+       
+       
+       
+                     <button
+                       onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                       disabled={currentPage === totalPages}
+                       className="font-bold"
+                     >
+                       &gt;
+                     </button>
+                   </div>
+                 </div>
       </div>
 
       {/* Success Dialog */}
@@ -612,3 +394,5 @@ export function TopProducts() {
     </>
   )
 }
+
+

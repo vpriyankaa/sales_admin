@@ -92,7 +92,7 @@ export async function getVendors() {
   }
 }
 
-// Add a new customer
+// Add customer
 export async function addCustomer(customerData: {
   name: string
   phone: string
@@ -131,6 +131,49 @@ export async function addCustomer(customerData: {
   } catch (error) {
     // console.error("Error in addCustomer:", error)
     throw error
+  }
+}
+
+export async function editCustomer(customerData: {
+  id: string | number; 
+  name: string;
+  phone: number;
+  aadhaar?: string;
+  address?: string;
+}) {
+  const { id, name, phone, aadhaar, address } = customerData;
+
+  if (!id || !name || !phone) {
+    throw new Error("Id, name and phone are required");
+  }
+
+  if (!supabase) {
+    console.warn("Supabase client not initialized. Cannot edit customer.");
+    throw new Error(
+      "Database connection not available. Please set up Supabase environment variables."
+    );
+  }
+
+  const sanitizedCustomer = {
+    name,
+    phone,
+    aadhaar: aadhaar?.trim() || null,
+    address: address?.trim() || null,
+  };
+
+  try {
+    const { data, error } = await supabase
+      .from("customers")
+      .update(sanitizedCustomer)
+      .eq("id", id)        
+      .select("id")        
+      .single();
+
+    if (error) throw error;
+
+    return data.id;       
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -439,6 +482,58 @@ export async function addProduct(productData: {
   }
 }
 
+
+export async function editProduct(productData: {
+  id: string | number;          // ← REQUIRED so we know which row to update
+  name: string;
+  quantity: number;
+  price: number;
+  unit: string;
+}) {
+  const { id, name, quantity, price, unit } = productData;
+
+  // -------- validation ------------------------------------------------------
+  if (
+    id == null ||
+    !name ||
+    !unit ||
+    quantity == null ||
+    price == null
+  ) {
+    throw new Error("All product fields (including id) are required");
+  }
+
+  if (!supabase) {
+    console.warn("Supabase client not initialized. Cannot edit product.");
+    throw new Error(
+      "Database connection not available. Please set up Supabase environment variables."
+    );
+  }
+
+  // -------- update ----------------------------------------------------------
+  try {
+    const { data, error } = await supabase
+      .from("products")
+      .update({
+        name,
+        quantity,
+        price,
+        unit,
+      })
+      .eq("id", id)     // update only the row whose id matches
+      .select("id")     // adjust the projection if you want more fields
+      .single();
+
+    if (error) throw error;
+
+    return data.id;     // or return `data` if you need the whole object
+  } catch (error) {
+    // Re‑throw so the caller can handle / toast the error
+    throw error;
+  }
+}
+
+
 export type productItem = {
   product_id: number
   product_name: string
@@ -495,6 +590,58 @@ export async function addVendor(vendorData: {
     throw error
   }
 }
+
+
+export async function editVendor(vendorData: {
+  id: string | number;        
+  name: string;
+  phone: number;
+  aadhaar?: string;
+  address?: string;
+  products: productItem[];
+}) {
+  const { id, name, phone, aadhaar, address, products } = vendorData;
+
+  if (
+    id == null ||
+    !name ||
+    !phone ||
+    products.length === 0
+  ) {
+    throw new Error("All vendor fields (including id) are required");
+  }
+
+  if (!supabase) {
+    console.warn("Supabase client not initialized. Cannot edit vendor.");
+    throw new Error(
+      "Database connection not available. Please set up Supabase environment variables."
+    );
+  }
+  const sanitizedVendor = {
+    name,
+    phone,
+    aadhaar: aadhaar?.trim() || null,
+    address: address?.trim() || null,
+    products,
+  };
+
+ 
+  try {
+    const { data, error } = await supabase
+      .from("vendors")
+      .update(sanitizedVendor)
+      .eq("id", id)         
+      .select("id")          
+      .single();
+
+    if (error) throw error;
+
+    return data.id;          
+  } catch (error) {
+    throw error;
+  }
+}
+
 
 
 export async function getReports() {

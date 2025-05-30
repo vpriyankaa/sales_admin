@@ -7,7 +7,7 @@ import { Checkbox } from "../FormElements/checkbox";
 
 export default function SigninWithPassword() {
   const [data, setData] = useState({
-    email: process.env.NEXT_PUBLIC_DEMO_USER_MAIL || "",
+    phone: process.env.NEXT_PUBLIC_DEMO_USER_MAIL || "",
     password: process.env.NEXT_PUBLIC_DEMO_USER_PASS || "",
     remember: false,
   });
@@ -35,14 +35,16 @@ export default function SigninWithPassword() {
   return (
     <form onSubmit={handleSubmit}>
       <InputGroup
-        type="email"
-        label="Email"
+        type="phone"
+        label="Phone"
         className="mb-4 [&_input]:py-[15px]"
-        placeholder="Enter your email"
-        name="email"
+        placeholder="Enter your Phone Number"
+        name="phone"
         handleChange={handleChange}
-        value={data.email}
+        value={data.phone}
         icon={<EmailIcon />}
+        iconPosition="right"
+
       />
 
       <InputGroup
@@ -54,6 +56,7 @@ export default function SigninWithPassword() {
         handleChange={handleChange}
         value={data.password}
         icon={<PasswordIcon />}
+        iconPosition="right"
       />
 
       <div className="mb-6 flex items-center justify-between gap-2 py-2 font-medium">

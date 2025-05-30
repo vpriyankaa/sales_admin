@@ -3,7 +3,7 @@
 import type React from "react"
 import { useEffect, useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { getProducts, addVendor, getVendors ,editVendor } from "@/app/actions"
+import { getProducts, addVendor, getVendors } from "@/app/actions"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,11 +11,12 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "@/components/ui/textarea"
 import { VendorsSkeleton } from "./skeleton"
+import { Badge } from "@/components/ui/badge"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Loader2, Edit } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 type Product = {
@@ -82,8 +83,6 @@ export function Vendors() {
   const [open, setOpen] = useState(false)
   const [openAdd, setOpenAdd] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [editingVendor, setEditingVendor] = useState<Vendor | null>(null)
-  const [openEdit, setOpenEdit] = useState(false)
 
   const vendorForm = useForm<VendorFormData>({
     resolver: zodResolver(vendorFormSchema),
@@ -171,68 +170,8 @@ export function Vendors() {
     }
   }
 
-  const handleEditVendor = (vendor: Vendor) => {
-    setEditingVendor(vendor)
-
-    // Pre-populate the form with vendor data
-    vendorForm.reset({
-      name: vendor.name,
-      phone: Number(vendor.phone),
-      aadhaar: vendor.aadhaar || "",
-      address: vendor.address || "",
-      products: vendor.products || [],
-    })
-
-    setOpenEdit(true)
-  }
-
-  const handleUpdateVendor = async (data: VendorFormData) => {
-    if (!editingVendor) return
-
-    setIsSubmitting(true)
-
-    try {
-      const vendorData = {
-        id: editingVendor.id,
-        name: data.name,
-        phone: data.phone,
-        aadhaar: data.aadhaar?.trim() || undefined,
-        address: data.address?.trim() || undefined,
-        products: data.products.map((product) => ({
-          product_id: product.product_id,
-          product_name: product.product_name,
-        })),
-      }
-
-      // You'll need to create this action
-      await editVendor(vendorData)
-
-      // Close dialog and show success
-      setOpenEdit(false)
-      setOpenAdd(true)
-
-      // Reset form and editing state
-      vendorForm.reset()
-      setEditingVendor(null)
-
-      // Refresh vendors list
-      const refreshedVendors = await getVendors()
-      setVendors(refreshedVendors)
-    } catch (err) {
-      console.error("Error updating vendor:", err)
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
   const handleDialogClose = () => {
     setOpen(false)
-    vendorForm.reset()
-  }
-
-  const handleEditDialogClose = () => {
-    setOpenEdit(false)
-    setEditingVendor(null)
     vendorForm.reset()
   }
 
@@ -283,7 +222,6 @@ export function Vendors() {
               <TableHead className="!text-left">Aadhaar</TableHead>
               <TableHead className="!text-left">Address</TableHead>
               <TableHead className="!text-left p-6">Products</TableHead>
-              <TableHead className="!text-center">Actions</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -295,20 +233,16 @@ export function Vendors() {
                 <TableCell>{vendor.aadhaar || "-"}</TableCell>
                 <TableCell className="max-w-xs truncate">{vendor.address || "-"}</TableCell>
                 <TableCell>
-                  <div className="text-md font-semibold text-gray-800">
-                    {vendor.products?.map((product, index) => (
-                      <span key={index}>
-                        {product.product_name}
-                        {index !== vendor.products.length - 1 && ", "}
-                      </span>
-                    ))}
-                  </div>
-                </TableCell>
-                <TableCell className="text-center">
-                  <Button variant="ghost" size="sm" onClick={() => handleEditVendor(vendor)} className="h-8 w-8 p-0">
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                </TableCell>
+                <div className="text-md font-semibold text-gray-800">
+                  {vendor.products?.map((product, index) => (
+                    <span key={index}>
+                      {product.product_name}
+                      {index !== vendor.products.length - 1 && ', '}
+                    </span>
+                  ))}
+                </div>
+              </TableCell>
+
               </TableRow>
             ))}
           </TableBody>
@@ -474,212 +408,55 @@ export function Vendors() {
           </DialogContent>
         </Dialog>
 
-        {/* Edit Vendor Dialog */}
-        <Dialog open={openEdit} onOpenChange={handleEditDialogClose}>
-          <DialogContent className="bg-white dark:bg-white max-w-2xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-dark font-bold text-center">Edit Vendor</DialogTitle>
-            </DialogHeader>
-
-            <Form {...vendorForm}>
-              <form onSubmit={vendorForm.handleSubmit(handleUpdateVendor)} className="space-y-6">
-                <div className="grid gap-4 py-4">
-                  {/* NAME */}
-                  <FormField
-                    control={vendorForm.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">
-                          Name <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <div className="col-span-3">
-                          <FormControl>
-                            <Input {...field} maxLength={20} placeholder="Enter vendor name" />
-                          </FormControl>
-                          <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* PHONE */}
-                  <FormField
-                    control={vendorForm.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">
-                          Phone <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <div className="col-span-3">
-                          <FormControl>
-                            <Input
-                              type="tel"
-                              inputMode="numeric"
-                              maxLength={10}
-                              placeholder="Enter 10-digit phone number"
-                              value={field.value || ""}
-                              onChange={(e) => {
-                                const value = e.target.value.replace(/\D/g, "")
-                                if (value) {
-                                  field.onChange(Number(value))
-                                } else {
-                                  field.onChange(undefined)
-                                }
-                              }}
-                              onBlur={() => vendorForm.trigger("phone")}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* AADHAAR */}
-                  <FormField
-                    control={vendorForm.control}
-                    name="aadhaar"
-                    render={({ field }) => (
-                      <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">Aadhaar</FormLabel>
-                        <div className="col-span-3">
-                          <FormControl>
-                            <Input
-                              {...field}
-                              inputMode="numeric"
-                              maxLength={14}
-                              placeholder="Enter Aadhaar number"
-                              onChange={(e) => {
-                                const value = e.target.value.replace(/[^\d\s]/g, "")
-                                field.onChange(value)
-                              }}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* ADDRESS */}
-                  <FormField
-                    control={vendorForm.control}
-                    name="address"
-                    render={({ field }) => (
-                      <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">Address</FormLabel>
-                        <div className="col-span-3">
-                          <FormControl>
-                            <Textarea {...field} rows={3} placeholder="Enter vendor address" />
-                          </FormControl>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* PRODUCTS */}
-                  <FormField
-                    control={vendorForm.control}
-                    name="products"
-                    render={({ field }) => (
-                      <FormItem className="grid grid-cols-4 items-start gap-4">
-                        <FormLabel className="text-right text-black mt-2">
-                          Products <span className="text-red-500">*</span>
-                        </FormLabel>
-                        <div className="col-span-3 space-y-3">
-                          <div className="max-h-60 overflow-y-auto border rounded-md p-3 space-y-3">
-                            {products.map((product) => (
-                              <div key={product.id} className="space-y-2">
-                                <div className="flex items-center space-x-2">
-                                  <Checkbox
-                                    id={`edit-product-${product.id}`}
-                                    checked={field.value.some((p) => p.product_id === product.id)}
-                                    onCheckedChange={(checked) =>
-                                      handleProductSelection(product.id, checked as boolean)
-                                    }
-                                  />
-                                  <Label htmlFor={`edit-product-${product.id}`} className="text-dark font-medium">
-                                    {product.name} ({product.unit})
-                                  </Label>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                          <FormMessage />
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <DialogFooter className="flex flex-col sm:flex-row-reverse sm:justify-center gap-2">
-                  <Button type="button" variant="outline" onClick={handleEditDialogClose} disabled={isSubmitting}>
-                    Cancel
-                  </Button>
-                  <Button type="submit" className="text-white" disabled={isSubmitting}>
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Update
-                      </>
-                    ) : (
-                      "Update"
-                    )}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
-
         {/* Pagination */}
-
-        <div className="flex items-center text-gray-700 justify-end p-4">
-          <div className="flex items-center text-gray-700 gap-4">
-            <span className="text-md text-gray-700 dark:text-gray-300">Items per page:</span>
-            <Select
-              value={itemsPerPage.toString()}
-              onValueChange={(value) => {
-                const num = Number.parseInt(value)
-                setItemsPerPage(num)
-                setCurrentPage(1)
-              }}
-            >
-              <SelectTrigger className="w-24 h-8 text-gray-700 text-center">
-                <SelectValue className="text-gray-700" />
-              </SelectTrigger>
-              <SelectContent className="text-gray-700 font-semibold bg-white shadow-md border rounded-md">
-                {[10, 20, 30, 40, 50].map((n) => (
-                  <SelectItem key={n} value={n.toString()}>
-                    {n}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <span className="text-md text-gray-700 dark:text-gray-300">
-              Page {currentPage} of {totalPages}
-            </span>
-
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="font-bold"
-            >
-              &lt;
-            </button>
-
-            <button
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="font-bold"
-            >
-              &gt;
-            </button>
-          </div>
-        </div>
+      
+       <div className="flex items-center text-gray-700 justify-end p-4">
+                  <div className="flex items-center text-gray-700 gap-4">
+                    <span className="text-md text-gray-700 dark:text-gray-300">Items per page:</span>
+                    <Select
+                      value={itemsPerPage.toString()}
+                      onValueChange={(value) => {
+                        const num = parseInt(value)
+                        setItemsPerPage(num)
+                        setCurrentPage(1)
+                      }}
+      
+                    >
+                      <SelectTrigger className="w-24 h-8 text-gray-700 text-center">
+                        <SelectValue className="text-gray-700" />
+                      </SelectTrigger>
+                      <SelectContent className="text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                        {[10, 20, 30, 40, 50].map((n) => (
+                          <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+      
+      
+      
+                    <span className="text-md text-gray-700 dark:text-gray-300">
+                      Page {currentPage} of {totalPages}
+                    </span>
+      
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className="font-bold"
+                    >
+                      &lt;
+                    </button>
+      
+      
+      
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                      className="font-bold"
+                    >
+                      &gt;
+                    </button>
+                  </div>
+                </div>
       </div>
 
       {/* Success Dialog */}
@@ -688,7 +465,7 @@ export function Vendors() {
           <DialogHeader>
             <DialogTitle>Success</DialogTitle>
           </DialogHeader>
-          <div>{editingVendor ? "Vendor updated successfully!" : "Vendor added successfully!"}</div>
+          <div>Vendor added successfully!</div>
           <DialogFooter>
             <Button className="w-full md:w-auto text-white mb-5 mr-2" onClick={() => setOpenAdd(false)}>
               Close
