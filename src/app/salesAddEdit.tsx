@@ -123,7 +123,7 @@ export default function Home({ id }: Props) {
   const isEditMode = !!id
 
   // State
-  const [date, setDate] = useState<Date | null>(new Date())
+  const [date, setDate] = useState<Date | null>(null);
   const [open, setOpen] = useState(!isEditMode)
   const [openEdit, setEditOpen] = useState(false)
   const [customers, setCustomers] = useState<Customer[]>([])
@@ -151,6 +151,11 @@ export default function Home({ id }: Props) {
 
   const openDialog = () => setIsOpen(true)
   const closeDialog = () => setIsOpen(false)
+
+    useEffect(() => {
+    setDate(new Date());
+  }, []);
+
 
   const [cart, setCart] = useState<CartItem[]>([])
   const [selectedParticular, setSelectedParticular] = useState<string>("")

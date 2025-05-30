@@ -2,10 +2,10 @@ import { createClient } from "@supabase/supabase-js"
 import { type NextRequest, NextResponse } from "next/server"
 import path from "path"
 
-// ✅ Use service role key (never expose it to client-side)
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY! // Must be a secret key (not the anon key)
+  process.env.SUPABASE_SERVICE_ROLE_KEY! 
 )
 
 export async function POST(request: NextRequest) {

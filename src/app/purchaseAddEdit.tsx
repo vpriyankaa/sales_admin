@@ -149,7 +149,7 @@ export default function Home({ id }: Props) {
   const isEditMode = !!id
 
   // State
-  const [date, setDate] = useState<Date | null>(new Date())
+  const [date, setDate] = useState<Date | null>(null);
   const [open, setOpen] = useState(!isEditMode)
   const [openEdit, setEditOpen] = useState(false)
   const [vendors, setVendors] = useState<Vendor[]>([])
@@ -326,6 +326,12 @@ export default function Home({ id }: Props) {
       vendorForm.trigger("products") // Trigger validation
     }
   }
+
+
+    useEffect(() => {
+    setDate(new Date());
+  }, []);
+
 
   const handleAddVendor = async (data: VendorFormData) => {
     setIsLoading(true)
