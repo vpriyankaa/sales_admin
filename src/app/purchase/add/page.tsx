@@ -7,7 +7,7 @@ export default function PurchaseAdd() {
     <div className="space-y-10">
       <Suspense fallback={
         <div className="flex justify-center items-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       }>
         <Home id="" />

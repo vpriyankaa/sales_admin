@@ -159,14 +159,14 @@ export function OrderSummary({
       <h3 className="font-bold text-lg text-black border-b pb-2 sticky top-0 z-10">Order Summary</h3>
 
       <div className="flex justify-between items-center">
-        <span className="font-semibold text-blue-600">Price</span>
+        <span className="font-semibold text-primary">Price</span>
         <span className="text-lg text-black first-letter:font-bold">₹{cart.length ? totalPriceDisplay : "0"}</span>
       </div>
 
       {/* Discount section */}
       <div className="space-y-2">
         <div className="flex justify-between items-center">
-          <label className="font-semibold text-blue-600">Discount Type</label>
+          <label className="font-semibold text-primary">Discount Type</label>
           <Select value={discountType} onValueChange={(v) => setDiscountType(v as "flat" | "percentage")}>
             <SelectTrigger className="w-36 h-9 text-black border font-bold">
               <SelectValue placeholder="Type" />
@@ -179,7 +179,7 @@ export function OrderSummary({
         </div>
 
         <div className="flex justify-between items-center">
-          <label className="font-semibold text-blue-600">
+          <label className="font-semibold text-primary">
             {discountType === "percentage" ? "Discount (%)" : "Discount (₹)"}
           </label>
           <input
@@ -203,7 +203,7 @@ export function OrderSummary({
 
       {/* Discounted amount */}
       <div className="flex justify-between items-center">
-        <span className="font-semibold text-blue-600">Discount Amount</span>
+        <span className="font-semibold text-primary">Discount Amount</span>
         <span className="text-lg font-bold text-red-600">
           -₹{discountAmount % 1 === 0 ? discountAmount : discountAmount.toFixed(2)}
         </span>
@@ -211,14 +211,14 @@ export function OrderSummary({
 
       {/* Total payment after discount */}
       <div className="flex justify-between items-center border-b pb-2">
-        <span className="font-semibold text-blue-600">Total</span>
+        <span className="font-semibold text-primary">Total</span>
         <span className="text-lg text-black font-bold">₹{cart.length ? totalAmount : "0"}</span>
       </div>
 
       {/* Payment method */}
       <div className="space-y-1">
         <div className="flex justify-between items-center">
-          <label className="font-semibold text-blue-600">Payment Method:</label>
+          <label className="font-semibold text-primary">Payment Method:</label>
           <Select
             value={paymentMethod}
             onValueChange={(v) => {
@@ -253,7 +253,7 @@ export function OrderSummary({
       {/* Paid amount */}
       <div className="space-y-1">
         <div className="flex justify-between items-center">
-          <label className="font-semibold text-blue-600">Paid Amount (₹):</label>
+          <label className="font-semibold text-primary">Paid Amount (₹):</label>
           <input
             type="number"
             min={0}
@@ -279,12 +279,12 @@ export function OrderSummary({
 
       {/* Total payable */}
       <div className="flex justify-between items-center">
-        <span className="font-semibold text-blue-600">Total Payable:</span>
+        <span className="font-semibold text-primary">Total Payable:</span>
         <span className="text-lg font-bold text-dark-2">₹{cart.length ? remainingAmountDisplay : "0"}</span>
       </div>
 
       <div className="space-y-2 border-t pt-2">
-        <Label className="text-md font-semibold text-blue-600">Remarks:</Label>
+        <Label className="text-md font-semibold text-primary">Remarks:</Label>
         <Textarea
           value={remarks}
           onChange={(e) => setRemarks(e.target.value)}

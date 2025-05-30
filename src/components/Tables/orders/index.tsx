@@ -319,7 +319,7 @@ export function Orders({ className }: { className?: string }) {
                       {order.items.length > 2 && (
                         <button
                           onClick={() => setOpenOrderItems(order.items)}
-                          className="text-blue-600 underline text-sm"
+                          className="text-primary underline text-sm"
                         >
                           +{order.items.length - 2} more
                         </button>
@@ -342,7 +342,7 @@ export function Orders({ className }: { className?: string }) {
                               : order.payment_status === "partiallypaid"
                                 ? "bg-yellow-200 text-yellow-900"
                                 : order.payment_status === "credit"
-                                  ? "bg-blue-200 text-blue-600"
+                                  ? "bg-blue-200 text-primary"
                                   : "bg-gray-300 text-gray-700"
                             }`}
                         >
@@ -396,7 +396,7 @@ export function Orders({ className }: { className?: string }) {
                               <Pencil className="h-4 w-4" />
                             </Button>
                           </TooltipTrigger>
-                          <TooltipContent className="bg-white font-medium text-blue-400">
+                          <TooltipContent className="bg-white font-medium text-secondary">
                             Edit order status
                           </TooltipContent>
                         </Tooltip>
@@ -414,7 +414,7 @@ export function Orders({ className }: { className?: string }) {
                               <Eye className="h-4 w-4" />
                             </Button>
                           </TooltipTrigger>
-                          <TooltipContent className="bg-white font-medium text-blue-400">View status</TooltipContent>
+                          <TooltipContent className="bg-white font-medium text-secondary">View status</TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     </TableCell>

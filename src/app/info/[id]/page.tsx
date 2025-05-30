@@ -262,7 +262,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   // Products Table Component
   const ProductsTable = ({ items }: { items?: ProductItem[] }) => (
     <div>
-      <h3 className="text-lg font-semibold mb-4 text-blue-700 dark:text-blue-400">Products</h3>
+      <h3 className="text-lg font-semibold mb-4 text-primary dark:text-primary">Products</h3>
       <div className="overflow-x-auto border rounded-md">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-800">
@@ -428,7 +428,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     )
   }
@@ -485,7 +485,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                     setSelectedOrderStatus(statusOptions[0]) // Set to first option "Cancel"
                     setIsModalOpen(true)
                   }}
-                  className="text-blue-600 hover:text-blue-800 font-medium"
+                  className="text-primary hover:text-primary font-medium"
                 >
                   Change status
                 </button>
@@ -502,9 +502,9 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
                   {
                     type === "sale" ? (
-                      <h3 className="text-lg font-semibold mb-4 text-blue-700 dark:text-blue-400">Customer Information</h3>
+                      <h3 className="text-lg font-semibold mb-4 text-primary dark:text-primary">Customer Information</h3>
                     ) :(
-                      <h3 className="text-lg font-semibold mb-4 text-blue-700 dark:text-blue-400">Vendor Information</h3>
+                      <h3 className="text-lg font-semibold mb-4 text-primary dark:text-primary">Vendor Information</h3>
                     )
                   }
                   
@@ -537,7 +537,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                 {/* Order Logs - Only show if there are logs */}
                 {paymentLogData && paymentLogData.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-bold mb-4 text-blue-700 dark:text-blue-400">Payment Logs</h3>
+                    <h3 className="text-lg font-bold mb-4 text-primary dark:text-primary">Payment Logs</h3>
                     <div className="bg-white dark:bg-gray-800 border rounded-md p-3 space-y-2">
                       {paymentLogData.map((log) => {
                         const isOpen = openId === log.id
@@ -617,7 +617,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
                 {orderLogData && orderLogData.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-bold mb-4 text-blue-700 dark:text-blue-400">Order Logs</h3>
+                    <h3 className="text-lg font-bold mb-4 text-primary dark:text-primary">Order Logs</h3>
                     <div className="bg-white dark:bg-gray-800 border rounded-md p-3 space-y-2">
                       {orderLogData.map((log) => {
                         const isOpen = openId === log.id
@@ -683,7 +683,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                 <div className="sticky top-4 rounded-[10px] bg-white dark:bg-gray-dark">
                   <Card>
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-lg font-semibold text-blue-700 dark:text-blue-400">
+                      <CardTitle className="text-lg font-semibold text-primary dark:text-primary">
                         Payment Summary
                       </CardTitle>
                     </CardHeader>
@@ -740,7 +740,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
                         <div className="flex text-black justify-between items-center text-lg font-bold pt-3 border-t-2 border-blue-200">
                           <span>Total Payable</span>
-                          <span className="text-blue-700">₹{formatAmount(data.total_payable)}</span>
+                          <span className="text-primary">₹{formatAmount(data.total_payable)}</span>
                         </div>
 
                         {data.paid_amount !== data.total_payable && data.remaining_amount > 0 && (
@@ -844,7 +844,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                   disabled={isUploading}
                 />
                 {isUploading && (
-                  <div className="flex items-center gap-2 text-sm text-blue-600">
+                  <div className="flex items-center gap-2 text-sm text-primary">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Uploading...
                   </div>
@@ -852,8 +852,8 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                 {selectedFile && uploadedFileName && (
                   <div className="flex items-center justify-between p-2 border border-blue-200 rounded">
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-blue-600" />
-                      <span className="text-sm text-blue-700">{selectedFile.name}</span>
+                      <CheckCircle className="h-4 w-4 text-primary" />
+                      <span className="text-sm text-primary">{selectedFile.name}</span>
                     </div>
                     <Button
                       type="button"
@@ -927,7 +927,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
             )}
             {imageLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>
             )}
           </div>
