@@ -3,7 +3,7 @@
 import type React from "react"
 import { useEffect, useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { getProducts, addVendor, getVendors ,editVendor } from "@/app/actions"
+import { getProducts, addVendor, getVendors, editVendor } from "@/app/actions"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,8 +15,9 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Loader2, Edit } from "lucide-react"
+import { Loader2, Edit ,Eye} from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useRouter } from "next/navigation"
 
 type Product = {
   id: number
@@ -84,6 +85,12 @@ export function Vendors() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null)
   const [openEdit, setOpenEdit] = useState(false)
+
+  const router = useRouter()
+
+  const userStr = sessionStorage.getItem("user");
+
+  const user = userStr ? JSON.parse(userStr) : null;
 
   const vendorForm = useForm<VendorFormData>({
     resolver: zodResolver(vendorFormSchema),
@@ -202,6 +209,8 @@ export function Vendors() {
           product_id: product.product_id,
           product_name: product.product_name,
         })),
+        user: user?.id
+
       }
 
       // You'll need to create this action
@@ -307,6 +316,14 @@ export function Vendors() {
                 <TableCell className="text-center">
                   <Button variant="ghost" size="sm" onClick={() => handleEditVendor(vendor)} className="h-8 w-8 p-0">
                     <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => router.push(`/vendorLog/${vendor.id}`)}
+                    className="h-8 w-8"
+                  >
+                    <Eye className="h-4 w-4" />
                   </Button>
                 </TableCell>
               </TableRow>

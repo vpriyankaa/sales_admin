@@ -6,6 +6,16 @@ export const NAV_DATA = [
     items: [
       {
         id:"1",
+        title: "Dashboard",
+        icon: Icons.HomeIcon,
+        url: "/dashboard",
+        items: [
+         
+        ],
+      },
+
+      {
+        id:"1",
         title: "Sales",
         icon: Icons.Sale,
         url: "/sales/add",
@@ -41,16 +51,6 @@ export const NAV_DATA = [
         url: "/customers",
         icon: Icons.User,
         items: [],
-      },
-      {
-        title: "Authentication",
-        icon: Icons.Authentication,
-        items: [
-          {
-            title: "Sign In",
-            url: "/auth/sign-in",
-          },
-        ],
       },
       {
         id:"6",

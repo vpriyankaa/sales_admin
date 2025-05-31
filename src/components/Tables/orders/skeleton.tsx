@@ -17,6 +17,7 @@ import { TextField } from '@mui/material';
 import { getTodayDateRange ,formatForDateTimeLocal} from '@/utils/timeframe-extractor'
 import { getReports, changeOrderStatus, getCustomers, getProducts } from "@/app/actions"
 import { Button } from "@/components/ui/button"
+import { DateRangePicker } from "@/components/date-range-picker"
 
 interface FilterState {
   dateFrom: string
@@ -87,95 +88,72 @@ const [filteredData, setFilteredData] = useState<any[]>([])
 
            <div className="mt-6">
             <Card className="mb-4 sm:mx-4 xl:mx-8.5">
-              <CardContent className="pt-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
-                  {/* From Date */}
-                  <div className="h-full w-full min-w-[220px]">
-                    <TextField
-                      id="dateFrom"
-                      label="From Date"
-                      type="datetime-local"
-                      value={formatForDateTimeLocal(filters.dateFrom)} // Apply the helper function here
-                      onChange={(e) => handleFilterChange("dateFrom", e.target.value)}
-                      InputLabelProps={{
-                        shrink: true,
-                        style: { fontWeight: 'bold', color: 'gray'  },
-                      }}
-                      fullWidth
-                      variant="outlined"
-                      size="small"
-                    />
-                  </div>
-
-                  {/* To Date */}
-                  <div className="h-full w-full min-w-[220px]">
-                    <TextField
-                      id="dateTo"
-                      label="To Date"
-                      type="datetime-local"
-                      value={formatForDateTimeLocal(filters.dateTo)} // Apply the helper function here
-                      onChange={(e) => handleFilterChange("dateTo", e.target.value)}
-                      InputLabelProps={{
-                        shrink: true,
-                        style: { fontWeight: 'bold', color: 'gray'  },
-                      }}
-                      fullWidth
-                      variant="outlined"
-                      size="small"
-                    />
-                  </div>
-
-                  {/* Customer Filter */}
-                  <div className="h-full w-full min-w-[220px]">
-                    <Select value={filters.customer} onValueChange={(value) => handleFilterChange("customer", value)}>
-                      <SelectTrigger className="w-full h-[40px] text-sm font-semibold border rounded px-3">
-                        <SelectValue placeholder="Customer" />
-                      </SelectTrigger>
-                      <SelectContent className="z-[999] text-gray-700 font-semibold w-full bg-white shadow-md border rounded-md">
-                        <SelectItem value="all">All Customers</SelectItem>
-                        {customers.map((c) => (
-                          <SelectItem key={c.id} value={c.name}>
-                            {c.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Product Filter */}
-                  <div className="h-full w-full min-w-[220px]">
-                    <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
-                      <SelectTrigger className="w-full h-[40px] text-sm font-semibold border rounded px-3">
-                        <SelectValue placeholder="Product" />
-                      </SelectTrigger>
-                      <SelectContent className="z-[999] text-gray-700 font-semibold w-full bg-white shadow-md border rounded-md">
-                       
-                        {products.map((p) => (
-                          <SelectItem key={p.id} value={p.name}>
-                            {p.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                 
-                
-                 {hasActiveFilters && (
-                    <div>
-                      <Button
-                        variant="outline"
-                        onClick={clearFilters}
-                        className="bg-blue-500 text-white mt-1"
-                      >
-                        Clear
-                      </Button>
-                    </div>
-                  )}
-
-                </div>
-
-              </CardContent>
+             <CardContent className="pt-6 pb-4">
+                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-center">
+                               
+                               <div className="w-full">
+                                 <label htmlFor="date-range" className="sr-only">Date Range</label> 
+                                 <DateRangePicker
+                                   initialDateFrom={filters.dateFrom}
+                                   initialDateTo={filters.dateTo}
+                                   onChange={(range) => {
+                                     if (range.dateFrom !== filters.dateFrom || range.dateTo !== filters.dateTo) {
+                                       setFilters((prev) => ({
+                                         ...prev,
+                                         dateFrom: range.dateFrom,
+                                         dateTo: range.dateTo,
+                                       }));
+                                     }
+                                   }}
+                                 />
+                               </div>
+             
+                               {/* Customer Filter */}
+                               <div className="w-full">
+                                 <Select value={filters.customer} onValueChange={(value) => handleFilterChange("customer", value)}>
+                                   <SelectTrigger className="w-full h-[40px] text-sm font-semibold border rounded px-3">
+                                     <SelectValue placeholder="Select Customer" /> {/* More explicit placeholder */}
+                                   </SelectTrigger>
+                                   <SelectContent className="z-[999] text-gray-700 font-semibold w-full bg-white shadow-md border rounded-md">
+                                     {customers.map((c) => (
+                                       <SelectItem key={c.id} value={c.name}>
+                                         {c.name}
+                                       </SelectItem>
+                                     ))}
+                                   </SelectContent>
+                                 </Select>
+                               </div>
+             
+                               {/* Product Filter */}
+                               <div className="w-full">
+                                 <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
+                                   <SelectTrigger className="w-full h-[40px] text-sm font-semibold border rounded px-3">
+                                     <SelectValue placeholder="Select Product" /> {/* More explicit placeholder */}
+                                   </SelectTrigger>
+                                   <SelectContent className="z-[999] text-gray-700 font-semibold w-full bg-white shadow-md border rounded-md">
+                                     {products.map((p) => (
+                                       <SelectItem key={p.id} value={p.name}>
+                                         {p.name}
+                                       </SelectItem>
+                                     ))}
+                                   </SelectContent>
+                                 </Select>
+                               </div>
+             
+                               {/* Clear Button */}
+                               {hasActiveFilters && (
+                                 <div className="w-full flex justify-start"> {/* Use flexbox to control button alignment */}
+                                   <Button
+                                     variant="outline"
+                                     onClick={clearFilters}
+                                     className="bg-blue-500 hover:bg-blue-600 text-white h-[40px]" /* Ensure consistent height */
+                                   >
+                                     Clear Filters
+                                   </Button>
+                                 </div>
+                               )}
+                             </div>
+                           </CardContent>
             </Card>
           </div>
 

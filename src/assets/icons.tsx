@@ -258,6 +258,46 @@ export function EmailIcon(props: IconProps) {
   );
 }
 
+
+// EyeIcon.tsx
+export function EyeIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24" {...props}>
+      <path d="M12 4.5C7.5 4.5 3.9 7.6 2 12c1.9 4.4 5.5 7.5 10 7.5s8.1-3.1 10-7.5c-1.9-4.4-5.5-7.5-10-7.5zm0 12c-2.5 0-4.5-2-4.5-4.5S9.5 7.5 12 7.5 16.5 9.5 16.5 12 14.5 16.5 12 16.5zm0-7.5a3 3 0 100 6 3 3 0 000-6z" />
+    </svg>
+  );
+}
+
+// EyeOffIcon.tsx
+export function EyeOffIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24" {...props}>
+      <path d="M12 6.5c3.1 0 5.9 2 7.5 5.5-.6 1.3-1.4 2.5-2.5 3.4l1.4 1.4c1.4-1.2 2.6-2.8 3.4-4.8C20.1 7.6 16.5 4.5 12 4.5c-1.8 0-3.5.5-5 1.4l1.5 1.5C9.4 6.9 10.7 6.5 12 6.5zM2.8 4.2L1.4 5.6 5 9.2c-1.2 1.2-2.1 2.8-2.9 4.8 1.9 4.4 5.5 7.5 10 7.5 1.8 0 3.5-.5 5-1.4l2.8 2.8 1.4-1.4L2.8 4.2zM12 17.5c-3.1 0-5.9-2-7.5-5.5.5-1.1 1.2-2.1 2-2.9l1.6 1.6a4.5 4.5 0 005.7 5.7l1.6 1.6c-.9.3-1.9.5-3 .5z" />
+    </svg>
+  );
+}
+
+
+export function PhoneIcon(props: IconProps) {
+  return (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1.003 1.003 0 011.01-.24c1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1v3.5c0 .55-.45 1-1 1C10.07 21 3 13.93 3 5.5 3 4.95 3.45 4.5 4 4.5H7.5c.55 0 1 .45 1 1 0 1.25.2 2.46.57 3.58a1.003 1.003 0 01-.24 1.01l-2.21 2.2z"
+      />
+    </svg>
+  );
+}
+
+
 export function PasswordIcon(props: IconProps) {
   return (
     <svg

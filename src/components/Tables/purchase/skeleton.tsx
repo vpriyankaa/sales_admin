@@ -20,7 +20,7 @@ import { getTodayDateRange, formatForDateTimeLocal } from '@/utils/timeframe-ext
 import { TextField } from '@mui/material';
 import { getPurchaseList, changeOrderStatus, getVendors, getProducts } from "@/app/actions"
 import { Button } from "@/components/ui/button"
-
+import { DateRangePicker } from "@/components/date-range-picker"
 
 interface FilterState {
   dateFrom: string
@@ -101,49 +101,28 @@ export function PurchaseSkeleton() {
       <div className="mt-6">
         <Card className="mb-4 sm:mx-4 xl:mx-8.5">
           <CardContent className="pt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-center">
 
-              <div className="h-full w-full min-w-[220px]">
-                <TextField
-                  id="dateFrom"
-                  label="From Date"
-                  type="datetime-local"
-                  value={formatForDateTimeLocal(filters.dateFrom)} // Apply the helper function here
-                  onChange={(e) => handleFilterChange("dateFrom", e.target.value)}
-                  InputLabelProps={{
-                    shrink: true,
-                    style: { fontWeight: 'bold', color: 'gray' },
+              <div className="w-full">
+                <label htmlFor="date-range" className="sr-only">Date Range</label>
+                <DateRangePicker
+                  initialDateFrom={filters.dateFrom}
+                  initialDateTo={filters.dateTo}
+                  onChange={(range) => {
+                    if (range.dateFrom !== filters.dateFrom || range.dateTo !== filters.dateTo) {
+                      setFilters((prev) => ({
+                        ...prev,
+                        dateFrom: range.dateFrom,
+                        dateTo: range.dateTo,
+                      }));
+                    }
                   }}
-                  fullWidth
-                  variant="outlined"
-                  size="small"
                 />
-
-              </div>
-
-              {/* To Date */}
-              <div className="h-full w-full min-w-[220px]">
-
-                <TextField
-                  id="dateTo"
-                  label="To Date"
-                  type="datetime-local"
-                  value={formatForDateTimeLocal(filters.dateTo)} // Apply the helper function here
-                  onChange={(e) => handleFilterChange("dateTo", e.target.value)}
-                  InputLabelProps={{
-                    shrink: true,
-                    style: { fontWeight: 'bold', color: 'gray' },
-                  }}
-                  fullWidth
-                  variant="outlined"
-                  size="small"
-                />
-
               </div>
 
 
               {/* vendor Filter */}
-              <div className="h-full w-full min-w-[220px]">
+              <div className="w-full">
                 <Select value={filters.vendor} onValueChange={(value) => handleFilterChange("vendor", value)}>
                   <SelectTrigger className="w-full h-[40px] text-sm font-semibold border rounded px-3">
                     <SelectValue placeholder="Vendor" />
@@ -160,7 +139,7 @@ export function PurchaseSkeleton() {
               </div>
 
               {/* Product Filter */}
-              <div className="h-full w-full min-w-[220px]">
+              <div className="w-full">
                 <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
                   <SelectTrigger className="w-full h-[40px] text-sm font-semibold border rounded px-3">
                     <SelectValue placeholder="Product" />
@@ -177,17 +156,17 @@ export function PurchaseSkeleton() {
               </div>
 
 
-                  {hasActiveFilters && (
-                    <div>
-                      <Button
-                        variant="outline"
-                        onClick={clearFilters}
-                        className="bg-blue-500 text-white mt-1"
-                      >
-                        Clear
-                      </Button>
-                    </div>
-                  )}
+              {hasActiveFilters && (
+                <div>
+                  <Button
+                    variant="outline"
+                    onClick={clearFilters}
+                    className="bg-blue-500 text-white mt-1"
+                  >
+                    Clear
+                  </Button>
+                </div>
+              )}
 
             </div>
 

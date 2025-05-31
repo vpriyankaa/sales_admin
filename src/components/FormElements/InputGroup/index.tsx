@@ -51,7 +51,7 @@ const InputGroup: React.FC<InputGroupProps> = ({
       "w-full rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition focus:border-primary disabled:cursor-default disabled:bg-gray-100 data-[active=true]:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary dark:disabled:bg-dark dark:data-[active=true]:border-primary",
       type === "file"
         ? getFileStyles(props.fileStyleVariant!)
-        : "px-5.5 py-3 text-dark placeholder:text-dark-600 dark:text-white",
+        : "px-6 py-3 text-dark placeholder:text-dark-600 dark:text-white text-left",
       props.iconPosition === "left" && "pl-12.5",
       props.height === "sm" && "py-2.5",
     )}

@@ -14,8 +14,9 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Loader2, Edit } from "lucide-react"
+import { Loader2, Edit ,Eye } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useRouter } from "next/navigation"
 
 interface Customer {
   id: string
@@ -57,6 +58,13 @@ export function Customers() {
   const [currentPage, setCurrentPage] = useState(1)
   const [isEditingCustomer, setIsEditingCustomer] = useState(false)
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null)
+ const router = useRouter()
+
+
+  const userStr = sessionStorage.getItem("user");
+
+  const user = userStr ? JSON.parse(userStr) : null;
+
 
   const customerForm = useForm<CustomerFormData>({
     resolver: zodResolver(customerFormSchema),
@@ -142,9 +150,10 @@ export function Customers() {
         phone: Number(formData.phone),
         aadhaar: formData.aadhaar?.trim() || "",
         address: formData.address?.trim() || "",
+        user: user?.id
       }
 
-      
+
       await editCustomer(customerData)
       setIsEditingCustomer(false)
       setEditingCustomer(null)
@@ -222,14 +231,27 @@ export function Customers() {
                     <TableCell>{customer.aadhaar || "-"}</TableCell>
                     <TableCell className="max-w-xs truncate">{customer.address || "-"}</TableCell>
                     <TableCell className="text-center">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditCustomer(customer)}
-                        className="h-8 w-8 p-0 hover:bg-gray-100"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
+                      <>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEditCustomer(customer)}
+                          className="h-8 w-8 p-0 hover:bg-gray-100"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                           <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => router.push(`/customerLog/${customer.id}`)}
+                                            className="h-8 w-8"
+                                          >
+                                            <Eye className="h-4 w-4" />
+                                          </Button>
+
+                     
+                      </>
+
                     </TableCell>
                   </TableRow>
                 ))}

@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -14,9 +15,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { getReports, changeOrderStatus, getCustomers, getProducts } from "@/app/actions"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
 import { OrdersSkeleton } from "./skeleton"
-// import { TextField } from '@mui/material';
-import { getTodayDateRange } from "@/utils/timeframe-extractor"
-import { DateRangePicker } from "@/components/date-range-picker"
+import { TextField } from '@mui/material';
+import { getTodayDateRange ,formatForDateTimeLocal} from '@/utils/timeframe-extractor'
+
 
 type OrderItem = {
   product_name: string
@@ -50,7 +51,7 @@ export function Orders({ className }: { className?: string }) {
   const [customers, setCustomers] = useState<any[]>([])
   const [products, setProducts] = useState<any[]>([])
 
-  const { dateFrom, dateTo } = getTodayDateRange()
+  const { dateFrom, dateTo } = getTodayDateRange();
 
   // Filter states
   const [filters, setFilters] = useState<FilterState>({
@@ -72,8 +73,10 @@ export function Orders({ className }: { className?: string }) {
       const uniqueCustomers = await getCustomers()
       const uniqueProducts = await getProducts()
 
-      // console.log("reports", reports);
+      // console.log("uniqueCustomers", uniqueCustomers);
       // console.log("uniqueProducts", uniqueProducts);
+
+
 
       setCustomers(uniqueCustomers)
       setData(reports)
@@ -183,33 +186,52 @@ export function Orders({ className }: { className?: string }) {
 
           <div className="mt-6">
             <Card className="mb-4 sm:mx-4 xl:mx-8.5">
-              <CardContent className="pt-6 pb-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-center">
-                  
-                  <div className="w-full">
-                    <label htmlFor="date-range" className="sr-only">Date Range</label> 
-                    <DateRangePicker
-                      initialDateFrom={filters.dateFrom}
-                      initialDateTo={filters.dateTo}
-                      onChange={(range) => {
-                        if (range.dateFrom !== filters.dateFrom || range.dateTo !== filters.dateTo) {
-                          setFilters((prev) => ({
-                            ...prev,
-                            dateFrom: range.dateFrom,
-                            dateTo: range.dateTo,
-                          }));
-                        }
+              <CardContent className="pt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+                  {/* From Date */}
+                  <div className="h-full w-full min-w-[220px]">
+                    <TextField
+                      id="dateFrom"
+                      label="From Date"
+                      type="datetime-local"
+                      value={formatForDateTimeLocal(filters.dateFrom)} // Apply the helper function here
+                      onChange={(e) => handleFilterChange("dateFrom", e.target.value)}
+                      InputLabelProps={{
+                        shrink: true,
+                        style: { fontWeight: 'bold', color: 'gray'  },
                       }}
+                      fullWidth
+                      variant="outlined"
+                      size="small"
+                    />
+                  </div>
+
+                  {/* To Date */}
+                  <div className="h-full w-full min-w-[220px]">
+                    <TextField
+                      id="dateTo"
+                      label="To Date"
+                      type="datetime-local"
+                      value={formatForDateTimeLocal(filters.dateTo)} // Apply the helper function here
+                      onChange={(e) => handleFilterChange("dateTo", e.target.value)}
+                      InputLabelProps={{
+                        shrink: true,
+                        style: { fontWeight: 'bold', color: 'gray'  },
+                      }}
+                      fullWidth
+                      variant="outlined"
+                      size="small"
                     />
                   </div>
 
                   {/* Customer Filter */}
-                  <div className="w-full">
+                  <div className="h-full w-full min-w-[220px]">
                     <Select value={filters.customer} onValueChange={(value) => handleFilterChange("customer", value)}>
                       <SelectTrigger className="w-full h-[40px] text-sm font-semibold border rounded px-3">
-                        <SelectValue placeholder="Select Customer" /> {/* More explicit placeholder */}
+                        <SelectValue placeholder="Customer" />
                       </SelectTrigger>
                       <SelectContent className="z-[999] text-gray-700 font-semibold w-full bg-white shadow-md border rounded-md">
+                        
                         {customers.map((c) => (
                           <SelectItem key={c.id} value={c.name}>
                             {c.name}
@@ -220,12 +242,13 @@ export function Orders({ className }: { className?: string }) {
                   </div>
 
                   {/* Product Filter */}
-                  <div className="w-full">
+                  <div className="h-full w-full min-w-[220px]">
                     <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
                       <SelectTrigger className="w-full h-[40px] text-sm font-semibold border rounded px-3">
-                        <SelectValue placeholder="Select Product" /> {/* More explicit placeholder */}
+                        <SelectValue placeholder="Product" />
                       </SelectTrigger>
                       <SelectContent className="z-[999] text-gray-700 font-semibold w-full bg-white shadow-md border rounded-md">
+                    
                         {products.map((p) => (
                           <SelectItem key={p.id} value={p.name}>
                             {p.name}
@@ -237,17 +260,18 @@ export function Orders({ className }: { className?: string }) {
 
                   {/* Clear Button */}
                   {hasActiveFilters && (
-                    <div className="w-full flex justify-start"> {/* Use flexbox to control button alignment */}
+                    <div>
                       <Button
                         variant="outline"
                         onClick={clearFilters}
-                        className="bg-blue-500 hover:bg-blue-600 text-white h-[40px]" /* Ensure consistent height */
+                        className="bg-blue-500 text-white mt-1"
                       >
-                        Clear Filters
+                        Clear
                       </Button>
                     </div>
                   )}
                 </div>
+
               </CardContent>
             </Card>
           </div>
@@ -406,22 +430,23 @@ export function Orders({ className }: { className?: string }) {
               <Select
                 value={itemsPerPage.toString()}
                 onValueChange={(value) => {
-                  const num = Number.parseInt(value)
+                  const num = parseInt(value)
                   setItemsPerPage(num)
                   setCurrentPage(1)
                 }}
+
               >
                 <SelectTrigger className="w-24 h-8 text-gray-700 text-center">
                   <SelectValue className="text-gray-700" />
                 </SelectTrigger>
                 <SelectContent className="text-gray-700 font-semibold bg-white shadow-md border rounded-md">
                   {[10, 20, 30, 40, 50].map((n) => (
-                    <SelectItem key={n} value={n.toString()}>
-                      {n}
-                    </SelectItem>
+                    <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+
+
 
               <span className="text-md text-gray-700 dark:text-gray-300">
                 Page {currentPage} of {totalPages}
@@ -434,6 +459,8 @@ export function Orders({ className }: { className?: string }) {
               >
                 &lt;
               </button>
+
+
 
               <button
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}

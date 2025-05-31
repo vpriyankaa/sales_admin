@@ -17,6 +17,16 @@ if (!supabaseServiceKey) {
 const supabase = supabaseUrl && supabaseServiceKey ? createClient(supabaseUrl, supabaseServiceKey) : null
 
 
+interface User {
+  id: string;
+  created_at: string;
+  name: string;
+  phone: string;
+  password: string; 
+  email: string;
+}
+
+
 
 // console.log("supabase" ,supabase);
 
@@ -134,14 +144,59 @@ export async function addCustomer(customerData: {
   }
 }
 
+// export async function editCustomer(customerData: {
+//   id: string | number; 
+//   name: string;
+//   phone: number;
+//   aadhaar?: string;
+//   address?: string;
+// }) {
+//   const { id, name, phone, aadhaar, address } = customerData;
+
+//   if (!id || !name || !phone) {
+//     throw new Error("Id, name and phone are required");
+//   }
+
+//   if (!supabase) {
+//     console.warn("Supabase client not initialized. Cannot edit customer.");
+//     throw new Error(
+//       "Database connection not available. Please set up Supabase environment variables."
+//     );
+//   }
+
+//   const sanitizedCustomer = {
+//     name,
+//     phone,
+//     aadhaar: aadhaar?.trim() || null,
+//     address: address?.trim() || null,
+//   };
+
+//   try {
+//     const { data, error } = await supabase
+//       .from("customers")
+//       .update(sanitizedCustomer)
+//       .eq("id", id)        
+//       .select("id")        
+//       .single();
+
+//     if (error) throw error;
+
+//     return data.id;       
+//   } catch (error) {
+//     throw error;
+//   }
+// }
+
+
 export async function editCustomer(customerData: {
-  id: string | number; 
+  id: string | number;
   name: string;
   phone: number;
   aadhaar?: string;
   address?: string;
+  user?: number;
 }) {
-  const { id, name, phone, aadhaar, address } = customerData;
+  const { id, name, phone, aadhaar, address, user } = customerData;
 
   if (!id || !name || !phone) {
     throw new Error("Id, name and phone are required");
@@ -154,28 +209,68 @@ export async function editCustomer(customerData: {
     );
   }
 
+  // 1. Normalize incoming data
   const sanitizedCustomer = {
-    name,
+    name: name.trim(),
     phone,
     aadhaar: aadhaar?.trim() || null,
     address: address?.trim() || null,
   };
 
   try {
-    const { data, error } = await supabase
+    // 2. Fetch current row for diffing
+    const { data: current, error: fetchErr } = await supabase
       .from("customers")
-      .update(sanitizedCustomer)
-      .eq("id", id)        
-      .select("id")        
+      .select("name, phone, aadhaar, address")
+      .eq("id", id)
       .single();
 
-    if (error) throw error;
+    if (fetchErr) throw fetchErr;
+    if (!current) throw new Error("Customer not found.");
 
-    return data.id;       
+    // 3. Update the customer
+    const { error: updateErr } = await supabase
+      .from("customers")
+      .update(sanitizedCustomer)
+      .eq("id", id);
+
+    if (updateErr) throw updateErr;
+
+    // 4. Build a descriptive change log
+    const changes: string[] = [];
+    if (current.name !== sanitizedCustomer.name)
+      changes.push(`name: changed from "${current.name}" to "${sanitizedCustomer.name}"`);
+    if (current.phone !== sanitizedCustomer.phone)
+      changes.push(`phone: changed from ${current.phone} to ${sanitizedCustomer.phone}`);
+    if (current.aadhaar !== sanitizedCustomer.aadhaar)
+      changes.push(
+        `aadhaar: changed from "${current.aadhaar ?? "null"}" to "${sanitizedCustomer.aadhaar ?? "null"}"`
+      );
+    if (current.address !== sanitizedCustomer.address)
+      changes.push(
+        `address: changed from "${current.address ?? "null"}" to "${sanitizedCustomer.address ?? "null"}"`
+      );
+
+    const actionText = changes.length
+      ? changes.join(", ")
+      : "No changes – update called but data identical.";
+
+
+    const { error: logErr } = await supabase.from("customerLogs").insert({
+      customer_id: id,
+      action: actionText,
+      user: user,
+    });
+
+    if (logErr) throw logErr;
+
+    return true;
   } catch (error) {
+    console.error("Failed to edit customer", error);
     throw error;
   }
 }
+
 
 
 // place order
@@ -416,11 +511,11 @@ export async function updateOrder(
     }
 
     for (const [prodId, qty] of prevMap) {
-      // These items were removed — need to revert their effect
+     
       await changeProductQuantity(
         parseInt(prodId),
         qty,
-        order.type === "sale" ? "purchase" : "sale" // reverse the type to undo
+        order.type === "sale" ? "purchase" : "sale" 
       );
     }
   } catch (stockErr) {
@@ -483,55 +578,130 @@ export async function addProduct(productData: {
 }
 
 
+// export async function editProduct(productData: {
+//   id: string | number;          
+//   name: string;
+//   quantity: number;
+//   price: number;
+//   unit: string;
+// }) {
+//   const { id, name, quantity, price, unit } = productData;
+
+//   if (
+//     id == null ||
+//     !name ||
+//     !unit ||
+//     quantity == null ||
+//     price == null
+//   ) {
+//     throw new Error("All product fields (including id) are required");
+//   }
+
+//   if (!supabase) {
+//     console.warn("Supabase client not initialized. Cannot edit product.");
+//     throw new Error(
+//       "Database connection not available. Please set up Supabase environment variables."
+//     );
+//   }
+
+//   try {
+//     const { data, error } = await supabase
+//       .from("products")
+//       .update({
+//         name,
+//         quantity,
+//         price,
+//         unit,
+//       })
+//       .eq("id", id)     
+//       .select("id")     
+//       .single();
+
+//     if (error) throw error;
+
+//     return data.id;     
+//   } catch (error) {
+    
+//     throw error;
+//   }
+// }
+
+
+// utils/db/products.ts
+
+
 export async function editProduct(productData: {
-  id: string | number;          // ← REQUIRED so we know which row to update
+  id: string | number;
   name: string;
   quantity: number;
   price: number;
   unit: string;
+  user: number;
 }) {
-  const { id, name, quantity, price, unit } = productData;
+  const { id, name, quantity, price, unit, user } = productData;
 
-  // -------- validation ------------------------------------------------------
-  if (
-    id == null ||
-    !name ||
-    !unit ||
-    quantity == null ||
-    price == null
-  ) {
+  if (id == null || !name || !unit || quantity == null || price == null) {
     throw new Error("All product fields (including id) are required");
   }
 
   if (!supabase) {
     console.warn("Supabase client not initialized. Cannot edit product.");
-    throw new Error(
-      "Database connection not available. Please set up Supabase environment variables."
-    );
+    throw new Error("Database connection not available.");
   }
 
-  // -------- update ----------------------------------------------------------
   try {
-    const { data, error } = await supabase
+    // 1. Fetch the current product
+    const { data: current, error: fetchErr } = await supabase
       .from("products")
-      .update({
-        name,
-        quantity,
-        price,
-        unit,
-      })
-      .eq("id", id)     // update only the row whose id matches
-      .select("id")     // adjust the projection if you want more fields
+      .select("name, quantity, price, unit")
+      .eq("id", id)
       .single();
 
-    if (error) throw error;
+    if (fetchErr) throw fetchErr;
+    if (!current) throw new Error("Product not found.");
 
-    return data.id;     // or return `data` if you need the whole object
+    // 2. Update the product
+    const { error: updateErr } = await supabase
+      .from("products")
+      .update({ name, quantity, price, unit })
+      .eq("id", id);
+
+    if (updateErr) throw updateErr;
+
+    // 3. Create the log message with clear "changed from → to" format
+    const changes: string[] = [];
+    if (current.name !== name)
+      changes.push(`name: changed from "${current.name}" to "${name}"`);
+    if (current.quantity !== quantity)
+      changes.push(`quantity: changed from ${current.quantity} to ${quantity}`);
+    if (current.price !== price)
+      changes.push(`price: changed from ${current.price} to ${price}`);
+    if (current.unit !== unit)
+      changes.push(`unit: changed from "${current.unit}" to "${unit}"`);
+
+    const actionText = changes.length
+      ? changes.join(", ")
+      : "No changes – update called but data identical.";
+
+    // 4. Log the product update
+    const { error: logErr } = await supabase
+      .from("productLogs")
+      .insert({
+        product_id: id,
+        action: actionText,
+        user: user,
+      });
+
+    if (logErr) throw logErr;
+
+    return true;
   } catch (error) {
-    // Re‑throw so the caller can handle / toast the error
+    console.error("Failed to edit product", error);
     throw error;
   }
 }
+
+
 
 
 export type productItem = {
@@ -592,55 +762,147 @@ export async function addVendor(vendorData: {
 }
 
 
+// export async function editVendor(vendorData: {
+//   id: string | number;        
+//   name: string;
+//   phone: number;
+//   aadhaar?: string;
+//   address?: string;
+//   products: productItem[];
+// }) {
+//   const { id, name, phone, aadhaar, address, products } = vendorData;
+
+//   if (
+//     id == null ||
+//     !name ||
+//     !phone ||
+//     products.length === 0
+//   ) {
+//     throw new Error("All vendor fields (including id) are required");
+//   }
+
+//   if (!supabase) {
+//     console.warn("Supabase client not initialized. Cannot edit vendor.");
+//     throw new Error(
+//       "Database connection not available. Please set up Supabase environment variables."
+//     );
+//   }
+//   const sanitizedVendor = {
+//     name,
+//     phone,
+//     aadhaar: aadhaar?.trim() || null,
+//     address: address?.trim() || null,
+//     products,
+//   };
+
+ 
+//   try {
+//     const { data, error } = await supabase
+//       .from("vendors")
+//       .update(sanitizedVendor)
+//       .eq("id", id)         
+//       .select("id")          
+//       .single();
+
+//     if (error) throw error;
+
+//     return data.id;          
+//   } catch (error) {
+//     throw error;
+//   }
+// }
+
 export async function editVendor(vendorData: {
-  id: string | number;        
+  id: string | number;
   name: string;
   phone: number;
   aadhaar?: string;
   address?: string;
   products: productItem[];
+  user?: number;
 }) {
-  const { id, name, phone, aadhaar, address, products } = vendorData;
+  const { id, name, phone, aadhaar, address, products, user } = vendorData;
 
-  if (
-    id == null ||
-    !name ||
-    !phone ||
-    products.length === 0
-  ) {
+  if (!id || !name || !phone || products.length === 0) {
     throw new Error("All vendor fields (including id) are required");
   }
 
   if (!supabase) {
     console.warn("Supabase client not initialized. Cannot edit vendor.");
-    throw new Error(
-      "Database connection not available. Please set up Supabase environment variables."
-    );
+    throw new Error("Database connection not available.");
   }
+
   const sanitizedVendor = {
-    name,
+    name: name.trim(),
     phone,
     aadhaar: aadhaar?.trim() || null,
     address: address?.trim() || null,
     products,
   };
 
- 
   try {
-    const { data, error } = await supabase
+    // 1. Fetch existing vendor
+    const { data: current, error: fetchErr } = await supabase
       .from("vendors")
-      .update(sanitizedVendor)
-      .eq("id", id)         
-      .select("id")          
+      .select("name, phone, aadhaar, address, products")
+      .eq("id", id)
       .single();
 
-    if (error) throw error;
+    if (fetchErr) throw fetchErr;
+    if (!current) throw new Error("Vendor not found.");
 
-    return data.id;          
+    // 2. Update vendor
+    const { error: updateErr } = await supabase
+      .from("vendors")
+      .update(sanitizedVendor)
+      .eq("id", id);
+
+    if (updateErr) throw updateErr;
+
+    // 3. Build change log
+    const changes: string[] = [];
+
+    if (current.name !== sanitizedVendor.name)
+      changes.push(`name: changed from ${current.name} to ${sanitizedVendor.name}`);
+    if (current.phone !== sanitizedVendor.phone)
+      changes.push(`phone: changed from ${current.phone} to ${sanitizedVendor.phone}`);
+    if (current.aadhaar !== sanitizedVendor.aadhaar)
+      changes.push(
+        `aadhaar: changed from ${current.aadhaar ?? "null"} to ${sanitizedVendor.aadhaar ?? "null"}`
+      );
+    if (current.address !== sanitizedVendor.address)
+      changes.push(
+        `address: changed from ${current.address ?? "null"} to ${sanitizedVendor.address ?? "null"}`
+      );
+
+    const productsChanged =
+      JSON.stringify(current.products || []) !== JSON.stringify(products);
+
+    if (productsChanged) {
+      changes.push(`products list updated`);
+    }
+
+    const actionText =
+      changes.length > 0
+        ? changes.join(", ")
+        : "No changes – update called but data identical.";
+
+    // 4. Insert into vendorLogs
+    const { error: logErr } = await supabase.from("vendorLogs").insert({
+      vendor_id: id,
+      action: actionText,
+      user: user ?? null,
+    });
+
+    if (logErr) throw logErr;
+
+    return true;
   } catch (error) {
+    console.error("Failed to edit vendor", error);
     throw error;
   }
 }
+
 
 
 
@@ -722,6 +984,115 @@ export async function getOrderLogsById(orderId: number) {
   }
 }
 
+export async function getCustomerLogsById(orderId: number) {
+  if (!supabase) {
+    console.warn("Supabase client not initialized. Returning mock data.");
+    return null;
+  }
+
+  //  console.log("orderId",orderId);
+  
+  try {
+    const { data, error } = await supabase
+      .from("customerLogs")
+      .select("*")
+      .eq("customer_id", orderId)
+      .order("id", { ascending: false });
+
+      // console.log("data",data);
+
+    if (error) {
+      throw new Error("Failed to fetch order by ID");
+    }
+
+    return data || null;
+  } catch (error) {
+    console.error("Error fetching order by ID:", error);
+    return null;
+  }
+}
+
+export async function getProductLogsById(orderId: number) {
+  if (!supabase) {
+    console.warn("Supabase client not initialized. Returning mock data.");
+    return null;
+  }
+
+  //  console.log("orderId",orderId);
+  
+  try {
+    const { data, error } = await supabase
+      .from("productLogs")
+      .select("*")
+      .eq("product_id", orderId)
+      .order("id", { ascending: false });
+
+      // console.log("data",data);
+
+    if (error) {
+      throw new Error("Failed to fetch order by ID");
+    }
+
+    return data || null;
+  } catch (error) {
+    console.error("Error fetching order by ID:", error);
+    return null;
+  }
+}
+
+export async function getuser(id: number) {
+  if (!supabase) {
+    console.warn("Supabase client not initialized. Returning null.");
+    return null;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("user") 
+      .select("*")
+      .eq("id", id)
+      .single(); 
+
+    if (error) {
+      throw new Error("Failed to fetch user by ID");
+    }
+
+    return data || null;
+  } catch (error) {
+    console.error("Error fetching user by ID:", error);
+    return null;
+  }
+}
+
+export async function getVendorLogsById(orderId: number) {
+  if (!supabase) {
+    console.warn("Supabase client not initialized. Returning mock data.");
+    return null;
+  }
+
+  //  console.log("orderId",orderId);
+  
+  try {
+    const { data, error } = await supabase
+      .from("vendorLogs")
+      .select("*")
+      .eq("vendor_id", orderId)
+      .order("id", { ascending: false });
+
+      // console.log("data",data);
+
+    if (error) {
+      throw new Error("Failed to fetch order by ID");
+    }
+
+    return data || null;
+  } catch (error) {
+    console.error("Error fetching order by ID:", error);
+    return null;
+  }
+}
+
+
 export async function getPaymentLogsById(orderId: number) {
   if (!supabase) {
     console.warn("Supabase client not initialized. Returning mock data.");
@@ -777,10 +1148,113 @@ export async function getOrderById(orderId: number) {
 }
 
 
+// export async function changeOrderStatus(
+//   orderId: number,
+//   status: string,
+//   comments = "",         
+//   documents = ""
+// ): Promise<boolean> {
+//   if (!supabase) {
+//     console.warn("Supabase client not initialized. Returning mock data.");
+//     return false;
+//   }
+
+//   try {
+//     const { data: row, error: fetchErr } = await supabase
+//       .from("orders")
+//       .select("status")
+//       .eq("id", orderId)
+//       .single();
+
+//     if (fetchErr) throw fetchErr;
+//     if (!row) throw new Error("Order not found.");
+
+//     const oldStatus: string = row.status;
+
+
+//     if (oldStatus === status) {
+//       console.info("Status unchanged – still logging the action for traceability.");
+
+//       await supabase
+//         .from("orderLogs")
+//         .insert({
+//           order_id: orderId,
+//           action: `Status unchanged: remains ${oldStatus}.`,
+//           comments,
+//           documents,
+//         });
+
+//       return true;
+//     }
+
+//     const { error: updateErr } = await supabase
+//       .from("orders")
+//       .update({ status })
+//       .eq("id", orderId);
+
+//     if (updateErr) throw updateErr;
+
+//     const actionText =
+//       `Status changed from ${oldStatus} → ${status}.`;
+
+//     const { error: logErr } = await supabase
+//       .from("orderLogs")
+//       .insert({
+//         order_id: orderId,
+//         action: actionText,
+//         comments,
+//         documents,
+//       });
+
+//     if (logErr) throw logErr;
+
+//     return true;
+//   } catch (err) {
+//     console.error("Failed to update order status", err);
+//     return false;
+//   }
+// }
+
+async function revertStockForCancelledOrder(orderId: number) {
+
+   if (!supabase) {
+    console.warn("Supabase client not initialized. Returning mock data.");
+    return null;
+  }
+
+  //  console.log("orderId",orderId);
+  
+  const { data: order, error } = await supabase
+    .from("orders")
+    .select("type, items")
+    .eq("id", orderId)
+    .single();
+
+  if (error) throw error;
+  if (!order) throw new Error("Order not found while reverting stock.");
+
+  const reverseType = "purchase" ;
+
+  const items: { product_id: number; quantity: number }[] = order.items;
+
+  for (const item of items) {
+    const { product_id, quantity } = item;
+
+    // Only pass product_id and quantity to your inventory function
+    await changeProductQuantity(
+      product_id,
+      quantity,
+      reverseType
+    );
+  }
+}
+
+
+
 export async function changeOrderStatus(
   orderId: number,
   status: string,
-  comments = "",         
+  comments = "",
   documents = ""
 ): Promise<boolean> {
   if (!supabase) {
@@ -788,8 +1262,10 @@ export async function changeOrderStatus(
     return false;
   }
 
+  const trx = supabase; 
+
   try {
-    const { data: row, error: fetchErr } = await supabase
+    const { data: row, error: fetchErr } = await trx
       .from("orders")
       .select("status")
       .eq("id", orderId)
@@ -800,40 +1276,37 @@ export async function changeOrderStatus(
 
     const oldStatus: string = row.status;
 
-
+    /* 2. If status unchanged just write a log */
     if (oldStatus === status) {
-      console.info("Status unchanged – still logging the action for traceability.");
-
-      await supabase
-        .from("orderLogs")
-        .insert({
-          order_id: orderId,
-          action: `Status unchanged: remains ${oldStatus}.`,
-          comments,
-          documents,
-        });
-
+      await trx.from("orderLogs").insert({
+        order_id: orderId,
+        action: `Status unchanged: remains ${oldStatus}.`,
+        comments,
+        documents,
+      });
       return true;
     }
 
-    const { error: updateErr } = await supabase
+    /* 3. If moving to “cancelled”, revert inventory first */
+    if (status.toLowerCase() === "cancelled" && oldStatus.toLowerCase() !== "cancelled") {
+      await revertStockForCancelledOrder(orderId);
+    }
+
+    /* 4. Update status */
+    const { error: updateErr } = await trx
       .from("orders")
       .update({ status })
       .eq("id", orderId);
 
     if (updateErr) throw updateErr;
 
-    const actionText =
-      `Status changed from ${oldStatus} → ${status}.`;
-
-    const { error: logErr } = await supabase
-      .from("orderLogs")
-      .insert({
-        order_id: orderId,
-        action: actionText,
-        comments,
-        documents,
-      });
+    /* 5. Log the transition */
+    const { error: logErr } = await trx.from("orderLogs").insert({
+      order_id: orderId,
+      action: `Status changed from ${oldStatus} → ${status}.`,
+      comments,
+      documents,
+    });
 
     if (logErr) throw logErr;
 
@@ -843,6 +1316,7 @@ export async function changeOrderStatus(
     return false;
   }
 }
+
 
 export async function changeOrderPaymentStatus(
   orderId: number,
@@ -1032,4 +1506,39 @@ export async function getPaymentMethods(){
     // console.error("Error in paymentMethods" ,error)
     return []
   }
+}
+
+export async function checkUserCredentials(phoneOrEmail: string, password: string) {
+   if (!supabase) {
+    console.warn("Supabase client not initialized. Returning mock data.")
+    return []
+  }
+
+  const { data, error } = await supabase
+    .from<'user', User>('user')  
+    .select('*')
+    .or(`phone.eq.${phoneOrEmail},email.eq.${phoneOrEmail}`)
+    .limit(1)
+    .single();
+
+
+    // console.log("user",data);
+
+  if (error) {
+    throw new Error('Database error: ' + error.message);
+  }
+
+  if (!data) {
+    // User not found
+    return null;
+  }
+
+  if (password !== data.password) {
+    return null; // Password mismatch
+  }
+
+
+  // Return user data except password
+  const { password: _, ...userWithoutPassword } = data;
+  return userWithoutPassword;
 }

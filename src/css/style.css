@@ -89,6 +89,11 @@
     background-color: #3b82f6 !important;
   }
 
+ 
+  .bg-secondary {
+    background-color:  #ffff !important;
+  }
+
   .text-primary {
     color: #3b82f6 !important;
   }

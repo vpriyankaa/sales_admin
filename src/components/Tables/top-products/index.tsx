@@ -3,7 +3,7 @@
 import type React from "react"
 import { useEffect, useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { getProducts, addProduct, getUnits ,editProduct } from "@/app/actions"
+import { getProducts, addProduct, getUnits, editProduct } from "@/app/actions"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,7 +13,8 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Loader2, Edit } from "lucide-react"
+import { Loader2, Edit, Eye } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 type Unit = {
   id: number
@@ -49,6 +50,9 @@ const productFormSchema = z.object({
 type ProductFormData = z.infer<typeof productFormSchema>
 
 export function TopProducts() {
+
+  const router = useRouter()
+
   const [data, setData] = useState<Product[]>([])
   const [units, setUnits] = useState<Unit[]>([])
   const [open, setOpen] = useState(false)
@@ -60,6 +64,10 @@ export function TopProducts() {
 
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [openEdit, setOpenEdit] = useState(false)
+
+  const userStr = sessionStorage.getItem("user");
+
+  const user = userStr ? JSON.parse(userStr) : null;
 
   const productForm = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
@@ -141,6 +149,7 @@ export function TopProducts() {
       quantity: product.quantity,
       price: product.price,
       unit: product.unit,
+
     })
     setOpenEdit(true)
   }
@@ -157,6 +166,7 @@ export function TopProducts() {
         quantity: formData.quantity,
         price: formData.price,
         unit: formData.unit,
+        user: user?.id
       }
 
       // You'll need to create an updateProduct action
@@ -235,6 +245,14 @@ export function TopProducts() {
                 <TableCell className="text-center">
                   <Button variant="ghost" size="sm" onClick={() => handleEditProduct(product)} className="h-8 w-8 p-0">
                     <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => router.push(`/productLog/${product.id}`)}
+                    className="h-8 w-8"
+                  >
+                    <Eye className="h-4 w-4" />
                   </Button>
                 </TableCell>
               </TableRow>

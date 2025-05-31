@@ -478,6 +478,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                 <p className="text-sm font-bold text-black">Order Date</p>
                 <p className="font-medium">{formatDate(data.order_date || new Date())}</p>
               </div>
+              {type === "sale" && (
               <div className="flex flex-col items-end">
                 <button
                   onClick={() => {
@@ -490,16 +491,14 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                   Change status
                 </button>
               </div>
+              )}
             </div>
           </CardHeader>
 
           <CardContent className="p-2">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              {/* Left Side - Customer Information and Products */}
               <div className="lg:col-span-2 space-y-4">
-                {/* Customer Information */}
                 <div>
-
                   {
                     type === "sale" ? (
                       <h3 className="text-lg font-semibold mb-4 text-primary dark:text-primary">Customer Information</h3>
@@ -997,10 +996,10 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                   selectedOrderStatus,
                   setData,
                   setIsModalOpen,
-                  statusChangeComments // ✅ pass comments here
+                  statusChangeComments 
                 )
               }
-              disabled={!statusChangeComments.trim()} // Disable if comments are empty
+              disabled={!statusChangeComments.trim()}
             >
               Change Status
             </Button>

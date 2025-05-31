@@ -9,17 +9,61 @@ import {
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import { LogOutIcon, SettingsIcon, UserIcon } from "./icons";
+import { useAuth } from "@/contexts/auth-context";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { LogOutIcon, SettingsIcon, UserIcon, Profile } from "./icons";
+import { Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation";
+
+
+interface User {
+  name: string;
+  img: string;
+  phone: string;
+}
 
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
+const router = useRouter();
+ 
+  const { user, logout } = useAuth(); 
 
-  const USER = {
-    name: "John Smith",
-    email: "johnson@nextadmin.com",
-    img: "/images/user/user-03.png",
+  const [isLoading, setIsLoading] = useState(false)
+  
+  const memoizedUser = useMemo(() => user, [user]); 
+
+  console.log("isLoading",isLoading);
+
+
+  const handleLogout = async () => {
+
+  try {
+    await setIsLoading(true);
+    await logout(); 
+    
+  } catch (error) {
+    console.error("Logout failed:", error);
+  } finally {
+    setIsLoading(false);
+  }
   };
+
+  if (!memoizedUser) {
+    return (
+      <div className="flex items-center gap-3 animate-pulse">
+        <div className="size-12 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+        <div className="h-4 w-24 rounded bg-gray-200 dark:bg-gray-700 max-[1024px]:sr-only"></div>
+      </div>
+    );
+  }
+
+    if (isLoading) {
+      return (
+        <div className="flex justify-center items-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      )
+    }
 
   return (
     <Dropdown isOpen={isOpen} setIsOpen={setIsOpen}>
@@ -27,22 +71,15 @@ export function UserInfo() {
         <span className="sr-only">My Account</span>
 
         <figure className="flex items-center gap-3">
-          <Image
-            src={USER.img}
-            className="size-12"
-            alt={`Avatar of ${USER.name}`}
-            role="presentation"
-            width={200}
-            height={200}
-          />
           <figcaption className="flex items-center gap-1 font-medium text-dark dark:text-dark-600 max-[1024px]:sr-only">
-            <span>{USER.name}</span>
+            <Profile />
+            <span>{memoizedUser.name}</span>
 
             <ChevronUpIcon
-              aria-hidden
+              aria-hidden="true"
               className={cn(
                 "rotate-180 transition-transform",
-                isOpen && "rotate-0",
+                isOpen && "rotate-0"
               )}
               strokeWidth={1.5}
             />
@@ -57,59 +94,27 @@ export function UserInfo() {
         <h2 className="sr-only">User information</h2>
 
         <figure className="flex items-center gap-2.5 px-5 py-3.5">
-          <Image
-            src={USER.img}
-            className="size-12"
-            alt={`Avatar for ${USER.name}`}
-            role="presentation"
-            width={200}
-            height={200}
-          />
-
+         
           <figcaption className="space-y-1 text-base font-medium">
             <div className="mb-2 leading-none text-dark dark:text-white">
-              {USER.name}
+              {memoizedUser.name}
             </div>
-
-            <div className="leading-none text-gray-6">{USER.email}</div>
+            <div className="leading-none text-gray-6">
+              {memoizedUser.phone}
+            </div>
           </figcaption>
         </figure>
 
         <hr className="border-[#E8E8E8] dark:border-dark-3" />
-
-        <div className="p-2 text-base text-[#4B5563] dark:text-dark-600 [&>*]:cursor-pointer">
-          <Link
-            href={"/profile"}
-            onClick={() => setIsOpen(false)}
-            className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-100 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
-          >
-            <UserIcon />
-
-            <span className="mr-auto text-base font-medium">View profile</span>
-          </Link>
-
-          <Link
-            href={"/pages/settings"}
-            onClick={() => setIsOpen(false)}
-            className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-100 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
-          >
-            <SettingsIcon />
-
-            <span className="mr-auto text-base font-medium">
-              Account Settings
-            </span>
-          </Link>
-        </div>
 
         <hr className="border-[#E8E8E8] dark:border-dark-3" />
 
         <div className="p-2 text-base text-[#4B5563] dark:text-dark-600">
           <button
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-100 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
-            onClick={() => setIsOpen(false)}
+            onClick={handleLogout}
           >
             <LogOutIcon />
-
             <span className="text-base font-medium">Log out</span>
           </button>
         </div>
