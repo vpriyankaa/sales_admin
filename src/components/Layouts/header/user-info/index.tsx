@@ -36,9 +36,8 @@ const router = useRouter();
 
 
   const handleLogout = async () => {
-
+      await setIsLoading(true);
   try {
-    await setIsLoading(true);
     await logout(); 
     
   } catch (error) {
