@@ -1617,7 +1617,7 @@ export default function Home({ id }: Props) {
                         className={cn(
                           "h-10",
                           "hover:border-black mt-5",
-                          "font-bold",
+                         
 
                           orderValidation.customer ? "border-red-500" : "",
                         )}
