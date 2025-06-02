@@ -1618,8 +1618,7 @@ export default function Home({ id }: Props) {
                           "h-10",
                           "hover:border-black mt-5",
                           "font-bold",
-                          "text-dark-2",
-                          "dark:!text-white",
+
                           orderValidation.customer ? "border-red-500" : "",
                         )}
                       >
