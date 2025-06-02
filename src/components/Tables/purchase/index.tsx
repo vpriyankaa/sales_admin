@@ -368,15 +368,16 @@ export function Purchase({ className }: { className?: string }) {
                     <TableCell>
                       {order.status?.trim() ? (
                         <div
-                          className={`py-1 px-2 rounded-full text-sm font-semibold
-                          ${order.status === "created"
-                              ? "text-green-900"
+                          className={`py-1 px-2 rounded-full text-sm font-semibold dark:!text-white
+                          ${
+                            order.status === "created" || order.status === "completed" 
+                              ? "text-green-900 "
                               : order.status === "cancelled"
                                 ? "text-orange-600"
                                 : order.status === "trashed"
                                   ? "text-red-600"
                                   : "text-gray-700"
-                            }`}
+                          }`}
                         >
                           {order.status === "created"
                             ? "Created"
@@ -384,6 +385,8 @@ export function Purchase({ className }: { className?: string }) {
                               ? "Cancelled"
                               : order.status === "trashed"
                                 ? "Trashed"
+                                :order.status === "completed"
+                                ? "Completed"
                                 : order.status}
                         </div>
                       ) : (

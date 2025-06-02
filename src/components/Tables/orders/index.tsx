@@ -359,7 +359,7 @@ export function Orders({ className }: { className?: string }) {
                         <div
                           className={`py-1 px-2 rounded-full text-sm font-semibold dark:!text-white
                           ${
-                            order.status === "created"
+                            order.status === "created" || order.status === "completed" 
                               ? "text-green-900 "
                               : order.status === "cancelled"
                                 ? "text-orange-600"
@@ -374,6 +374,8 @@ export function Orders({ className }: { className?: string }) {
                               ? "Cancelled"
                               : order.status === "trashed"
                                 ? "Trashed"
+                                :order.status === "completed"
+                                ? "Completed"
                                 : order.status}
                         </div>
                       ) : (
