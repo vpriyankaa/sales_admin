@@ -220,7 +220,7 @@ export function OverviewCardsGroup() {
             {/* Total Amount */}
             <div className="text-center p-4">
               <p className="text-sm font-bold text-dark-3 dark:!text-white mt-1">Total sale amount</p>
-              <p className="text-3xl font-bold text-primary">₹{compactFormat(metrics.totalSales)}</p>
+              <p className="text-3xl font-bold text-primary">₹{metrics.totalSales}</p>
               
             </div>
 
@@ -253,14 +253,14 @@ export function OverviewCardsGroup() {
                   <ArrowUpRight className="h-3 w-3 text-green-600" />
                   <span className="text-xs font-bold text-dark-3 dark:!text-white">Collected</span>
                 </div>
-                <p className="text-lg font-semibold text-green-600">₹{compactFormat(metrics.totalSalePayments)}</p>
+                <p className="text-lg font-semibold text-green-600">₹{metrics.totalSalePayments}</p>
               </div>
               <div className="p-3 bg-white/60 rounded-lg">
                 <div className="flex items-center space-x-2">
                   <ArrowDownRight className="h-3 w-3 text-orange-600" />
                   <span className="text-xs font-bold text-dark-3 dark:!text-white">Pending</span>
                 </div>
-                <p className="text-lg font-semibold text-orange-600">₹{compactFormat(metrics.totalSalePending)}</p>
+                <p className="text-lg font-semibold text-orange-600">₹{metrics.totalSalePending}</p>
               </div>
             </div>
           </CardContent>
@@ -281,7 +281,7 @@ export function OverviewCardsGroup() {
             <div className="text-center p-4">
             
               <p className="text-sm font-bold text-dark-3 mt-1 dark:!text-white">Total purchase amount</p>
-                <p className="text-3xl font-bold text-primary">₹{compactFormat(metrics.totalPurchases)}</p>
+                <p className="text-3xl font-bold text-primary">₹{metrics.totalPurchases}</p>
             </div>
 
             {/* Progress Bar */}
@@ -314,14 +314,14 @@ export function OverviewCardsGroup() {
                   <ArrowUpRight className="h-3 w-3 text-green-600" />
                   <span className="text-xs font-bold text-dark-3 dark:!text-white">Paid</span>
                 </div>
-                <p className="text-lg font-semibold text-green-600">₹{compactFormat(metrics.totalPurchasePayments)}</p>
+                <p className="text-lg font-semibold text-green-600">₹{metrics.totalPurchasePayments}</p>
               </div>
               <div className="p-3 bg-white/60 rounded-lg">
                 <div className="flex items-center space-x-2">
                   <ArrowDownRight className="h-3 w-3 text-orange-600" />
                   <span className="text-xs font-bold text-dark-3 dark:!text-white">Outstanding</span>
                 </div>
-                <p className="text-lg font-semibold text-orange-600">₹{compactFormat(metrics.totalPurchasePending)}</p>
+                <p className="text-lg font-semibold text-orange-600">₹{metrics.totalPurchasePending}</p>
               </div>
             </div>
           </CardContent>
