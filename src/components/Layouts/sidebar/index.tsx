@@ -55,7 +55,7 @@ export function Sidebar() {
 
       <aside
         className={cn(
-          "max-w-[290px] overflow-hidden border-r border-gray-200 bg-white transition-[width] duration-200 ease-linear dark:border-gray-800 dark:bg-gray-dark",
+          "max-w-[290px] overflow-hidden border-r border-gray-200 bg-white transition-[width] duration-200 dark:text-white ease-linear dark:border-gray-800 dark:bg-gray-dark",
           isMobile ? "fixed bottom-0 top-0 z-50" : "sticky top-0 h-screen",
           isOpen ? "w-full" : "w-0",
         )}
@@ -86,15 +86,15 @@ export function Sidebar() {
           </div>
 
           {/* Navigation */}
-          <div className="custom-scrollbar mt-6 flex-1 overflow-y-auto pr-3 min-[850px]:mt-10">
+          <div className="custom-scrollbar mt-6 flex-1 overflow-y-auto pr-3 min-[850px]:mt-10 dark:!text-white">
             {NAV_DATA.map((section) => (
               <div key={section.label} className="mb-6">
-                <h2 className="mb-5 text-sm font-medium text-dark-4 dark:text-dark-6">
+                <h2 className="mb-5 text-sm font-medium dark:!text-white">
                   {section.label}
                 </h2>
 
                 <nav role="navigation" aria-label={section.label}>
-                  <ul className="space-y-2">
+                  <ul className="space-y-2 dark:!text-white">
                     {section.items.map((item) => (
                       <li key={item.title}>
                         {item.items.length ? (
@@ -106,17 +106,19 @@ export function Sidebar() {
                               onClick={() => toggleExpanded(item.title)}
                             >
                               <item.icon
-                                className="size-6 shrink-0"
+                                
                                 aria-hidden="true"
+                                className="size-6 shrink-0 dark:!text-white" 
                               />
 
-                              <span>{item.title}</span>
+                              <span className="dark:!text-white">{item.title}</span>
 
                               <ChevronUp
                                 className={cn(
                                   "ml-auto rotate-180 transition-transform duration-200",
                                   expandedItems.includes(item.title) &&
                                     "rotate-0",
+                                    
                                 )}
                                 aria-hidden="true"
                               />
@@ -124,7 +126,7 @@ export function Sidebar() {
 
                             {expandedItems.includes(item.title) && (
                               <ul
-                                className="ml-9 mr-0 space-y-1.5 pb-[15px] pr-0 pt-2"
+                                className="ml-9 mr-0 space-y-1.5 pb-[15px] pr-0 pt-2 dark:!text-white"
                                 role="menu"
                               >
                                 {item.items.map((subItem) => (
@@ -134,7 +136,7 @@ export function Sidebar() {
                                       href={subItem.url}
                                       isActive={pathname === subItem.url}
                                     >
-                                      <span>{subItem.title}</span>
+                                      <span className="dark:!text-white">{subItem.title}</span>
                                     </MenuItem>
                                   </li>
                                 ))}
@@ -151,7 +153,7 @@ export function Sidebar() {
 
                             return (
                               <MenuItem
-                                className="flex items-center gap-3 py-3"
+                                className="flex items-center gap-3 py-3 dark:!text-white"
                                 as="link"
                                 href={href}
                                 isActive={pathname === href}
@@ -161,7 +163,7 @@ export function Sidebar() {
                                   aria-hidden="true"
                                 />
 
-                                <span>{item.title}</span>
+                                <span className="dark:!text-white">{item.title}</span>
                               </MenuItem>
                             );
                           })()

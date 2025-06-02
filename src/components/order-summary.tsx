@@ -156,11 +156,11 @@ export function OrderSummary({
 
   return (
     <div className="rounded-[10px] p-4 space-y-1 bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
-      <h3 className="font-bold text-lg text-black border-b pb-2 sticky top-0 z-10">Order Summary</h3>
+      <h3 className="font-bold text-lg text-black dark:!text-white border-b pb-2 sticky top-0 z-10">Order Summary</h3>
 
       <div className="flex justify-between items-center">
         <span className="font-semibold text-primary">Price</span>
-        <span className="text-lg text-black first-letter:font-bold">₹{cart.length ? totalPriceDisplay : "0"}</span>
+        <span className="text-lg text-black dark:!text-white first-letter:font-bold">₹{cart.length ? totalPriceDisplay : "0"}</span>
       </div>
 
       {/* Discount section */}
@@ -168,7 +168,7 @@ export function OrderSummary({
         <div className="flex justify-between items-center">
           <label className="font-semibold text-primary">Discount Type</label>
           <Select value={discountType} onValueChange={(v) => setDiscountType(v as "flat" | "percentage")}>
-            <SelectTrigger className="w-36 h-9 text-black border font-bold">
+            <SelectTrigger className="w-36 h-9 dark:!text-white border font-bold">
               <SelectValue placeholder="Type" />
             </SelectTrigger>
             <SelectContent className="bg-white text-black font-bold">
@@ -196,7 +196,7 @@ export function OrderSummary({
                 setDiscount(Math.min(value, 100))
               }
             }}
-            className="border rounded font-bold text-black px-2 py-1 w-24 text-right"
+            className="border rounded font-bold text-black dark:!text-white px-2 py-1 w-24 text-right"
           />
         </div>
       </div>
@@ -212,7 +212,7 @@ export function OrderSummary({
       {/* Total payment after discount */}
       <div className="flex justify-between items-center border-b pb-2">
         <span className="font-semibold text-primary">Total</span>
-        <span className="text-lg text-black font-bold">₹{cart.length ? totalAmount : "0"}</span>
+        <span className="text-lg text-black dark:!text-white font-bold">₹{cart.length ? totalAmount : "0"}</span>
       </div>
 
       {/* Payment method */}
@@ -234,9 +234,9 @@ export function OrderSummary({
             }}
           >
             <SelectTrigger
-              className={`w-36 h-9 text-black border font-bold ${errors.paymentMethod ? "border-red-500" : ""}`}
+              className={`w-36 h-9 dark:!text-white border font-bold ${errors.paymentMethod ? "border-red-500" : ""}`}
             >
-              <SelectValue placeholder="Select" />
+              <SelectValue placeholder="Select"/>
             </SelectTrigger>
             <SelectContent className="bg-white text-black font-bold">
               {paymentMethods.map((method) => (
@@ -271,7 +271,7 @@ export function OrderSummary({
                 })
               }
             }}
-            className={`border rounded text-black font-bold px-2 py-1 w-32 text-right ${errors.paidAmount ? "border-red-500" : ""}`}
+            className={`border rounded text-black dark:!text-white font-bold px-2 py-1 w-32 text-right ${errors.paidAmount ? "border-red-500" : ""}`}
           />
         </div>
         {errors.paidAmount && <p className="text-sm text-red-500 mt-1 text-right">{errors.paidAmount}</p>}
@@ -279,7 +279,7 @@ export function OrderSummary({
 
       {/* Total payable */}
       <div className="flex justify-between items-center">
-        <span className="font-semibold text-primary">Total Payable:</span>
+        <span className="font-semibold text-primary">Remaining Amount:</span>
         <span className="text-lg font-bold text-dark-2">₹{cart.length ? remainingAmountDisplay : "0"}</span>
       </div>
 
@@ -289,7 +289,7 @@ export function OrderSummary({
           value={remarks}
           onChange={(e) => setRemarks(e.target.value)}
           placeholder="Add any special instructions or notes here"
-          className="w-full text-black border rounded"
+          className="w-full text-black dark:!text-white border rounded"
           rows={3}
         />
       </div>

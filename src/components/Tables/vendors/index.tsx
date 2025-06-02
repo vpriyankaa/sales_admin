@@ -275,7 +275,7 @@ export function Vendors() {
     <>
       <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
         <div className="px-6 py-4 sm:px-6 sm:py-5 xl:px-8.5">
-          <h2 className="text-2xl font-bold text-dark dark:text-white">Vendors</h2>
+          <h2 className="text-2xl font-bold text-dark dark:!text-white">Vendors</h2>
         </div>
 
         <div className="flex justify-end mb-5 mr-2">
@@ -298,13 +298,13 @@ export function Vendors() {
 
           <TableBody>
             {paginatedData.map((vendor) => (
-              <TableRow className="text-base font-medium text-dark dark:text-white" key={vendor.id}>
+              <TableRow className="text-base font-medium text-dark dark:!text-white" key={vendor.id}>
                 <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{vendor.name}</TableCell>
                 <TableCell>{vendor.phone}</TableCell>
                 <TableCell>{vendor.aadhaar || "-"}</TableCell>
                 <TableCell className="max-w-xs truncate">{vendor.address || "-"}</TableCell>
                 <TableCell>
-                  <div className="text-md font-semibold text-gray-800">
+                  <div className="text-md font-semibold text-gray-800 dark:!text-white">
                     {vendor.products?.map((product, index) => (
                       <span key={index}>
                         {product.product_name}
@@ -655,7 +655,7 @@ export function Vendors() {
 
         <div className="flex items-center text-gray-700 justify-end p-4">
           <div className="flex items-center text-gray-700 gap-4">
-            <span className="text-md text-gray-700 dark:text-gray-300">Items per page:</span>
+            <span className="text-md text-gray-700 dark:!text-white">Items per page:</span>
             <Select
               value={itemsPerPage.toString()}
               onValueChange={(value) => {
@@ -664,7 +664,7 @@ export function Vendors() {
                 setCurrentPage(1)
               }}
             >
-              <SelectTrigger className="w-24 h-8 text-gray-700 text-center">
+              <SelectTrigger className="w-24 h-8 text-gray-700 dark:!text-white text-center">
                 <SelectValue className="text-gray-700" />
               </SelectTrigger>
               <SelectContent className="text-gray-700 font-semibold bg-white shadow-md border rounded-md">
@@ -676,7 +676,7 @@ export function Vendors() {
               </SelectContent>
             </Select>
 
-            <span className="text-md text-gray-700 dark:text-gray-300">
+            <span className="text-md text-gray-700 dark:!text-white">
               Page {currentPage} of {totalPages}
             </span>
 

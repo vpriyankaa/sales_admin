@@ -43,105 +43,105 @@ type DatePreset = {
 }
 
 export function DateRangePicker({ onChange, initialDateFrom, initialDateTo, className }: DateRangePickerProps) {
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false)
-  const [isPresetOpen, setIsPresetOpen] = useState(false)
-  const [selectedPreset, setSelectedPreset] = useState<string>("today")
+const [isCalendarOpen, setIsCalendarOpen] = useState(false)
+const [isPresetOpen, setIsPresetOpen] = useState(false)
+const [selectedPreset, setSelectedPreset] = useState<string>("today")
 
   const [dateRange, setDateRange] = useState<DateRange>({
     from: undefined,
     to: undefined,
   })
 
-  const presets: DatePreset[] = [
-    {
-      name: "today",
-      label: "Today",
-      getValue: () => ({
-        from: startOfDay(new Date()),
-        to: endOfDay(new Date()),
-      }),
+const presets: DatePreset[] = [
+  {
+    name: "today",
+    label: "Today",
+    getValue: () => ({
+      from: startOfDay(new Date()),
+      to: endOfDay(new Date()),
+    }),
+  },
+  {
+    name: "yesterday",
+    label: "Yesterday",
+    getValue: () => ({
+      from: startOfDay(subDays(new Date(), 1)),
+      to: endOfDay(subDays(new Date(), 1)),
+    }),
+  },
+  {
+    name: "thisWeek",
+    label: "This Week",
+    getValue: () => ({
+      from: startOfWeek(new Date(), { weekStartsOn: 1 }),
+      to: endOfWeek(new Date(), { weekStartsOn: 1 }),
+    }),
+  },
+  {
+    name: "lastWeek",
+    label: "Last Week",
+    getValue: () => {
+      const lastWeek = subWeeks(new Date(), 1)
+      return {
+        from: startOfWeek(lastWeek, { weekStartsOn: 1 }),
+        to: endOfWeek(lastWeek, { weekStartsOn: 1 }),
+      }
     },
-    {
-      name: "yesterday",
-      label: "Yesterday",
-      getValue: () => ({
-        from: startOfDay(subDays(new Date(), 1)),
-        to: endOfDay(subDays(new Date(), 1)),
-      }),
+  },
+  {
+    name: "thisMonth",
+    label: "This Month",
+    getValue: () => ({
+      from: startOfMonth(new Date()),
+      to: endOfMonth(new Date()),
+    }),
+  },
+  {
+    name: "lastMonth",
+    label: "Last Month",
+    getValue: () => {
+      const lastMonth = subMonths(new Date(), 1)
+      return {
+        from: startOfMonth(lastMonth),
+        to: endOfMonth(lastMonth),
+      }
     },
-    {
-      name: "thisWeek",
-      label: "This Week",
-      getValue: () => ({
-        from: startOfWeek(new Date(), { weekStartsOn: 1 }),
-        to: endOfWeek(new Date(), { weekStartsOn: 1 }),
-      }),
+  },
+  {
+    name: "thisYear",
+    label: "This Year",
+    getValue: () => ({
+      from: startOfYear(new Date()),
+      to: endOfYear(new Date()),
+    }),
+  },
+  {
+    name: "lastYear",
+    label: "Last Year",
+    getValue: () => {
+      const lastYear = subYears(new Date(), 1)
+      return {
+        from: startOfYear(lastYear),
+        to: endOfYear(lastYear),
+      }
     },
-    {
-      name: "lastWeek",
-      label: "Last Week",
-      getValue: () => {
-        const lastWeek = subWeeks(new Date(), 1)
-        return {
-          from: startOfWeek(lastWeek, { weekStartsOn: 1 }),
-          to: endOfWeek(lastWeek, { weekStartsOn: 1 }),
-        }
-      },
-    },
-    {
-      name: "thisMonth",
-      label: "This Month",
-      getValue: () => ({
-        from: startOfMonth(new Date()),
-        to: endOfMonth(new Date()),
-      }),
-    },
-    {
-      name: "lastMonth",
-      label: "Last Month",
-      getValue: () => {
-        const lastMonth = subMonths(new Date(), 1)
-        return {
-          from: startOfMonth(lastMonth),
-          to: endOfMonth(lastMonth),
-        }
-      },
-    },
-    {
-      name: "thisYear",
-      label: "This Year",
-      getValue: () => ({
-        from: startOfYear(new Date()),
-        to: endOfYear(new Date()),
-      }),
-    },
-    {
-      name: "lastYear",
-      label: "Last Year",
-      getValue: () => {
-        const lastYear = subYears(new Date(), 1)
-        return {
-          from: startOfYear(lastYear),
-          to: endOfYear(lastYear),
-        }
-      },
-    },
-    {
-      name: "custom",
-      label: "Custom Range",
-      getValue: () => ({ from: undefined, to: undefined }),
-    },
-  ]
+  },
+  {
+    name: "custom",
+    label: "Custom Range",
+    getValue: () => ({ from: undefined, to: undefined }),
+  },
+]
 
 
-  useEffect(() => {
-    if (dateRange.from && dateRange.to) {
-      onChange({
-        dateFrom: dateRange.from.toISOString(),
-        dateTo: dateRange.to.toISOString(),
-      });
-    }
-  }, [dateRange, onChange]);
+useEffect(() => {
+  if (dateRange.from && dateRange.to) {
+    onChange({
+      dateFrom: dateRange.from.toISOString(),
+      dateTo: dateRange.to.toISOString(),
+    });
+  }
+}, [dateRange, onChange]);
 
 
   const handlePresetChange = (preset: string) => {
@@ -163,10 +163,12 @@ export function DateRangePicker({ onChange, initialDateFrom, initialDateTo, clas
   }
 
 
-  console.log("selectedPreset", selectedPreset);
-  console.log("isCalendarOpen", isCalendarOpen);
+  // console.log("selectedPreset", selectedPreset);
+  // console.log("isCalendarOpen", isCalendarOpen);
 
-  const [hoveredDate, setHoveredDate] = useState<Date | undefined>();
+
+
+const [hoveredDate, setHoveredDate] = useState<Date | undefined>();
 
 
 
@@ -198,13 +200,13 @@ export function DateRangePicker({ onChange, initialDateFrom, initialDateTo, clas
   }
 
 
-  const rangeHover: Matcher | undefined =
-    dateRange.from && !dateRange.to && hoveredDate
-      ? {
-        from: dateRange.from,
-        to: hoveredDate > dateRange.from ? hoveredDate : dateRange.from,
-      }
-      : undefined;
+const rangeHover: Matcher | undefined =
+  dateRange.from && !dateRange.to && hoveredDate
+    ? {
+      from: dateRange.from,
+      to: hoveredDate > dateRange.from ? hoveredDate : dateRange.from,
+    }
+    : undefined;
 
   return (
     <div className={cn("grid gap-2", className)}>
@@ -214,15 +216,15 @@ export function DateRangePicker({ onChange, initialDateFrom, initialDateTo, clas
             id="date-range-preset"
             variant="outline"
             className={cn(
-              "justify-between  text-fill-dark-5 font-semibold text-left w-full md:w-[260px]",
-              !dateRange && "text-muted-foreground",
+              "justify-between font-semibold text-left w-full md:w-[260px]",
+              !dateRange && "text-muted-foreground dark:!text-black",
             )}
           >
             <span>{formatDateRange()}</span>
             <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0 bg-white text-dark-3 font-semibold" align="start">
+        <PopoverContent className="w-full p-0 bg-white text-dark-3  dark:!text-black font-semibold" align="start">
           <Command>
             <CommandInput />
             <CommandList>
@@ -266,3 +268,5 @@ export function DateRangePicker({ onChange, initialDateFrom, initialDateTo, clas
     </div>
   )
 }
+
+

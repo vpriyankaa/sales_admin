@@ -265,22 +265,22 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       <h3 className="text-lg font-semibold mb-4 text-primary dark:text-primary">Products</h3>
       <div className="overflow-x-auto border rounded-md">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead className="bg-gray-50 dark:bg-gray-800">
+          <thead className="bg-gray-50 dark:bg-gray-800 dark:!text-white">
             <tr>
-              <th className="px-3 py-2 text-left text-xs font-bold text-black uppercase tracking-wider">Product</th>
-              <th className="px-3 py-2 text-center text-xs font-bold text-black uppercase tracking-wider">Quantity</th>
-              <th className="px-3 py-2 text-center text-xs font-bold text-black uppercase tracking-wider">Unit</th>
-              <th className="px-2 py-5 text-right text-xs font-bold text-black uppercase tracking-wider">
+              <th className="px-3 py-2 text-left text-xs font-bold text-black dark:!text-white uppercase tracking-wider">Product</th>
+              <th className="px-3 py-2 text-center text-xs font-bold text-black dark:!text-white uppercase tracking-wider">Quantity</th>
+              <th className="px-3 py-2 text-center text-xs font-bold text-black dark:!text-white uppercase tracking-wider">Unit</th>
+              <th className="px-2 py-5 text-right text-xs font-bold text-black dark:!text-white  uppercase tracking-wider">
                 Price / unit
               </th>
-              <th className="px-3 py-2 text-right text-xs font-bold text-black uppercase tracking-wider">Total</th>
+              <th className="px-3 py-2 text-right text-xs font-bold dark:!text-white text-black uppercase tracking-wider">Total</th>
             </tr>
           </thead>
-          <tbody className="bg-white font-bold dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="bg-white font-bold dark:bg-gray-900 divide-y divide-gray-200 dark:!text-white dark:divide-gray-700">
             {items && items.length > 0 ? (
               items.map((item, index) => (
                 <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                  <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                  <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900  dark:text-white">
                     {item.product_name}
                   </td>
                   <td className="px-3 py-2 whitespace-nowrap text-sm text-center text-gray-700 dark:text-gray-300">
@@ -299,7 +299,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
               ))
             ) : (
               <tr>
-                <td colSpan={5} className="px-4 py-4 text-center text-sm text-black">
+                <td colSpan={5} className="px-4 py-4 text-center text-sm dark:!text-white text-black">
                   No products found in this order.
                 </td>
               </tr>
@@ -371,8 +371,8 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     try {
       // Pass the uploaded filename to changeOrderPayment
 
-      console.log("comments----", comments)
-      console.log("documents-----------", uploadedFileName)
+      // console.log("comments----", comments)
+      // console.log("documents-----------", uploadedFileName)
 
       const success = await changeOrderPayment(id, paymentAmount, comments.trim(), uploadedFileName)
       if (success) {
@@ -450,13 +450,13 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   const PaymentStatusBadge = ({ status }: { status: string }) => {
     switch (status?.toLowerCase()) {
       case "paid":
-        return <span className="text-black font-bold">Paid</span>
+        return <span className="text-black dark:!text-white font-bold">Paid</span>
       case "partiallypaid":
-        return <span className="text-black font-bold">Partially Paid</span>
+        return <span className="text-black dark:!text-white font-bold">Partially Paid</span>
       case "credit":
-        return <span className="text-black font-bold">Credit</span>
+        return <span className="text-black dark:!text-white font-bold">Credit</span>
       default:
-        return <span className="text-black">Credit</span>
+        return <span className="text-black dark:!text-white">Credit</span>
     }
   }
 
@@ -468,14 +468,14 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     <>
       <div className="max-w-6xl mx-auto p-4 print:p-0 print:shadow-none">
         <Card className="shadow-lg border-t-4 border-b-4 border-b-blue-500 border-t-blue-500 print:shadow-none print:border">
-          <CardHeader className="bg-gray-50 dark:bg-gray-800 border-b">
+          <CardHeader className="bg-gray-50 dark:bg-gray-800 border-b dark:!text-white">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
               <div>
-                <p className="text-sm font-bold text-black">Order ID</p>
+                <p className="text-sm font-bold text-black dark:!text-white">Order ID</p>
                 <CardTitle className="text-xl font-bold">#{data.order_id || id}</CardTitle>
               </div>
               <div className="flex flex-col items-end">
-                <p className="text-sm font-bold text-black">Order Date</p>
+                <p className="text-sm font-bold text-black dark:!text-white">Order Date</p>
                 <p className="font-medium">{formatDate(data.order_date || new Date())}</p>
               </div>
               {type === "sale" && (
@@ -511,20 +511,20 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                     {
                     type === "sale" ? (
                     <div className="bg-white dark:bg-gray-800 font-bold p-3 rounded-md border">
-                      <p className="text-sm text-black">Customer Name</p>
+                      <p className="text-sm text-black dark:!text-white">Customer Name</p>
                       <p className="font-medium text-lg">{data.customer_name || "-"}</p>
                     </div>
                     ):(
                       <div className="bg-white dark:bg-gray-800 font-bold p-3 rounded-md border">
-                      <p className="text-sm text-black">Vendor Name</p>
-                      <p className="font-medium text-lg">{data.vendor_name || "-"}</p>
+                      <p className="text-sm text-black dark:!text-white">Vendor Name</p>
+                      <p className="font-medium text-lg dark:!text-white">{data.vendor_name || "-"}</p>
                     </div>
 
                     )}
                     {data.remarks && (
                       <div className="bg-white dark:bg-gray-800 font-bold p-3 rounded-md border">
-                        <p className="text-sm text-black">Remarks</p>
-                        <p className="font-medium">{data.remarks}</p>
+                        <p className="text-sm text-black dark:!text-white">Remarks</p>
+                        <p className="font-medium dark:!text-white">{data.remarks}</p>
                       </div>
                     )}
                   </div>
@@ -542,7 +542,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                         const isOpen = openId === log.id
 
                         return (
-                          <div key={log.id} className="border border-gray-300 dark:border-gray-600 rounded-md">
+                          <div key={log.id} className="border border-gray-300 dark:!text-white dark:border-gray-600 rounded-md">
                             {/* header */}
                             <button
                               type="button"
@@ -689,20 +689,20 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                     <CardContent className="pt-0">
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
-                          <span className="text-black font-semibold text-sm">Subtotal</span>
-                          <span className="font-medium text-black">₹{formatAmount(totalBeforeDiscount)}</span>
+                          <span className="text-black dark:!text-white font-semibold text-sm">Subtotal</span>
+                          <span className="font-medium dark:!text-white text-black">₹{formatAmount(totalBeforeDiscount)}</span>
                         </div>
 
                         <div className="flex justify-between items-center">
-                          <span className="text-black font-semibold text-sm">Payment Status</span>
+                          <span className="text-black dark:!text-white font-semibold text-sm">Payment Status</span>
                           <PaymentStatusBadge status={data.payment_status} />
                         </div>
 
                        {
-                        data?.discount_type && data?.discount_value && data.discount_value !== 0 &&(
+                        data?.discount_type && data?.discount_value && data.discount_value !== 0 ? (
                        
                         <div className="flex justify-between items-center">
-                          <span className="text-black font-semibold text-sm">
+                          <span className="text-black dark:!text-white font-semibold text-sm">
                             Discount ({" "}
                             {data?.discount_type && data?.discount_value && data.discount_value !== 0
                               ? getDiscountTypeDisplay(data.discount_type)
@@ -716,31 +716,34 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                               : "0"}
                           </span>
                         </div>
+                        ):(
+                          ""
                         )}
 
-                        <div className="flex text-black justify-between items-center border-t pt-2">
-                          <span className="text-black font-semibold text-sm">Total After Discount</span>
-                          <span className="text-black font-medium">
+                        <div className="flex text-black dark:!text-white justify-between items-center border-t pt-2">
+                          <span className="text-black dark:!text-white font-semibold text-sm">Total After Discount</span>
+                          <span className="text-black dark:!text-white font-medium">
                             ₹{formatAmount((data.total_price || 0) - (data.discount_value || 0))}
                           </span>
                         </div>
 
+                        <div className="flex text-black justify-between items-center dark:!text-white text-sm font-bold pt-3 border-t-2 border-blue-200">
+                          <span>Total Payable</span>
+                          <span className="text-primary">₹{formatAmount(data.total_payable)}</span>
+                        </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-black font-semibold text-sm">Amount Paid</span>
-                          <span className="font-medium text-black">₹{formatAmount(data.paid_amount || 0)}</span>
+                          <span className="text-black dark:!text-white font-semibold text-sm">Amount Paid</span>
+                          <span className="font-medium text-black dark:!text-white">₹{formatAmount(data.paid_amount || 0)}</span>
                         </div>
 
                         {data.remaining_amount > 0 && (
                           <div className="flex justify-between items-center">
-                            <span className="font-semibold text-black text-sm">Remaining Amount</span>
+                            <span className="font-semibold text-black dark:!text-white text-sm">Remaining Amount</span>
                             <span className="font-medium text-red-600">₹{formatAmount(data.remaining_amount)}</span>
                           </div>
                         )}
 
-                        <div className="flex text-black justify-between items-center text-lg font-bold pt-3 border-t-2 border-blue-200">
-                          <span>Total Payable</span>
-                          <span className="text-primary">₹{formatAmount(data.total_payable)}</span>
-                        </div>
+                  
 
                         {data.paid_amount !== data.total_payable && data.remaining_amount > 0 && (
                           <div className="pt-3">

@@ -2,6 +2,10 @@
 
 import { createClient } from "@supabase/supabase-js"
 import {changeProductQuantity} from "@/utils/inventory"
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { NextResponse } from 'next/server';
+
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -18,7 +22,7 @@ const supabase = supabaseUrl && supabaseServiceKey ? createClient(supabaseUrl, s
 
 
 interface User {
-  id: string;
+  id: number;
   created_at: string;
   name: string;
   phone: string;
@@ -1064,6 +1068,7 @@ export async function getuser(id: number) {
   }
 }
 
+
 export async function getVendorLogsById(orderId: number) {
   if (!supabase) {
     console.warn("Supabase client not initialized. Returning mock data.");
@@ -1379,11 +1384,93 @@ export async function changeOrderPaymentStatus(
   }
 }
 
+// export async function changeOrderPayment(
+//   orderId: number,
+//   amount: number,
+//   comments:string, 
+//   documents :string
+// ): Promise<boolean> {
+//   if (!supabase) {
+//     console.warn("Supabase client not initialized. Returning mock data.");
+//     return false;
+//   }
+
+//   if (amount <= 0) {
+//     console.error("Amount must be greater than 0.");
+//     return false;
+//   }
+
+//   try {
+//     const { data: row, error: fetchErr } = await supabase
+//       .from("orders")
+//       .select("paid_amount, remaining_amount, total_payable, payment_status")
+//       .eq("id", orderId)
+//       .single();
+
+//     if (fetchErr) throw fetchErr;
+//     if (!row) throw new Error("Order not found.");
+
+//     const {
+//       paid_amount = 0,
+//       remaining_amount = 0,
+//       total_payable = 0,
+//       payment_status: oldStatus,
+//     } = row;
+
+//     const newPaidAmount = Math.min(paid_amount + amount, total_payable);
+//     const newRemainingAmount = Math.max(total_payable - newPaidAmount, 0);
+
+//     const newStatus = newRemainingAmount === 0 ? "paid" : "partiallypaid";
+
+//     const { error: updateErr } = await supabase
+//       .from("orders")
+//       .update({
+//         paid_amount: newPaidAmount,
+//         remaining_amount: newRemainingAmount,
+//         payment_status: newStatus,
+//       })
+//       .eq("id", orderId);
+
+//     if (updateErr) throw updateErr;
+
+//     // ✅ Only log if the status actually changed
+//     if (newStatus !== oldStatus) {
+//       const actionText = `Payment of ₹${amount.toFixed(2)} received. `
+//         + `Status changed from ${oldStatus} to ${newStatus}. `
+
+
+//         // console.log("comments",comments);
+//         // console.log("documents",documents);
+
+//       const { error: logErr } = await supabase
+//         .from("paymentLogs")
+//         .insert({ order_id: orderId, action: actionText ,comments:comments ,documents:documents});
+
+//       if (logErr) throw logErr;
+//     }else{
+//       if (newStatus === oldStatus) {
+//       const actionText = `Payment of ₹${amount} received. `
+        
+//       const { error: logErr } = await supabase
+//         .from("paymentLogs")
+//         .insert({ order_id: orderId, action: actionText,comments:comments ,documents:documents });
+
+//       if (logErr) throw logErr;
+//     }
+//     }
+
+//     return true;
+//   } catch (err) {
+//     console.error("Failed to apply payment", err);
+//     return false;
+//   }
+// }
+
 export async function changeOrderPayment(
   orderId: number,
   amount: number,
-  comments:string, 
-  documents :string
+  comments: string,
+  documents: string
 ): Promise<boolean> {
   if (!supabase) {
     console.warn("Supabase client not initialized. Returning mock data.");
@@ -1398,7 +1485,7 @@ export async function changeOrderPayment(
   try {
     const { data: row, error: fetchErr } = await supabase
       .from("orders")
-      .select("paid_amount, remaining_amount, total_payable, payment_status")
+      .select("paid_amount, remaining_amount, total_payable, payment_status, status")
       .eq("id", orderId)
       .single();
 
@@ -1409,50 +1496,58 @@ export async function changeOrderPayment(
       paid_amount = 0,
       remaining_amount = 0,
       total_payable = 0,
-      payment_status: oldStatus,
+      payment_status: oldPaymentStatus,
+      status: oldOrderStatus,
     } = row;
 
-    const newPaidAmount = Math.min(paid_amount + amount, total_payable);
+    const newPaidAmount      = Math.min(paid_amount + amount, total_payable);
     const newRemainingAmount = Math.max(total_payable - newPaidAmount, 0);
 
-    const newStatus = newRemainingAmount === 0 ? "paid" : "partiallypaid";
+    const newPaymentStatus = newRemainingAmount === 0 ? "paid" : "partiallypaid";
+    const newOrderStatus   = newRemainingAmount === 0 ? "completed" : oldOrderStatus;
 
+   
+    const updatePayload: Record<string, any> = {
+      paid_amount:      newPaidAmount,
+      remaining_amount: newRemainingAmount,
+      payment_status:   newPaymentStatus,
+    };
+
+    if (newRemainingAmount === 0) {
+      updatePayload.status = "completed";
+    }
+
+    
     const { error: updateErr } = await supabase
       .from("orders")
-      .update({
-        paid_amount: newPaidAmount,
-        remaining_amount: newRemainingAmount,
-        payment_status: newStatus,
-      })
+      .update(updatePayload)
       .eq("id", orderId);
 
     if (updateErr) throw updateErr;
 
-    // ✅ Only log if the status actually changed
-    if (newStatus !== oldStatus) {
-      const actionText = `Payment of ₹${amount.toFixed(2)} received. `
-        + `Status changed from ${oldStatus} to ${newStatus}. `
-
-
-        // console.log("comments",comments);
-        // console.log("documents",documents);
-
-      const { error: logErr } = await supabase
-        .from("paymentLogs")
-        .insert({ order_id: orderId, action: actionText ,comments:comments ,documents:documents});
-
-      if (logErr) throw logErr;
-    }else{
-      if (newStatus === oldStatus) {
-      const actionText = `Payment of ₹${amount} received. `
-        
-      const { error: logErr } = await supabase
-        .from("paymentLogs")
-        .insert({ order_id: orderId, action: actionText,comments:comments ,documents:documents });
-
-      if (logErr) throw logErr;
+    
+    const changes: string[] = [];
+    if (newPaymentStatus !== oldPaymentStatus) {
+      changes.push(`payment_status: ${oldPaymentStatus} → ${newPaymentStatus}`);
     }
+    if (updatePayload.status && updatePayload.status !== oldOrderStatus) {
+      changes.push(`status: ${oldOrderStatus} → ${updatePayload.status}`);
     }
+
+    const actionText =
+      `Payment of ₹${amount.toFixed(2)} received.` +
+      (changes.length ? ` Status changed (${changes.join(", ")}).` : "");
+
+    const { error: logErr } = await supabase
+      .from("paymentLogs")
+      .insert({
+        order_id: orderId,
+        action: actionText,
+        comments,
+        documents,
+      });
+
+    if (logErr) throw logErr;
 
     return true;
   } catch (err) {
@@ -1460,6 +1555,7 @@ export async function changeOrderPayment(
     return false;
   }
 }
+
 
 
 export async function getUnits(){
@@ -1508,37 +1604,24 @@ export async function getPaymentMethods(){
   }
 }
 
-export async function checkUserCredentials(phoneOrEmail: string, password: string) {
-   if (!supabase) {
-    console.warn("Supabase client not initialized. Returning mock data.")
-    return []
+
+export async function checkUserCredentials(phoneOrEmail: string, password: string): Promise<User | null> {
+  if (!supabase) {
+    console.warn("Supabase client not initialized.");
+    return null;
   }
 
   const { data, error } = await supabase
-    .from<'user', User>('user')  
+    .from<'user', User>('user')
     .select('*')
     .or(`phone.eq.${phoneOrEmail},email.eq.${phoneOrEmail}`)
     .limit(1)
     .single();
 
-
-    // console.log("user",data);
-
-  if (error) {
-    throw new Error('Database error: ' + error.message);
-  }
-
-  if (!data) {
-    // User not found
+  if (error || !data || data.password !== password) {
     return null;
   }
 
-  if (password !== data.password) {
-    return null; // Password mismatch
-  }
-
-
-  // Return user data except password
   const { password: _, ...userWithoutPassword } = data;
   return userWithoutPassword;
 }

@@ -215,7 +215,7 @@ export function TopProducts() {
 
       <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
         <div className="px-6 py-4 sm:px-6 sm:py-5 xl:px-8.5">
-          <h2 className="text-2xl font-bold text-dark dark:text-white">Products</h2>
+          <h2 className="text-2xl font-bold text-dark dark:!text-white">Products</h2>
         </div>
 
         <div className="flex justify-end mb-5 mr-2">
@@ -237,7 +237,7 @@ export function TopProducts() {
 
           <TableBody>
             {paginatedData.map((product) => (
-              <TableRow className="text-base font-medium text-dark dark:text-white" key={product.id}>
+              <TableRow className="text-base font-medium text-dark dark:!text-white" key={product.id}>
                 <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{product.name}</TableCell>
                 <TableCell>{product.quantity}</TableCell>
                 <TableCell>{product.unit.charAt(0).toUpperCase() + product.unit.slice(1)}</TableCell>
@@ -276,7 +276,7 @@ export function TopProducts() {
                     name="product_name"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">
+                        <FormLabel className="text-right text-black ">
                           Name <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
@@ -295,7 +295,7 @@ export function TopProducts() {
                     name="unit"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">
+                        <FormLabel className="text-right text-black ">
                           Unit <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
@@ -567,9 +567,9 @@ export function TopProducts() {
         </Dialog>
 
         {/* Pagination */}
-        <div className="flex items-center text-gray-700 justify-end p-4">
-          <div className="flex items-center text-gray-700 gap-4">
-            <span className="text-md text-gray-700 dark:text-gray-300">Items per page:</span>
+        <div className="flex items-center text-gray-700 dark:!text-white justify-end p-4">
+          <div className="flex items-center text-gray-700 dark:!text-white gap-4">
+            <span className="text-md text-gray-700 dark:!text-white">Items per page:</span>
             <Select
               value={itemsPerPage.toString()}
               onValueChange={(value) => {
@@ -578,8 +578,8 @@ export function TopProducts() {
                 setCurrentPage(1)
               }}
             >
-              <SelectTrigger className="w-24 h-8 text-gray-700 text-center">
-                <SelectValue className="text-gray-700" />
+              <SelectTrigger className="w-24 h-8 text-gray-700 dark:!text-white text-center">
+                <SelectValue className="text-gray-700 dark:!text-white" />
               </SelectTrigger>
               <SelectContent className="text-gray-700 font-semibold bg-white shadow-md border rounded-md">
                 {[10, 20, 30, 40, 50].map((n) => (

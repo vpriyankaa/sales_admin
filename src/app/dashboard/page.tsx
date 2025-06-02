@@ -20,6 +20,7 @@ export default async function Home({ searchParams }: PropsType) {
 
   return (
     <>
+    
       <Suspense fallback={<OverviewCardsSkeleton />}>
         <OverviewCardsGroup />
       </Suspense>

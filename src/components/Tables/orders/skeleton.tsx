@@ -86,76 +86,95 @@ const [filteredData, setFilteredData] = useState<any[]>([])
             </div>
           </div>
 
-           <div className="mt-6">
-            <Card className="mb-4 sm:mx-4 xl:mx-8.5">
-             <CardContent className="pt-6 pb-4">
-                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-center">
-                               
-                               <div className="w-full">
-                                 <label htmlFor="date-range" className="sr-only">Date Range</label> 
-                                 <DateRangePicker
-                                   initialDateFrom={filters.dateFrom}
-                                   initialDateTo={filters.dateTo}
-                                   onChange={(range) => {
-                                     if (range.dateFrom !== filters.dateFrom || range.dateTo !== filters.dateTo) {
-                                       setFilters((prev) => ({
-                                         ...prev,
-                                         dateFrom: range.dateFrom,
-                                         dateTo: range.dateTo,
-                                       }));
-                                     }
-                                   }}
-                                 />
-                               </div>
-             
-                               {/* Customer Filter */}
-                               <div className="w-full">
-                                 <Select value={filters.customer} onValueChange={(value) => handleFilterChange("customer", value)}>
-                                   <SelectTrigger className="w-full h-[40px] text-sm font-semibold border rounded px-3">
-                                     <SelectValue placeholder="Select Customer" /> {/* More explicit placeholder */}
-                                   </SelectTrigger>
-                                   <SelectContent className="z-[999] text-gray-700 font-semibold w-full bg-white shadow-md border rounded-md">
-                                     {customers.map((c) => (
-                                       <SelectItem key={c.id} value={c.name}>
-                                         {c.name}
-                                       </SelectItem>
-                                     ))}
-                                   </SelectContent>
-                                 </Select>
-                               </div>
-             
-                               {/* Product Filter */}
-                               <div className="w-full">
-                                 <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
-                                   <SelectTrigger className="w-full h-[40px] text-sm font-semibold border rounded px-3">
-                                     <SelectValue placeholder="Select Product" /> {/* More explicit placeholder */}
-                                   </SelectTrigger>
-                                   <SelectContent className="z-[999] text-gray-700 font-semibold w-full bg-white shadow-md border rounded-md">
-                                     {products.map((p) => (
-                                       <SelectItem key={p.id} value={p.name}>
-                                         {p.name}
-                                       </SelectItem>
-                                     ))}
-                                   </SelectContent>
-                                 </Select>
-                               </div>
-             
-                               {/* Clear Button */}
-                               {hasActiveFilters && (
-                                 <div className="w-full flex justify-start"> {/* Use flexbox to control button alignment */}
-                                   <Button
-                                     variant="outline"
-                                     onClick={clearFilters}
-                                     className="bg-blue-500 hover:bg-blue-600 text-white h-[40px]" /* Ensure consistent height */
-                                   >
-                                     Clear Filters
-                                   </Button>
-                                 </div>
-                               )}
-                             </div>
-                           </CardContent>
-            </Card>
-          </div>
+       <div className="mt-6 dark:!text-white">
+                 <Card className="mb-4 mx-2 sm:mx-4 xl:mx-8.5">
+                   <CardContent className="pt-6 pb-4">
+                       <div className="flex flex-col gap-4">
+                       {/* First row - Date picker takes full width on mobile */}
+     
+                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                       <div className="w-2/4">
+                         <DateRangePicker
+                           initialDateFrom={filters.dateFrom}
+                           initialDateTo={filters.dateTo}
+                           onChange={(range) => {
+                             if (range.dateFrom !== filters.dateFrom || range.dateTo !== filters.dateTo) {
+                               setFilters((prev) => ({
+                                 ...prev,
+                                 dateFrom: range.dateFrom,
+                                 dateTo: range.dateTo,
+                               }))
+                             }
+                           }}
+                         />
+                       </div>
+     
+                        <div className="w-2/4">
+                           <Select value={filters.customer} onValueChange={(value) => handleFilterChange("customer", value)}>
+                             <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
+                               <SelectValue placeholder="Select Customer" />
+                             </SelectTrigger>
+                             <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                               {customers.map((c) => (
+                                 <SelectItem key={c.id} value={c.name}>
+                                   {c.name}
+                                 </SelectItem>
+                               ))}
+                             </SelectContent>
+                           </Select>
+                         </div>
+                       </div>
+     
+                       {/* Second row - Customer and Product filters */}
+                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                         {/* Customer */}
+                        
+     
+                         {/* Product */}
+                         <div className="w-2/4">
+                           <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
+                             <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
+                               <SelectValue placeholder="Select Product" />
+                             </SelectTrigger>
+                             <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                               {products.map((p) => (
+                                 <SelectItem key={p.id} value={p.name}>
+                                   {p.name}
+                                 </SelectItem>
+                               ))}
+                             </SelectContent>
+                           </Select>
+                         </div>
+     
+                          <div className="w-40">
+                           {hasActiveFilters && (
+                           <Button
+                             variant="outline"
+                             onClick={clearFilters}
+                             className="h-[40px] px-6 bg-blue-500 hover:bg-blue-600 text-white border-blue-500 hover:border-blue-600"
+                           >
+                             Clear Filters
+                           </Button>
+                         )}
+                         </div>
+                       </div>
+     
+                       {/* Third row - Clear Filters Button (always in consistent position) */}
+                       {/* <div className="flex justify-start sm:justify-end">
+                         {hasActiveFilters && (
+                           <Button
+                             variant="outline"
+                             onClick={clearFilters}
+                             className="h-[40px] px-6 bg-blue-500 hover:bg-blue-600 text-white border-blue-500 hover:border-blue-600"
+                           >
+                             Clear Filters
+                           </Button>
+                         )}
+                       </div> */}
+                     </div>
+                   </CardContent>
+                 </Card>
+               </div>
 
 
       <Table>

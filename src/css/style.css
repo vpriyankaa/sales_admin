@@ -89,6 +89,9 @@
     background-color: #3b82f6 !important;
   }
 
+  .dark {
+  --foreground: 0 0% 100%; /* white */
+}
  
   .bg-secondary {
     background-color:  #ffff !important;

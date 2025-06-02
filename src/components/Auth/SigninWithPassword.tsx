@@ -42,10 +42,8 @@ export default function SigninWithPassword() {
 
       // console.log("user----1",user);
 
-      if (user) {
-        // router.push("/sales/add");
+     if (user) {
         login(user);
-
         sessionStorage.setItem("user", JSON.stringify(user));
         router.push("/dashboard");
       } else {

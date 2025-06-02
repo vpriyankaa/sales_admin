@@ -199,86 +199,90 @@ export function Purchase({ className }: { className?: string }) {
         <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
           <div className="px-2 py-4 sm:px-4 sm:py-5 xl:px-8.5 text-left">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-dark dark:text-white">Purchase Reports</h2>
+              <h2 className="text-2xl font-bold text-dark dark:!text-white">Purchase Reports</h2>
             </div>
           </div>
 
-          <div className="mt-6">
-            <Card className="mb-4 sm:mx-4 xl:mx-8.5">
-              <CardContent className="pt-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-center">
-
-                   <div className="w-full">
-                                     <label htmlFor="date-range" className="sr-only">Date Range</label> 
-                                     <DateRangePicker
-                                       initialDateFrom={filters.dateFrom}
-                                       initialDateTo={filters.dateTo}
-                                       onChange={(range) => {
-                                         if (range.dateFrom !== filters.dateFrom || range.dateTo !== filters.dateTo) {
-                                           setFilters((prev) => ({
-                                             ...prev,
-                                             dateFrom: range.dateFrom,
-                                             dateTo: range.dateTo,
-                                           }));
-                                         }
-                                       }}
-                                     />
-                                   </div>
-                 
-
-                  {/* vendor Filter */}
-                  <div className="w-full">
-                    <Select value={filters.vendor} onValueChange={(value) => handleFilterChange("vendor", value)}>
-                      <SelectTrigger className="w-full h-[40px] text-sm font-semibold border rounded px-3">
-                        <SelectValue placeholder="Vendor" />
-                      </SelectTrigger>
-                      <SelectContent className="z-[999] text-gray-700 font-semibold w-full bg-white shadow-md border rounded-md">
-                       
-                        {vendors.map((c) => (
-                          <SelectItem key={c.id} value={c.name}>
-                            {c.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Product Filter */}
-                  <div className="w-full">
-                    <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
-                      <SelectTrigger className="w-full h-[40px] text-sm font-semibold border rounded px-3">
-                        <SelectValue placeholder="Product" />
-                      </SelectTrigger>
-                      <SelectContent className="z-[999] text-gray-700 font-semibold w-full bg-white shadow-md border rounded-md">
-                       
-                        {products.map((p) => (
-                          <SelectItem key={p.id} value={p.name}>
-                            {p.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
 
 
-                  {/* Clear Button */}
-                  {hasActiveFilters && (
-                    <div>
-                      <Button
-                        variant="outline"
-                        onClick={clearFilters}
-                        className="bg-blue-500 text-white mt-1"
-                      >
-                        Clear
-                      </Button>
+          <div className="mt-6 dark:!text-white">
+            <Card className="mb-4 mx-2 sm:mx-4 xl:mx-8.5">
+              <CardContent className="pt-6 pb-4">
+                {/* Date Range Picker */}
+
+                <div className="flex flex-col gap-4">
+                  {/* First row - Date picker takes full width on mobile */}
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="w-2/4">
+                      <DateRangePicker
+                        initialDateFrom={filters.dateFrom}
+                        initialDateTo={filters.dateTo}
+                        onChange={(range) => {
+                          if (range.dateFrom !== filters.dateFrom || range.dateTo !== filters.dateTo) {
+                            setFilters((prev) => ({
+                              ...prev,
+                              dateFrom: range.dateFrom,
+                              dateTo: range.dateTo,
+                            }))
+                          }
+                        }}
+                      />
                     </div>
-                  )}
-                </div>
 
+                    <div className="w-2/4">
+                      <Select value={filters.vendor} onValueChange={(value) => handleFilterChange("vendor", value)}>
+                        <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
+                          <SelectValue placeholder="Select Vendor" />
+                        </SelectTrigger>
+                        <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                          {vendors.map((c) => (
+                            <SelectItem key={c.id} value={c.name}>
+                              {c.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Second row - Customer and Product filters */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Customer */}
+
+
+                    {/* Product */}
+                    <div className="w-2/4">
+                      <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
+                        <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
+                          <SelectValue placeholder="Select Product" />
+                        </SelectTrigger>
+                        <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                          {products.map((p) => (
+                            <SelectItem key={p.id} value={p.name}>
+                              {p.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="w-40">
+                      {hasActiveFilters && (
+                        <Button
+                          variant="outline"
+                          onClick={clearFilters}
+                          className="h-[40px] px-6 bg-blue-500 hover:bg-blue-600 text-white border-blue-500 hover:border-blue-600"
+                        >
+                          Clear Filters
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
-
           <Table>
             <TableHeader>
               <TableRow className="border-none uppercase [&>th]:text-center">
@@ -295,13 +299,13 @@ export function Purchase({ className }: { className?: string }) {
             <TableBody>
               {currentData.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center text-md py-8 text-gray-700 font-semibold">
+                  <TableCell colSpan={8} className="text-center text-md py-8 text-gray-700 dark:!text-white font-semibold">
                     {hasActiveFilters ? "No orders found" : "No orders found"}
                   </TableCell>
                 </TableRow>
               ) : (
                 currentData.map((order) => (
-                  <TableRow className="text-center text-base font-medium text-dark dark:text-white" key={order.id}>
+                  <TableRow className="text-center text-base font-medium text-dark dark:!text-white" key={order.id}>
                     <TableCell className="!text-left">
                       <div>
                         {new Date(order.date).toLocaleDateString("en-US", {
@@ -390,14 +394,16 @@ export function Purchase({ className }: { className?: string }) {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => router.push(`/purchase/edit/${order.id}`)}
-                              className="h-8 w-8"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
+                            {order.status !== "completed" && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => router.push(`/purchase/edit/${order.id}`)}
+                                className="h-8 w-8"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            )}
                           </TooltipTrigger>
                           <TooltipContent className="bg-white font-medium text-secondary">
                             Edit order status
@@ -427,9 +433,9 @@ export function Purchase({ className }: { className?: string }) {
             </TableBody>
           </Table>
 
-          <div className="flex items-center text-gray-700 justify-end p-4">
+          <div className="flex items-center text-gray-700 dark:!text-white justify-end p-4">
             <div className="flex items-center text-gray-700 gap-4">
-              <span className="text-md text-gray-700 dark:text-gray-300">Items per page:</span>
+              <span className="text-md text-gray-700 dark:!text-white">Items per page:</span>
               <Select
                 value={itemsPerPage.toString()}
                 onValueChange={(value) => {
@@ -439,7 +445,7 @@ export function Purchase({ className }: { className?: string }) {
                 }}
 
               >
-                <SelectTrigger className="w-24 h-8 text-gray-700 text-center">
+                <SelectTrigger className="w-24 h-8 text-gray-700 dark:!text-white text-center">
                   <SelectValue className="text-gray-700" />
                 </SelectTrigger>
                 <SelectContent className="text-gray-700 font-semibold bg-white shadow-md border rounded-md">
@@ -451,7 +457,7 @@ export function Purchase({ className }: { className?: string }) {
 
 
 
-              <span className="text-md text-gray-700 dark:text-gray-300">
+              <span className="text-md text-gray-700 dark:!text-white">
                 Page {currentPage} of {totalPages}
               </span>
 
@@ -479,7 +485,7 @@ export function Purchase({ className }: { className?: string }) {
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogContent className="sm:max-w-md bg-white">
               <DialogHeader>
-                <DialogTitle className="text-bold text-gray-700">Change Order Status</DialogTitle>
+                <DialogTitle className="text-bold text-gray-700 dark:!text-white">Change Order Status</DialogTitle>
               </DialogHeader>
 
               <div className="py-4">
@@ -524,7 +530,7 @@ export function Purchase({ className }: { className?: string }) {
                 {openOrderItems?.map((item: OrderItem, index: number) => (
                   <div key={index} className="flex justify-between border-b pb-1">
                     <div className="font-medium">{item.product_name}</div>
-                    <div className="text-sm text-gray-600"> {item.quantity}</div>
+                    <div className="text-sm text-gray-600 dark:!text-white"> {item.quantity}</div>
                   </div>
                 ))}
               </div>

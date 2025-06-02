@@ -57,34 +57,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(u);
   };
 
+
+
   const logout = () => {
+  setIsLoggingOut(true);
+  sessionStorage.removeItem("user"); // or sessionStorage
+  setUser(null);
+
+  router.replace("/auth/sign-in");
+  setTimeout(() => {
+    setIsLoggingOut(false);
+    window.location.reload(); // Only if really needed
+  }, 100);
+};
 
 
-    setUser(null);
-    // router.push("/"); 
+ 
+//   if (loading) {
+//   return (
+//     <div className="flex min-h-screen items-center justify-center">
+//       <Loader2 className="h-6 w-6 animate-spin text-primary" />
+//     </div>
+//   );
+// }
 
-    // In logout function
-    setTimeout(async () => {
-
-      setIsLoggingOut(true);
-      sessionStorage.removeItem("user");
-      const pushResult = await router.push("/auth/sign-in");
-      // console.log("usePathname:", pathname); 
-      
-      if (pathname !== '/auth/sign-in' && isLoggingOut) {
-            console.log("Auth Guard: Redirecting to sign-in page due to unauthenticated user.");
-            router.replace('/auth/sign-in'); 
-            setIsLoggingOut(false);
-      } else{
-      setIsLoggingOut(false);
-    }
-
-
-    }, 500);
-
-
-  };
-
+  
   return (
     <AuthContext.Provider
       value={{
@@ -98,14 +95,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     >
       {/* {children} */}
 
-      {isLoggingOut && (
-
-        <div className="flex justify-center items-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-
-
-      )}
       {!isLoggingOut && children}
     </AuthContext.Provider>
   );

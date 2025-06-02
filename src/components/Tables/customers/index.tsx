@@ -203,7 +203,7 @@ export function Customers() {
         <>
           <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
             <div className="px-6 py-4 sm:px-6 sm:py-5 xl:px-8.5">
-              <h2 className="text-2xl font-bold text-dark dark:text-white">Customers</h2>
+              <h2 className="text-2xl font-bold text-dark dark:!text-white">Customers</h2>
             </div>
 
             <div className="flex justify-end mb-5 mr-2">
@@ -225,7 +225,7 @@ export function Customers() {
 
               <TableBody>
                 {paginatedData.map((customer) => (
-                  <TableRow className="text-base font-medium text-dark dark:text-white" key={customer.id}>
+                  <TableRow className="text-base font-medium text-dark dark:!text-white" key={customer.id}>
                     <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{customer.name}</TableCell>
                     <TableCell>{customer.phone}</TableCell>
                     <TableCell>{customer.aadhaar || "-"}</TableCell>
@@ -236,7 +236,7 @@ export function Customers() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleEditCustomer(customer)}
-                          className="h-8 w-8 p-0 hover:bg-gray-100"
+                          className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-black"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -258,9 +258,9 @@ export function Customers() {
               </TableBody>
             </Table>
 
-            <div className="flex items-center text-gray-700 justify-end p-4">
+            <div className="flex items-center text-gray-700 dark:!text-white justify-end p-4">
               <div className="flex items-center text-gray-700 gap-4">
-                <span className="text-md text-gray-700 dark:text-gray-300">Items per page:</span>
+                <span className="text-md text-gray-700 dark:!text-white">Items per page:</span>
                 <Select
                   value={itemsPerPage.toString()}
                   onValueChange={(value) => {
@@ -269,7 +269,7 @@ export function Customers() {
                     setCurrentPage(1)
                   }}
                 >
-                  <SelectTrigger className="w-24 h-8 text-gray-700 text-center">
+                  <SelectTrigger className="w-24 h-8 text-gray-700 dark:!text-white  text-center">
                     <SelectValue className="text-gray-700" />
                   </SelectTrigger>
                   <SelectContent className="text-gray-700 font-semibold bg-white shadow-md border rounded-md">
@@ -281,7 +281,7 @@ export function Customers() {
                   </SelectContent>
                 </Select>
 
-                <span className="text-md text-gray-700 dark:text-gray-300">
+                <span className="text-md text-gray-700 dark:!text-white">
                   Page {currentPage} of {totalPages}
                 </span>
 
