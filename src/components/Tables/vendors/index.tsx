@@ -320,7 +320,7 @@ export function Vendors() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => router.push(`/vendorLog/${vendor.id}`)}
+                    onClick={() => router.push(`/vendor-log/${vendor.id}`)}
                     className="h-8 w-8"
                   >
                     <Eye className="h-4 w-4" />

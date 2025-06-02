@@ -107,7 +107,7 @@ export function Purchase({ className }: { className?: string }) {
 
     // vendor filter
     if (filters.vendor && filters.vendor !== "all") {
-      filtered = filtered.filter((order) => order.customer_name.includes(filters.vendor))
+      filtered = filtered.filter((order) => order.vendor_name.includes(filters.vendor))
     }
 
     // Product filter

@@ -63,7 +63,7 @@ export const NAV_DATA = [
           },
           {
             title: "Purchase Reports",
-            url: "/purchaseReports",
+            url: "/purchase-reports",
           },
         ],
       },

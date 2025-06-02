@@ -249,7 +249,7 @@ export function TopProducts() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => router.push(`/productLog/${product.id}`)}
+                    onClick={() => router.push(`/product-log/${product.id}`)}
                     className="h-8 w-8"
                   >
                     <Eye className="h-4 w-4" />
