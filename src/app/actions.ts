@@ -391,57 +391,132 @@ export type OrderInput = {
 // }
 
 
+// export async function addOrder(order: OrderInput): Promise<string> {
+//   if (!supabase) throw new Error("Supabase client not initialized");
+
+//   const reserved: typeof order.items = [];
+
+//   try {
+
+//     for (const item of order.items) {
+//       await changeProductQuantity(+item.product_id, item.quantity, order.type);
+//       reserved.push(item);
+//     }
+
+
+//     // Insert the order record
+//     const { data, error } = await supabase
+//       .from("orders")
+//       .insert([
+//         {
+//           customer_id: order.customer_id?.trim() || null,
+//           customer_name: order.customer_name?.trim() || null,
+//           vendor_id: order.vendor_id?.trim() || null,
+//           vendor_name: order.vendor_name?.trim() || null,
+//           items: order.items,
+//           date: order.date,
+//           total_price: order.total_price,
+//           discount_type: order.discount_type,
+//           discount_value: order.discount_value,
+//           total_payable: order.total_payable,
+//           paid_amount: order.paid_amount,
+//           remaining_amount: order.remaining_amount,
+//           payment_method: order.payment_method,
+//           payment_status: order.payment_status,
+//           type: order.type,
+//           status: order.status,
+//           remarks: order.remarks,
+//         },
+//       ])
+//       .select("id")
+//       .single();
+
+//     if (error) throw error;
+//     return data!.id;
+
+//   } catch (err) {
+//     // Rollback inventory changes with **opposite type**
+//     const rollbackType = order.type === 'sale' ? 'purchase' : 'sale';
+
+//     for (const item of reserved) {
+//       await changeProductQuantity(+item.product_id, item.quantity, rollbackType);
+//     }
+
+//     throw err;
+//   }
+// }
+
+
 export async function addOrder(order: OrderInput): Promise<string> {
   if (!supabase) throw new Error("Supabase client not initialized");
 
   const reserved: typeof order.items = [];
 
   try {
-
+    /* ░░ 1. Reserve / rollback‑safe inventory handling ░░ */
     for (const item of order.items) {
       await changeProductQuantity(+item.product_id, item.quantity, order.type);
       reserved.push(item);
     }
 
-
-    // Insert the order record
-    const { data, error } = await supabase
+    /* ░░ 2. Insert the order ░░ */
+    const { data: inserted, error: insertErr } = await supabase
       .from("orders")
       .insert([
         {
-          customer_id: order.customer_id?.trim() || null,
+          customer_id:   order.customer_id?.trim() || null,
           customer_name: order.customer_name?.trim() || null,
-          vendor_id: order.vendor_id?.trim() || null,
-          vendor_name: order.vendor_name?.trim() || null,
-          items: order.items,
-          date: order.date,
-          total_price: order.total_price,
+          vendor_id:     order.vendor_id?.trim() || null,
+          vendor_name:   order.vendor_name?.trim() || null,
+          items:         order.items,
+          date:          order.date,
+          total_price:   order.total_price,
           discount_type: order.discount_type,
-          discount_value: order.discount_value,
+          discount_value:order.discount_value,
           total_payable: order.total_payable,
-          paid_amount: order.paid_amount,
+          paid_amount:   order.paid_amount,
           remaining_amount: order.remaining_amount,
-          payment_method: order.payment_method,
-          payment_status: order.payment_status,
-          type: order.type,
-          status: order.status,
-          remarks: order.remarks,
+          payment_method:   order.payment_method,
+          payment_status:   order.payment_status,
+          type:             order.type,
+          status:           order.status,
+          remarks:          order.remarks,
         },
       ])
-      .select("id")
+      .select("id")           // we only need the id back
       .single();
 
-    if (error) throw error;
-    return data!.id;
+    if (insertErr) throw insertErr;
 
+    const orderId = inserted!.id;
+
+    /* ░░ 3.  ➜  NEW: Write the initial payment log ░░ */
+    if (order.paid_amount > 0) {
+      const actionText = [
+        `Order created with initial payment of ₹${order.paid_amount.toFixed(2)} Received.`,
+        
+      ].join(" ");
+
+      const { error: logErr } = await supabase
+        .from("paymentLogs")
+        .insert({
+          order_id:  orderId,
+          action:    actionText,
+          comments:  order.remarks ?? null,
+                   // or populate if you have docs at creation time
+        });
+
+      if (logErr) throw logErr;
+    }
+
+    /* ░░ 4. Done ░░ */
+    return orderId;
   } catch (err) {
-    // Rollback inventory changes with **opposite type**
-    const rollbackType = order.type === 'sale' ? 'purchase' : 'sale';
-
+    /* ░░ 5. Roll back inventory if anything failed ░░ */
+    const rollbackType = order.type === "sale" ? "purchase" : "sale";
     for (const item of reserved) {
       await changeProductQuantity(+item.product_id, item.quantity, rollbackType);
     }
-
     throw err;
   }
 }
