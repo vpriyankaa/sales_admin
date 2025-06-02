@@ -1807,7 +1807,7 @@ export default function Home({ id }: Props) {
               <div className="grid grid-cols-4 gap-4 items-center">
                 <h3 className="text-right text-lg font-semibold text-dark-2 dark:!text-white">Date:</h3>
                 <div className="col-span-3 w-3/4">
-                  <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+                  {/* <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                       <DateTimePicker
                         label="Select date & time"
@@ -1851,7 +1851,61 @@ export default function Home({ id }: Props) {
                         }}
                       />
                     </LocalizationProvider>
-                  </ThemeProvider>
+                  </ThemeProvider> */}
+                      <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+                                      <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                        <DateTimePicker
+                                          label="Select date & time"
+                                          value={date}
+                                          onChange={(v) => setDate(v)}
+                                          views={["year", "month", "day", "hours", "minutes", "seconds"]}
+                                          slotProps={{
+                                            /* ---------- pop‑up panel ---------- */
+                                            popper: {
+                                              sx: {
+                                                "& .MuiPaper-root": {
+                                                  minWidth: 400, // widen calendar
+                                                  bgcolor: isDark ? "#1e1e1e" : "#fff",
+                                                },
+                  
+                                                "& .MuiTypography-root, \
+                                   & .MuiPickersDay-root, \
+                                   & .MuiDayCalendar-weekDayLabel, \
+                                   & .MuiPickersCalendarHeader-label": {
+                                                  color: isDark ? "#fff" : "#000 !important",
+                                                },
+                                              },
+                                            },
+                  
+                                            /* ---------- text field ---------- */
+                                            textField: {
+                                              fullWidth: true,
+                                              variant: "outlined",
+                                              size: "small",
+                                              sx: {
+                                                /* Input text */
+                                                "& .MuiInputBase-input, & .MuiOutlinedInput-input": {
+                                                  color: isDark ? "#fff" : "#000", // Correct now
+                                                },
+                  
+                                                /* Calendar icon */
+                                                "& .MuiSvgIcon-root": {
+                                                  color: isDark ? "#fff" : "#000", // Also correct
+                                                },
+                  
+                                                /* Floating label */
+                                                "& .MuiInputLabel-root": {
+                                                  color: isDark ? "#bbb" : "#555",
+                                                },
+                                                "& .Mui-focused.MuiInputLabel-root": {
+                                                  color: isDark ? "#fff" : "#000",
+                                                },
+                                              },
+                                            } as TextFieldProps,
+                                          }}
+                                        />
+                                      </LocalizationProvider>
+                                    </ThemeProvider>
                 </div>
               </div>
 
@@ -1964,7 +2018,7 @@ export default function Home({ id }: Props) {
                                 name="aadhaar"
                                 render={({ field }) => (
                                   <FormItem className="grid grid-cols-4 items-center gap-4">
-                                    <FormLabel className="text-right text-black dark:!text-white">Aadhaar</FormLabel>
+                                    <FormLabel className="text-right text-black">Aadhaar</FormLabel>
                                     <div className="col-span-3">
                                       <FormControl>
                                         <Input
@@ -1989,7 +2043,7 @@ export default function Home({ id }: Props) {
                                 name="address"
                                 render={({ field }) => (
                                   <FormItem className="grid grid-cols-4 items-center gap-4">
-                                    <FormLabel className="text-right text-black dark:!text-white">Address</FormLabel>
+                                    <FormLabel className="text-right text-black">Address</FormLabel>
                                     <div className="col-span-3">
                                       <FormControl>
                                         <Textarea {...field} rows={3} placeholder="Enter vendor address" />
@@ -2004,7 +2058,7 @@ export default function Home({ id }: Props) {
                                 name="products"
                                 render={({ field }) => (
                                   <FormItem className="grid grid-cols-4 items-start gap-4">
-                                    <FormLabel className="text-right text-black dark:!text-white mt-2">
+                                    <FormLabel className="text-right text-black mt-2">
                                       Products <span className="text-red-500">*</span>
                                     </FormLabel>
                                     <div className="col-span-3 space-y-3">
