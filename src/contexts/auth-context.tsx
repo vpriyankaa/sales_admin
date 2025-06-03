@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
-import { useRouter ,usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Loader2 } from "lucide-react"
 
 type User = {
@@ -59,29 +59,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
 
+  // const logout = () => {
+  // setIsLoggingOut(true);
+  // sessionStorage.removeItem("user"); // or sessionStorage
+  // setUser(null);
+
+  // router.replace("/auth/sign-in");
+  // setTimeout(() => {
+  //   setIsLoggingOut(false);
+  //   window.location.reload(); // Only if really needed
+  // }, 100);
+  // };
+
+
   const logout = () => {
-  setIsLoggingOut(true);
-  sessionStorage.removeItem("user"); // or sessionStorage
-  setUser(null);
-
-  router.replace("/auth/sign-in");
-  setTimeout(() => {
-    setIsLoggingOut(false);
-    window.location.reload(); // Only if really needed
-  }, 100);
-};
+    setIsLoggingOut(true);
+    sessionStorage.removeItem("user");
+    setUser(null);
 
 
- 
-//   if (loading) {
-//   return (
-//     <div className="flex min-h-screen items-center justify-center">
-//       <Loader2 className="h-6 w-6 animate-spin text-primary" />
-//     </div>
-//   );
-// }
+    setTimeout(() => {
+      router.replace("/auth/sign-in");
+      setIsLoggingOut(false);
+      if (pathname === "/auth/sign-in") {
+        window.location.reload();
+      }
+    }, 50);
+  };
 
-  
+
+
+
+  //   if (loading) {
+  //   return (
+  //     <div className="flex min-h-screen items-center justify-center">
+  //       <Loader2 className="h-6 w-6 animate-spin text-primary" />
+  //     </div>
+  //   );
+  // }
+
+
   return (
     <AuthContext.Provider
       value={{
@@ -95,7 +112,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     >
       {/* {children} */}
 
-      {!isLoggingOut && children}
+      {/* {!isLoggingOut && children} */}
+      <>
+        {children}
+        {isLoggingOut && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          </div>
+        )}
+      </>
     </AuthContext.Provider>
   );
 }
