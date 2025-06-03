@@ -37,6 +37,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
 
   useEffect(() => {
@@ -52,11 +53,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   /** call this after successful sign‑in */
-  const login = (u: User) => {
+  // const login = (u: User) => {
+  //   sessionStorage.setItem("user", JSON.stringify(u));
+  //   setUser(u);
+  //   router.push("/dashboard");
+
+  // };
+
+
+  const login = async (u: User) => {
+    setIsLoggingIn(true);
     sessionStorage.setItem("user", JSON.stringify(u));
     setUser(u);
-  };
 
+    // Delay just enough for UI to catch up
+    await new Promise((r) => setTimeout(r, 50));
+
+    router.push("/dashboard");
+  };
 
 
   // const logout = () => {
@@ -71,21 +85,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // }, 100);
   // };
 
-
-  const logout = () => {
+  const logout = async () => {
     setIsLoggingOut(true);
     sessionStorage.removeItem("user");
     setUser(null);
 
-
-    setTimeout(() => {
-      router.replace("/auth/sign-in");
-      setIsLoggingOut(false);
-      if (pathname === "/auth/sign-in") {
-        window.location.reload();
-      }
-    }, 50);
+    await new Promise((r) => setTimeout(r, 50));
+    window.location.href = "/auth/sign-in"; // full reload
   };
+
 
 
 
@@ -97,6 +105,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   //     </div>
   //   );
   // }
+
+
+useEffect(() => {
+  if (pathname === "/dashboard") {
+    setIsLoggingIn(false); // Clear loader after redirect
+  }
+}, [pathname]);
 
 
   return (
@@ -115,11 +130,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       {/* {!isLoggingOut && children} */}
       <>
         {children}
-        {isLoggingOut && (
+        {(isLoggingOut || isLoggingIn) && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
           </div>
         )}
+
       </>
     </AuthContext.Provider>
   );

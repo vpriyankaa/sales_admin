@@ -8,15 +8,15 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
   const { isAuthenticated, loading } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    // console.log("isAuthenticated",isAuthenticated);
-    // console.log("user",loading);
+  //   // console.log("isAuthenticated",isAuthenticated);
+  //   // console.log("user",loading);
 
-    if (!loading && !isAuthenticated) {
-      router.replace("/auth/sign-in");
-    }
-  }, [isAuthenticated, loading, router]);
+  //   if (!loading && !isAuthenticated) {
+  //     router.replace("/auth/sign-in");
+  //   }
+  // }, [isAuthenticated, loading, router]);
 
   if (loading || !isAuthenticated) return null;
 
