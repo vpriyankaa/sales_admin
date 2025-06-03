@@ -493,7 +493,7 @@ export async function addOrder(order: OrderInput): Promise<string> {
     /* ░░ 3.  ➜  NEW: Write the initial payment log ░░ */
     if (order.paid_amount > 0) {
       const actionText = [
-        `Payment of ₹${order.paid_amount.toFixed(2)} Received.`,
+        `Payment of ₹${order.paid_amount} Received.`,
         
       ].join(" ");
 
