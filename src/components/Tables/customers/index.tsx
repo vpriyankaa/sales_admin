@@ -328,7 +328,7 @@ export function Customers() {
                 <button
                   onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
-                  className="font-bold"
+                  className="font-bold dark:!text-white"
                 >
                   &lt;
                 </button>
@@ -336,7 +336,7 @@ export function Customers() {
                 <button
                   onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
-                  className="font-bold"
+                  className="font-bold dark:!text-white"
                 >
                   &gt;
                 </button>

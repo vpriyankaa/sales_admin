@@ -637,14 +637,14 @@ export function TopProducts() {
               </SelectContent>
             </Select>
 
-            <span className="text-md text-gray-700 dark:text-gray-300">
+            <span className="text-md text-gray-700 dark:!text-white">
               Page {currentPage} of {totalPages}
             </span>
 
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="font-bold"
+              className="font-bold dark:!text-white"
             >
               &lt;
             </button>
@@ -652,7 +652,7 @@ export function TopProducts() {
             <button
               onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="font-bold"
+              className="font-bold dark:!text-white"
             >
               &gt;
             </button>

@@ -970,7 +970,7 @@ export function Orders({ className }: { className?: string }) {
 
           <div className="flex items-center text-gray-700 justify-end p-4">
             <div className="flex items-center text-gray-700 gap-4">
-              <span className="text-md text-gray-700 dark:text-gray-300">Items per page:</span>
+              <span className="text-md text-gray-700 dark:!text-white">Items per page:</span>
               <Select
                 value={itemsPerPage.toString()}
                 onValueChange={(value) => {
@@ -979,8 +979,8 @@ export function Orders({ className }: { className?: string }) {
                   setCurrentPage(1)
                 }}
               >
-                <SelectTrigger className="w-24 h-8 text-gray-700 text-center">
-                  <SelectValue className="text-gray-700" />
+                <SelectTrigger className="w-24 h-8 text-gray-700 dark:!text-white text-center">
+                  <SelectValue className="text-gray-700 dark:!text-white" />
                 </SelectTrigger>
                 <SelectContent className="text-gray-700 font-semibold bg-white shadow-md border rounded-md">
                   {[10, 20, 30, 40, 50].map((n) => (
@@ -991,14 +991,14 @@ export function Orders({ className }: { className?: string }) {
                 </SelectContent>
               </Select>
 
-              <span className="text-md text-gray-700 dark:text-gray-300">
+              <span className="text-md text-gray-700 dark:!text-white">
                 Page {currentPage} of {totalPages}
               </span>
 
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="font-bold"
+                className="font-bold dark:!text-white"
               >
                 &lt;
               </button>
@@ -1006,7 +1006,7 @@ export function Orders({ className }: { className?: string }) {
               <button
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="font-bold"
+                className="font-bold dark:!text-white"
               >
                 &gt;
               </button>
