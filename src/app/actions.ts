@@ -1700,3 +1700,22 @@ export async function checkUserCredentials(phoneOrEmail: string, password: strin
   const { password: _, ...userWithoutPassword } = data;
   return userWithoutPassword;
 }
+
+export async function resetPassword(phone: string, newPassword: string): Promise<boolean> {
+  if (!supabase) {
+    console.warn("Supabase client not initialized.");
+    return false;
+  }
+
+  const { error } = await supabase
+    .from("user")
+    .update({ password: newPassword })
+    .eq("phone", phone);
+
+  if (error) {
+    console.error("Failed to reset password:", error.message);
+    return false;
+  }
+
+  return true;
+}

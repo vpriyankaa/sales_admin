@@ -47,7 +47,7 @@ export default function SigninWithPassword() {
         sessionStorage.setItem("user", JSON.stringify(user));
         router.push("/dashboard");
       } else {
-        setError("Authentication failed");
+        setError("Incorrect phone number or password. Please try again.");
       }
     } catch (err: any) {
       setError(err.message || "Something went wrong");
@@ -68,6 +68,7 @@ export default function SigninWithPassword() {
         value={data.phone}
         icon={<PhoneIcon />}
         iconPosition="right"
+        required
       />
 
       <InputGroup
@@ -88,6 +89,7 @@ export default function SigninWithPassword() {
           </button>
         }
         iconPosition="right"
+        required
       />
 
       <div className="mb-6 flex items-center justify-end gap-2 py-2 font-medium">
