@@ -171,7 +171,7 @@ export function OrderSummary({
             <SelectTrigger className="w-36 h-9 dark:!text-white border font-bold">
               <SelectValue placeholder="Type" />
             </SelectTrigger>
-            <SelectContent className="bg-white text-black font-bold">
+            <SelectContent className="bg-white text-black dark:!text-white dark:!bg-gray-dark">
               <SelectItem value="flat">Flat (₹)</SelectItem>
               <SelectItem value="percentage">Percentage (%)</SelectItem>
             </SelectContent>
@@ -196,7 +196,7 @@ export function OrderSummary({
                 setDiscount(Math.min(value, 100))
               }
             }}
-            className="border rounded font-bold text-black dark:!text-white px-2 py-1 w-24 text-right"
+            className="border rounded font-bold dark:!text-white dark:!bg-gray-dark px-2 py-1 w-24 text-right"
           />
         </div>
       </div>
@@ -212,7 +212,7 @@ export function OrderSummary({
       {/* Total payment after discount */}
       <div className="flex justify-between items-center border-b pb-2">
         <span className="font-semibold text-primary">Total</span>
-        <span className="text-lg text-black dark:!text-white font-bold">₹{cart.length ? totalAmount : "0"}</span>
+        <span className="text-lg text-text-gray-400 dark:!text-white font-bold">₹{cart.length ? totalAmount : "0"}</span>
       </div>
 
       {/* Payment method */}
@@ -238,7 +238,7 @@ export function OrderSummary({
             >
               <SelectValue placeholder="Select"/>
             </SelectTrigger>
-            <SelectContent className="bg-white text-black font-bold">
+            <SelectContent className="bg-white text-black dark:!text-white dark:!bg-gray-dark">
               {paymentMethods.map((method) => (
                 <SelectItem key={method.id} value={method.name}>
                   {method.name.charAt(0).toUpperCase() + method.name.slice(1).toLowerCase()}
@@ -271,7 +271,7 @@ export function OrderSummary({
                 })
               }
             }}
-            className={`border rounded text-black dark:!text-white font-bold px-2 py-1 w-32 text-right ${errors.paidAmount ? "border-red-500" : ""}`}
+            className={`border rounded text-black dark:!text-white dark:!bg-gray-dark font-bold px-2 py-1 w-32 text-right ${errors.paidAmount ? "border-red-500" : ""}`}
           />
         </div>
         {errors.paidAmount && <p className="text-sm text-red-500 mt-1 text-right">{errors.paidAmount}</p>}

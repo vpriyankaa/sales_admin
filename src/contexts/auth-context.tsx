@@ -2,6 +2,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Loader2 } from "lucide-react"
+import { setCookie } from "cookies-next";
+import { deleteCookie } from "cookies-next";
 
 type User = {
   id: number;
@@ -52,47 +54,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   }, []);
 
-  /** call this after successful sign‑in */
-  // const login = (u: User) => {
-  //   sessionStorage.setItem("user", JSON.stringify(u));
-  //   setUser(u);
-  //   router.push("/dashboard");
+  
 
-  // };
-
-
-  const login = async (u: User) => {
-    setIsLoggingIn(true);
-    sessionStorage.setItem("user", JSON.stringify(u));
-    setUser(u);
-
-    // Delay just enough for UI to catch up
-    await new Promise((r) => setTimeout(r, 50));
-
-    router.push("/dashboard");
-  };
+const login = (u: User) => {
+  setIsLoggingIn(true); // ✅ show loader
+  sessionStorage.setItem("user", JSON.stringify(u));
+  setCookie("auth", "true", { maxAge: 60 * 60 * 24 }); // 1 day
+  setUser(u);
+  router.push("/dashboard");
+};
 
 
-  // const logout = () => {
-  // setIsLoggingOut(true);
-  // sessionStorage.removeItem("user"); // or sessionStorage
-  // setUser(null);
 
-  // router.replace("/auth/sign-in");
-  // setTimeout(() => {
-  //   setIsLoggingOut(false);
-  //   window.location.reload(); // Only if really needed
-  // }, 100);
-  // };
 
-  const logout = async () => {
-    setIsLoggingOut(true);
-    sessionStorage.removeItem("user");
-    setUser(null);
+  const logout = () => {
+  setIsLoggingOut(true);
+  sessionStorage.removeItem("user");
+  deleteCookie("auth");
+  setUser(null);
+  router.replace("/auth/sign-in");
+};
 
-    await new Promise((r) => setTimeout(r, 50));
-    window.location.href = "/auth/sign-in"; // full reload
-  };
 
 
 
@@ -104,14 +86,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   //       <Loader2 className="h-6 w-6 animate-spin text-primary" />
   //     </div>
   //   );
-  // }
+  // }s
 
-
-useEffect(() => {
+   useEffect(() => {
   if (pathname === "/dashboard") {
-    setIsLoggingIn(false); // Clear loader after redirect
+    setIsLoggingIn(false);
+  }
+
+  if (pathname === "/auth/sign-in") {
+    setIsLoggingOut(false);
   }
 }, [pathname]);
+
+
 
 
   return (

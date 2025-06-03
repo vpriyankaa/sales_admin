@@ -1924,14 +1924,14 @@ export default function Home({ id }: Props) {
                         className={cn(
                           "h-10",
                           "hover:border-black mt-5",
-                          "font-semibold",
+                         
                           isEditMode ? "opacity-60 cursor-not-allowed" : "",
                           orderValidation.vendor ? "border-red-500" : "",
                         )}
                       >
-                        <SelectValue className="text-black font-semibold" placeholder="Select vendor" />
+                        <SelectValue className="text-text-dark-400 dark:!text-white dark:!bg-gray-dark font-semibold" placeholder="Select vendor" />
                       </SelectTrigger>
-                      <SelectContent className="z-[999] w-full font-bold text-black bg-white shadow-md border rounded-md">
+                      <SelectContent className="z-[999] w-full text-text-dark-400 bg-white dark:!bg-gray-dark shadow-md border rounded-md">
                         {vendors.map((vendor) => (
                           <SelectItem key={vendor.id} value={vendor.id.toString()}>
                             {vendor.name}
@@ -1951,9 +1951,9 @@ export default function Home({ id }: Props) {
                           <span className="sr-only">Add new vendor</span>
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="bg-white max-w-2xl max-h-[90vh] overflow-y-auto">
+                      <DialogContent className="bg-white dark:!text-white dark:!bg-gray-dark max-w-2xl max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
-                          <DialogTitle className="text-center text-black dark:!text-white">Add New Vendor</DialogTitle>
+                          <DialogTitle className="text-center text-black dark:!bg-gray-dark dark:!text-white">Add New Vendor</DialogTitle>
                         </DialogHeader>
 
                         <Form {...vendorForm}>
@@ -1964,7 +1964,7 @@ export default function Home({ id }: Props) {
                                 name="name"
                                 render={({ field }) => (
                                   <FormItem className="grid grid-cols-4 items-center gap-4">
-                                    <FormLabel className="text-right text-black">
+                                    <FormLabel className="text-right text-black dark:!text-white">
                                       Name <span className="text-red-500">*</span>
                                     </FormLabel>
                                     <div className="col-span-3">
@@ -1982,7 +1982,7 @@ export default function Home({ id }: Props) {
                                 name="phone"
                                 render={({ field }) => (
                                   <FormItem className="grid grid-cols-4 items-center gap-4">
-                                    <FormLabel className="text-right text-black">
+                                    <FormLabel className="text-right text-black dark:!text-white">
                                       Phone <span className="text-red-500">*</span>
                                     </FormLabel>
                                     <div className="col-span-3">
@@ -2018,7 +2018,7 @@ export default function Home({ id }: Props) {
                                 name="aadhaar"
                                 render={({ field }) => (
                                   <FormItem className="grid grid-cols-4 items-center gap-4">
-                                    <FormLabel className="text-right text-black">Aadhaar</FormLabel>
+                                    <FormLabel className="text-right text-black dark:!text-white ">Aadhaar</FormLabel>
                                     <div className="col-span-3">
                                       <FormControl>
                                         <Input
@@ -2043,7 +2043,7 @@ export default function Home({ id }: Props) {
                                 name="address"
                                 render={({ field }) => (
                                   <FormItem className="grid grid-cols-4 items-center gap-4">
-                                    <FormLabel className="text-right text-black">Address</FormLabel>
+                                    <FormLabel className="text-right text-black dark:!text-white">Address</FormLabel>
                                     <div className="col-span-3">
                                       <FormControl>
                                         <Textarea {...field} rows={3} placeholder="Enter vendor address" />
@@ -2058,7 +2058,7 @@ export default function Home({ id }: Props) {
                                 name="products"
                                 render={({ field }) => (
                                   <FormItem className="grid grid-cols-4 items-start gap-4">
-                                    <FormLabel className="text-right text-black mt-2">
+                                    <FormLabel className="text-right text-black dark:!text-white mt-2">
                                       Products <span className="text-red-500">*</span>
                                     </FormLabel>
                                     <div className="col-span-3 space-y-3">
@@ -2077,7 +2077,7 @@ export default function Home({ id }: Props) {
                                               />
                                               <Label
                                                 htmlFor={`product-${product.id}`}
-                                                className="text-dark font-medium"
+                                                className="text-dark dark:!text-white font-medium"
                                               >
                                                 {product.name} ({product.unit})
                                               </Label>
@@ -2170,15 +2170,15 @@ export default function Home({ id }: Props) {
                           aria-label="Select product"
                           className={cn(
                             "h-10",
-                            "font-semibold",
+                            "text-text-dark-400",
                             "hover:border-black",
                             orderValidation.cart ? "border-red-500" : "",
                           )}
                         >
-                          <SelectValue className="font-semibold text-black " placeholder="Select product" />
+                          <SelectValue className="text-text-dark-400" placeholder="Select product" />
                         </SelectTrigger>
 
-                        <SelectContent className="z-[999] text-black font-semibold w-full bg-white shadow-md border rounded-md">
+                        <SelectContent className="z-[999] text-text-dark-400 w-full bg-white dark:!bg-gray-dark shadow-md border rounded-md">
                           {filteredProducts.map((product) => (
                             <SelectItem key={product.id} value={product.id}>
                               {product.name}
@@ -2300,7 +2300,7 @@ export default function Home({ id }: Props) {
 
       {isOpen && !isEditMode && (
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="bg-white">
+          <DialogContent className="bg-white dark:!text-white dark:!bg-gray-dark">
             <DialogHeader>
               <DialogTitle>Success</DialogTitle>
             </DialogHeader>
@@ -2322,14 +2322,14 @@ export default function Home({ id }: Props) {
 
       {openEdit && isEditMode && (
         <Dialog open={openEdit} onOpenChange={setEditOpen}>
-          <DialogContent className="bg-white">
+          <DialogContent className="bg-white dark:!bg-gray-dark">
             <DialogHeader>
               <DialogTitle>Success</DialogTitle>
             </DialogHeader>
             <div>Purchase Updated successfully!</div>
             <DialogFooter>
               <Button
-                className="w-full md:w-auto text-white mb-5 mr-2"
+                className="w-full md:w-auto text-white  dark:!text-white mb-5 mr-2"
                 onClick={() => {
                   setEditOpen(false)
                   window.location.reload()

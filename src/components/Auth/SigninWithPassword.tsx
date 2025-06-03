@@ -93,19 +93,7 @@ export default function SigninWithPassword() {
       />
 
       <div className="mb-6 flex items-center justify-end gap-2 py-2 font-medium">
-        {/* <Checkbox
-          label="Remember me"
-          name="remember"
-          withIcon="check"
-          minimal
-          radius="md"
-          onChange={(e) =>
-            setData({
-              ...data,
-              remember: e.target.checked,
-            })
-          }
-        /> */}
+      
 
         <Link
           href="/auth/forgot-password"
