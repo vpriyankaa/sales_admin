@@ -512,7 +512,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                     type === "sale" ? (
                     <div className="bg-white dark:bg-gray-800 font-bold p-3 rounded-md border">
                       <p className="text-sm text-black dark:!text-white">Customer Name</p>
-                      <p className="font-medium text-lg">{data.customer_name || "-"}</p>
+                      <p className="font-medium text-lg dark:!text-white">{data.customer_name || "-"}</p>
                     </div>
                     ):(
                       <div className="bg-white dark:bg-gray-800 font-bold p-3 rounded-md border">
