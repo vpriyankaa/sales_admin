@@ -716,8 +716,8 @@ export function Orders({ className }: { className?: string }) {
 
   const clearFilters = () => {
     setFilters({
-      dateFrom: new Date().toISOString().split("T")[0], // Reset to current date
-      dateTo: "",
+      dateFrom: dateFrom.toISOString(),
+      dateTo: dateTo.toISOString(),
       customer: "",
       product: "",
     })

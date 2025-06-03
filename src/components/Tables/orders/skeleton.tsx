@@ -14,7 +14,7 @@ import { useEffect, useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TextField } from '@mui/material';
-import { getTodayDateRange ,formatForDateTimeLocal} from '@/utils/timeframe-extractor'
+import { getTodayDateRange, formatForDateTimeLocal } from '@/utils/timeframe-extractor'
 import { getReports, changeOrderStatus, getCustomers, getProducts } from "@/app/actions"
 import { Button } from "@/components/ui/button"
 import { DateRangePicker } from "@/components/date-range-picker"
@@ -30,36 +30,36 @@ export function OrdersSkeleton() {
 
   const { dateFrom, dateTo } = getTodayDateRange();
   const [data, setData] = useState<any[]>([])
-    // Filter states
-    const [filters, setFilters] = useState<FilterState>({
-      dateFrom: dateFrom.toISOString(), // or dateFrom.toLocaleDateString(), etc.
-      dateTo: dateTo.toISOString(),
-      customer: "",
-      product: "",
-    })
-    const [showFilters, setShowFilters] = useState(false)
-    const [customers, setCustomers] = useState<any[]>([])
-      const [products, setProducts] = useState<any[]>([])
-const [filteredData, setFilteredData] = useState<any[]>([])
+  // Filter states
+  const [filters, setFilters] = useState<FilterState>({
+    dateFrom: dateFrom.toISOString(), // or dateFrom.toLocaleDateString(), etc.
+    dateTo: dateTo.toISOString(),
+    customer: "",
+    product: "",
+  })
+  const [showFilters, setShowFilters] = useState(false)
+  const [customers, setCustomers] = useState<any[]>([])
+  const [products, setProducts] = useState<any[]>([])
+  const [filteredData, setFilteredData] = useState<any[]>([])
 
-     useEffect(() => {
-        async function fetchData() {
-          const reports = await getReports()
-          const uniqueCustomers = await getCustomers()
-          const uniqueProducts = await getProducts()
-    
-          // console.log("uniqueCustomers", uniqueCustomers);
-          // console.log("uniqueProducts", uniqueProducts);
-    
-    
-    
-          setCustomers(uniqueCustomers)
-          setData(reports)
-          setProducts(uniqueProducts)
-          setFilteredData(reports)
-        }
-        fetchData()
-      }, [])
+  useEffect(() => {
+    async function fetchData() {
+      const reports = await getReports()
+      const uniqueCustomers = await getCustomers()
+      const uniqueProducts = await getProducts()
+
+      // console.log("uniqueCustomers", uniqueCustomers);
+      // console.log("uniqueProducts", uniqueProducts);
+
+
+
+      setCustomers(uniqueCustomers)
+      setData(reports)
+      setProducts(uniqueProducts)
+      setFilteredData(reports)
+    }
+    fetchData()
+  }, [])
   const handleFilterChange = (key: keyof FilterState, value: string) => {
     setFilters((prev) => ({
       ...prev,
@@ -69,8 +69,8 @@ const [filteredData, setFilteredData] = useState<any[]>([])
 
   const clearFilters = () => {
     setFilters({
-      dateFrom: new Date().toISOString().split("T")[0], // Reset to current date
-      dateTo: "",
+      dateFrom: dateFrom.toISOString(),
+      dateTo: dateTo.toISOString(),
       customer: "",
       product: "",
     })
@@ -80,81 +80,81 @@ const [filteredData, setFilteredData] = useState<any[]>([])
 
   return (
     <div className="rounded-[10px] bg-white text-#3b82f6 px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
-        <div className="px-2 py-4 sm:px-4 sm:py-5 xl:px-8.5 text-left">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-dark dark:text-white">Sales Reports</h2>
-            </div>
-          </div>
+      <div className="px-2 py-4 sm:px-4 sm:py-5 xl:px-8.5 text-left">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-dark dark:text-white">Sales Reports</h2>
+        </div>
+      </div>
 
-       <div className="mt-6 dark:!text-white">
-                 <Card className="mb-4 mx-2 sm:mx-4 xl:mx-8.5">
-                                 <CardContent className="pt-6 pb-4">
-                                   <div className="flex flex-wrap items-center gap-4">
-                                     {/* Date Range Picker - Fixed width to match the screenshot */}
-                                     <div className="w-full sm:w-[250px]">
-                                       <DateRangePicker
-                                         initialDateFrom={filters.dateFrom}
-                                         initialDateTo={filters.dateTo}
-                                         onChange={(range) => {
-                                           if (range.dateFrom !== filters.dateFrom || range.dateTo !== filters.dateTo) {
-                                             setFilters((prev) => ({
-                                               ...prev,
-                                               dateFrom: range.dateFrom,
-                                               dateTo: range.dateTo,
-                                             }))
-                                           }
-                                         }}
-                                       />
-                                     </div>
-                   
-                                     {/* Customer Filter - Fixed width to match the screenshot */}
-                                     <div className="w-full sm:w-[200px]">
-                                       <Select value={filters.customer} onValueChange={(value) => handleFilterChange("customer", value)}>
-                                         <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
-                                           <SelectValue placeholder="Select Customer" />
-                                         </SelectTrigger>
-                                         <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
-                                           {customers.map((c) => (
-                                             <SelectItem key={c.id} value={c.name}>
-                                               {c.name}
-                                             </SelectItem>
-                                           ))}
-                                         </SelectContent>
-                                       </Select>
-                                     </div>
-                   
-                                     {/* Product Filter - Fixed width to match the screenshot */}
-                                     <div className="w-full sm:w-[200px]">
-                                       <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
-                                         <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
-                                           <SelectValue placeholder="Select Product" />
-                                         </SelectTrigger>
-                                         <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
-                                           {products.map((p) => (
-                                             <SelectItem key={p.id} value={p.name}>
-                                               {p.name}
-                                             </SelectItem>
-                                           ))}
-                                         </SelectContent>
-                                       </Select>
-                                     </div>
-                   
-                                     {/* Clear Filters Button - Fixed width to match the screenshot */}
-                                     <div className="w-full sm:w-auto sm:ml-auto">
-                                       {hasActiveFilters && (
-                                         <Button
-                                           variant="outline"
-                                           onClick={clearFilters}
-                                           className="w-full sm:w-[150px] h-[40px] bg-blue-500 hover:bg-blue-600 text-white border-blue-500 hover:border-blue-600"
-                                         >
-                                           Clear Filters
-                                         </Button>
-                                       )}
-                                     </div>
-                                   </div>
-                                 </CardContent>
-                 </Card>
-               </div>
+      <div className="mt-6 dark:!text-white">
+        <Card className="mb-4 mx-2 sm:mx-4 xl:mx-8.5">
+          <CardContent className="pt-6 pb-4">
+            <div className="flex flex-wrap items-center gap-4">
+              {/* Date Range Picker - Fixed width to match the screenshot */}
+              <div className="w-full sm:w-[250px]">
+                <DateRangePicker
+                  initialDateFrom={filters.dateFrom}
+                  initialDateTo={filters.dateTo}
+                  onChange={(range) => {
+                    if (range.dateFrom !== filters.dateFrom || range.dateTo !== filters.dateTo) {
+                      setFilters((prev) => ({
+                        ...prev,
+                        dateFrom: range.dateFrom,
+                        dateTo: range.dateTo,
+                      }))
+                    }
+                  }}
+                />
+              </div>
+
+              {/* Customer Filter - Fixed width to match the screenshot */}
+              <div className="w-full sm:w-[200px]">
+                <Select value={filters.customer} onValueChange={(value) => handleFilterChange("customer", value)}>
+                  <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
+                    <SelectValue placeholder="Select Customer" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                    {customers.map((c) => (
+                      <SelectItem key={c.id} value={c.name}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Product Filter - Fixed width to match the screenshot */}
+              <div className="w-full sm:w-[200px]">
+                <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
+                  <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
+                    <SelectValue placeholder="Select Product" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                    {products.map((p) => (
+                      <SelectItem key={p.id} value={p.name}>
+                        {p.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Clear Filters Button - Fixed width to match the screenshot */}
+              <div className="w-full sm:w-auto sm:ml-auto">
+                {hasActiveFilters && (
+                  <Button
+                    variant="outline"
+                    onClick={clearFilters}
+                    className="w-full sm:w-[150px] h-[40px] bg-blue-500 hover:bg-blue-600 text-white border-blue-500 hover:border-blue-600"
+                  >
+                    Clear Filters
+                  </Button>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
 
       <Table>
@@ -186,19 +186,19 @@ const [filteredData, setFilteredData] = useState<any[]>([])
               <TableCell className="!text-right">
                 <Skeleton className="h-4 w-24" />
               </TableCell>
-               <TableCell className="!text-right">
+              <TableCell className="!text-right">
                 <Skeleton className="h-4 w-24" />
               </TableCell>
               <TableCell className="!text-right">
                 <Skeleton className="h-4 w-24" />
               </TableCell>
-                 <TableCell className="!text-right">
+              <TableCell className="!text-right">
                 <Skeleton className="h-4 w-24" />
               </TableCell >
-                 <TableCell className="!text-right">
+              <TableCell className="!text-right">
                 <Skeleton className="h-4 w-24" />
               </TableCell>
-        
+
             </TableRow>
           ))}
         </TableBody>

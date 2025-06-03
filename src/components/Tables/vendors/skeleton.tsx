@@ -21,11 +21,11 @@ export function VendorsSkeleton() {
       <Table>
          <TableHeader>
                    <TableRow className="border-none uppercase [&>th]:text-center">
-                     <TableHead className="!text-left pl-6">
-                       Vendor Name
-                     </TableHead>
-                     <TableHead className="!text-left">Phone</TableHead>
-                     <TableHead className="!text-left">Products</TableHead>
+                        <TableHead className="!text-left pl-6">Vendor Name</TableHead>
+                                  <TableHead className="!text-left">Phone</TableHead>
+                                  <TableHead className="!text-left">Aadhaar</TableHead>
+                                  <TableHead className="!text-left">Address</TableHead>
+                                  <TableHead className="!text-left p-6">Products</TableHead>
                      
                    </TableRow>
          </TableHeader>
@@ -40,6 +40,12 @@ export function VendorsSkeleton() {
                 <Skeleton className="h-4 w-20" />
               </TableCell>
               <TableCell>
+                <Skeleton className="h-4 w-20" />
+              </TableCell>
+                <TableCell>
+                <Skeleton className="h-4 w-20" />
+              </TableCell>
+                <TableCell>
                 <Skeleton className="h-4 w-20" />
               </TableCell>
            

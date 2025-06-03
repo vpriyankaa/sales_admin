@@ -173,8 +173,8 @@ export function Purchase({ className }: { className?: string }) {
 
   const clearFilters = () => {
     setFilters({
-      dateFrom: new Date().toISOString().split("T")[0],
-      dateTo: "",
+      dateFrom: dateFrom.toISOString(),
+      dateTo: dateTo.toISOString(),
       vendor: "",
       product: "",
     })

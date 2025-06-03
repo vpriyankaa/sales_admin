@@ -74,8 +74,8 @@ export function PurchaseSkeleton() {
   const hasActiveFilters = Object.values(filters).some((value) => value !== "")
   const clearFilters = () => {
     setFilters({
-      dateFrom: new Date().toISOString().split("T")[0],
-      dateTo: "",
+      dateFrom: dateFrom.toISOString(),
+      dateTo: dateTo.toISOString(),
       vendor: "",
       product: "",
     })
@@ -99,81 +99,74 @@ export function PurchaseSkeleton() {
 
 
       <div className="mt-6">
-        <Card className="mb-4 sm:mx-4 xl:mx-8.5">
-        <CardContent className="pt-6 pb-4">
-                       {/* Date Range Picker */}
-       
-                       <div className="flex flex-col gap-4">
-                         {/* First row - Date picker takes full width on mobile */}
-       
-                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                           <div className="w-2/4">
-                             <DateRangePicker
-                               initialDateFrom={filters.dateFrom}
-                               initialDateTo={filters.dateTo}
-                               onChange={(range) => {
-                                 if (range.dateFrom !== filters.dateFrom || range.dateTo !== filters.dateTo) {
-                                   setFilters((prev) => ({
-                                     ...prev,
-                                     dateFrom: range.dateFrom,
-                                     dateTo: range.dateTo,
-                                   }))
-                                 }
-                               }}
-                             />
-                           </div>
-       
-                           <div className="w-2/4">
-                             <Select value={filters.vendor} onValueChange={(value) => handleFilterChange("vendor", value)}>
-                               <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
-                                 <SelectValue placeholder="Select Vendor" />
-                               </SelectTrigger>
-                               <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
-                                 {vendors.map((c) => (
-                                   <SelectItem key={c.id} value={c.name}>
-                                     {c.name}
-                                   </SelectItem>
-                                 ))}
-                               </SelectContent>
-                             </Select>
-                           </div>
-                         </div>
-       
-                         {/* Second row - Customer and Product filters */}
-                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                           {/* Customer */}
-       
-       
-                           {/* Product */}
-                           <div className="w-2/4">
-                             <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
-                               <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
-                                 <SelectValue placeholder="Select Product" />
-                               </SelectTrigger>
-                               <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
-                                 {products.map((p) => (
-                                   <SelectItem key={p.id} value={p.name}>
-                                     {p.name}
-                                   </SelectItem>
-                                 ))}
-                               </SelectContent>
-                             </Select>
-                           </div>
-       
-                           <div className="w-40">
-                             {hasActiveFilters && (
-                               <Button
-                                 variant="outline"
-                                 onClick={clearFilters}
-                                 className="h-[40px] px-6 bg-blue-500 hover:bg-blue-600 text-white border-blue-500 hover:border-blue-600"
-                               >
-                                 Clear Filters
-                               </Button>
-                             )}
-                           </div>
-                         </div>
-                       </div>
-                     </CardContent>
+        <Card className="mb-4 mx-2 sm:mx-4 xl:mx-8.5">
+
+
+          <CardContent className="pt-6 pb-4">
+            <div className="flex flex-wrap items-center gap-4">
+              {/* Date Range Picker - Fixed width to match the screenshot */}
+              <div className="w-full sm:w-[250px]">
+                <DateRangePicker
+                  initialDateFrom={filters.dateFrom}
+                  initialDateTo={filters.dateTo}
+                  onChange={(range) => {
+                    if (range.dateFrom !== filters.dateFrom || range.dateTo !== filters.dateTo) {
+                      setFilters((prev) => ({
+                        ...prev,
+                        dateFrom: range.dateFrom,
+                        dateTo: range.dateTo,
+                      }))
+                    }
+                  }}
+                />
+              </div>
+
+              {/* Customer Filter - Fixed width to match the screenshot */}
+              <div className="w-full sm:w-[200px]">
+                <Select value={filters.vendor} onValueChange={(value) => handleFilterChange("vendor", value)}>
+                  <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
+                    <SelectValue placeholder="Select Vendor" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                    {vendors.map((c) => (
+                      <SelectItem key={c.id} value={c.name}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Product Filter - Fixed width to match the screenshot */}
+              <div className="w-full sm:w-[200px]">
+                <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
+                  <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
+                    <SelectValue placeholder="Select Product" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                    {products.map((p) => (
+                      <SelectItem key={p.id} value={p.name}>
+                        {p.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Clear Filters Button - Fixed width to match the screenshot */}
+              <div className="w-full sm:w-auto sm:ml-auto">
+                {hasActiveFilters && (
+                  <Button
+                    variant="outline"
+                    onClick={clearFilters}
+                    className="w-full sm:w-[150px] h-[40px] bg-blue-500 hover:bg-blue-600 text-white border-blue-500 hover:border-blue-600"
+                  >
+                    Clear Filters
+                  </Button>
+                )}
+              </div>
+            </div>
+          </CardContent>
         </Card>
       </div>
 
