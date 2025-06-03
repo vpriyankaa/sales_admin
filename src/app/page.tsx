@@ -5,9 +5,9 @@ import { useEffect } from "react";
 export default function HomePage() {
   const router = useRouter();
 
-  useEffect(() => {
-    router.replace("/dashboard");
-  }, [router]);
+  // useEffect(() => {
+  //   router.replace("/dashboard");
+  // }, [router]);
 
   return null;
 }

@@ -59,7 +59,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 const login = (u: User) => {
   setIsLoggingIn(true); // ✅ show loader
   sessionStorage.setItem("user", JSON.stringify(u));
-  setCookie("auth", "true", { maxAge: 60 * 60 * 24 }); // 1 day
+  setCookie("auth", "true", {
+  path: "/",
+  maxAge: 60 * 60 * 24, // 1 day
+  sameSite: "lax",
+}); // 1 day
+  
   setUser(u);
   router.push("/dashboard");
 };
@@ -70,23 +75,11 @@ const login = (u: User) => {
   const logout = () => {
   setIsLoggingOut(true);
   sessionStorage.removeItem("user");
-  deleteCookie("auth");
+  deleteCookie("auth", { path: "/" });
   setUser(null);
   router.replace("/auth/sign-in");
 };
 
-
-
-
-
-
-  //   if (loading) {
-  //   return (
-  //     <div className="flex min-h-screen items-center justify-center">
-  //       <Loader2 className="h-6 w-6 animate-spin text-primary" />
-  //     </div>
-  //   );
-  // }s
 
    useEffect(() => {
   if (pathname === "/dashboard") {
