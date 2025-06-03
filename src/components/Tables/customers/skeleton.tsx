@@ -5,7 +5,7 @@ export function CustomersSkeleton() {
   return (
     <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
       <div className="px-6 py-4 sm:px-6 sm:py-5 xl:px-8.5">
-        <h2 className="text-2xl font-bold text-dark dark:text-white">Customers</h2>
+        <h2 className="text-2xl font-bold text-dark dark:!text-white">Customers</h2>
       </div>
 
       <div className="flex justify-end mb-5 mr-2">

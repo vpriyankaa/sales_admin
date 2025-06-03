@@ -82,7 +82,7 @@ export function OrdersSkeleton() {
     <div className="rounded-[10px] bg-white text-#3b82f6 px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
       <div className="px-2 py-4 sm:px-4 sm:py-5 xl:px-8.5 text-left">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-dark dark:text-white">Sales Reports</h2>
+          <h2 className="text-2xl font-bold text-dark dark:!text-white">Sales Reports</h2>
         </div>
       </div>
 
