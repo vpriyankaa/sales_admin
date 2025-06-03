@@ -15,6 +15,7 @@ import * as z from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Loader2, Edit, Eye } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
 
 type Unit = {
   id: number
@@ -54,6 +55,7 @@ export function TopProducts() {
   const router = useRouter()
 
   const [data, setData] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
   const [units, setUnits] = useState<Unit[]>([])
   const [open, setOpen] = useState(false)
   const [openAdd, setOpenAdd] = useState(false)
@@ -103,6 +105,7 @@ export function TopProducts() {
     const fetchData = async () => {
       const res = await getProducts()
       setData(res)
+      setLoading(false)
     }
     fetchData()
   }, [])
@@ -183,6 +186,8 @@ export function TopProducts() {
       console.error(err)
     } finally {
       setIsLoading(false)
+
+
     }
   }
 
@@ -209,9 +214,12 @@ export function TopProducts() {
     }
   }
 
+  if (loading) {
+    return <TopProductsSkeleton />
+  }
+
   return (
     <>
-      {paginatedData.length === 0 && data.length === 0 && <TopProductsSkeleton />}
 
       <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
         <div className="px-6 py-4 sm:px-6 sm:py-5 xl:px-8.5">
@@ -226,23 +234,23 @@ export function TopProducts() {
 
         <Table>
           <TableHeader>
-            <TableRow className="border-none uppercase [&>th]:text-center">
+            <TableRow className="text-center text-base font-medium text-dark dark:!text-white group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
               <TableHead className="!text-left pl-6">Product Name</TableHead>
               <TableHead className="!text-left">Quantity</TableHead>
               <TableHead className="!text-left">Unit</TableHead>
               <TableHead className="!text-left">Price</TableHead>
-              <TableHead className="!text-center">Action</TableHead>
+              {/* <TableHead className="!text-center">Action</TableHead> */}
             </TableRow>
           </TableHeader>
 
           <TableBody>
             {paginatedData.map((product) => (
-              <TableRow className="text-base font-medium text-dark dark:!text-white" key={product.id}>
+              <TableRow className="text-left text-base font-medium text-dark dark:!text-white group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" key={product.id}>
                 <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{product.name}</TableCell>
                 <TableCell>{product.quantity}</TableCell>
                 <TableCell>{product.unit.charAt(0).toUpperCase() + product.unit.slice(1)}</TableCell>
                 <TableCell>₹{product.price}</TableCell>
-                <TableCell className="text-center">
+                {/* <TableCell className="text-center">
                   <Button variant="ghost" size="sm" onClick={() => handleEditProduct(product)} className="h-8 w-8 p-0">
                     <Edit className="h-4 w-4" />
                   </Button>
@@ -254,6 +262,45 @@ export function TopProducts() {
                   >
                     <Eye className="h-4 w-4" />
                   </Button>
+                </TableCell> */}
+                <TableCell>
+                  <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEditProduct(product)}
+                            className="h-8 w-8 hover:bg-blue-100 dark:hover:bg-blue-900"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-white font-medium text-secondary">
+                          Edit
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => router.push(`/product-log/${product.id}`)}
+                            className="h-8 w-8 hover:bg-green-100 dark:hover:bg-green-900"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-white font-medium text-secondary">View</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

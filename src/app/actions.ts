@@ -503,7 +503,7 @@ export async function addOrder(order: OrderInput): Promise<string> {
           order_id:  orderId,
           action:    actionText,
           comments:  order.remarks ?? null,
-                   // or populate if you have docs at creation time
+                   
         });
 
       if (logErr) throw logErr;

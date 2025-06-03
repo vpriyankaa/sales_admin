@@ -13,10 +13,10 @@ export default function SignIn() {
     <>
   
       <div className="flex min-h-screen bg-white items-center justify-center p-4">
-        <div className="w-full max-w-6xl rounded-[10px] shadow-1 dark:bg-gray-dark dark:shadow-card">
+        <div className="w-full max-w-6xl rounded-[10px] shadow-1">
           <div className="flex flex-wrap items-center">
             <div className="hidden w-full p-7.5 xl:block xl:w-1/2">
-              <div className="custom-gradient-1 overflow-hidden rounded-2xl px-12.5 pt-12.5 dark:!bg-dark-2 dark:bg-none">
+              <div className="custom-gradient-1 overflow-hidden rounded-2xl px-12.5 pt-12.5">
                 <Link className="mb-10 inline-block" href="/">
                   <Image
                     className="hidden dark:block"

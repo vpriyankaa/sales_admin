@@ -18,6 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Loader2, Edit ,Eye} from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useRouter } from "next/navigation"
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
 
 type Product = {
   id: number
@@ -286,19 +287,19 @@ export function Vendors() {
 
         <Table>
           <TableHeader>
-            <TableRow className="border-none uppercase [&>th]:text-center">
+            <TableRow className="text-center text-base font-medium text-dark dark:!text-white group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
               <TableHead className="!text-left pl-6">Vendor Name</TableHead>
               <TableHead className="!text-left">Phone</TableHead>
               <TableHead className="!text-left">Aadhaar</TableHead>
               <TableHead className="!text-left">Address</TableHead>
               <TableHead className="!text-left p-6">Products</TableHead>
-              <TableHead className="!text-center">Actions</TableHead>
+              {/* <TableHead className="!text-center">Actions</TableHead> */}
             </TableRow>
           </TableHeader>
 
           <TableBody>
             {paginatedData.map((vendor) => (
-              <TableRow className="text-base font-medium text-dark dark:!text-white" key={vendor.id}>
+              <TableRow className="text-left text-base font-medium text-dark dark:!text-white group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" key={vendor.id}>
                 <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{vendor.name}</TableCell>
                 <TableCell>{vendor.phone}</TableCell>
                 <TableCell>{vendor.aadhaar || "-"}</TableCell>
@@ -313,7 +314,7 @@ export function Vendors() {
                     ))}
                   </div>
                 </TableCell>
-                <TableCell className="text-center">
+                {/* <TableCell className="text-center">
                   <Button variant="ghost" size="sm" onClick={() => handleEditVendor(vendor)} className="h-8 w-8 p-0">
                     <Edit className="h-4 w-4" />
                   </Button>
@@ -325,7 +326,46 @@ export function Vendors() {
                   >
                     <Eye className="h-4 w-4" />
                   </Button>
-                </TableCell>
+                </TableCell> */}
+                <TableCell>
+                      <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                             
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleEditVendor(vendor)}
+                                  className="h-8 w-8 hover:bg-blue-100 dark:hover:bg-blue-900"
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                            
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-white font-medium text-secondary">
+                              Edit 
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => router.push(`/vendor-log/${vendor.id}`)}
+                                className="h-8 w-8 hover:bg-green-100 dark:hover:bg-green-900"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-white font-medium text-secondary">View</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </TableCell>
               </TableRow>
             ))}
           </TableBody>

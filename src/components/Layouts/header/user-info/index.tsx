@@ -88,7 +88,7 @@ export function UserInfo() {
           </figcaption> */}
 
           <figure className="flex items-center gap-3">
-            <figcaption className="flex items-center gap-1 font-medium text-dark dark:text-dark-600">
+            <figcaption className="flex items-center gap-1 font-medium text-dark dark:!text-white">
               <Profile />
               <span>{memoizedUser.name}</span>
               <ChevronUpIcon
@@ -107,7 +107,7 @@ export function UserInfo() {
       </DropdownTrigger>
 
       <DropdownContent
-        className="border border-stroke bg-white shadow-md dark:border-dark-3 dark:bg-gray-dark min-[230px]:min-w-[17.5rem]"
+        className="border border-stroke bg-white shadow-md dark:border-dark-3 dark:bg-gray-dark dark:!text-white min-[230px]:min-w-[17.5rem]"
         align="end"
       >
         <h2 className="sr-only">User information</h2>
@@ -128,7 +128,7 @@ export function UserInfo() {
 
         <hr className="border-[#E8E8E8] dark:border-dark-3" />
 
-        <div className="p-2 text-base text-[#4B5563] dark:text-dark-600">
+        <div className="p-2 text-base text-[#4B5563] dark:!text-white">
           <button
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-100 hover:text-dark dark:hover:bg-dark-3 dark:hover:!text-white"
             onClick={handleLogout}

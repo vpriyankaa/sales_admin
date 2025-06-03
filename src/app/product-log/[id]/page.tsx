@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback ,use } from "react";
+import { useState, useEffect, useCallback, use } from "react";
 import { Button } from "@/components/ui/button";
 import { getuser, getProductLogsById } from "@/app/actions";
 import { ArrowLeft } from "lucide-react";
@@ -31,7 +31,7 @@ interface OrderDetailPageProps {
 
 export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
-   const { id: idStr } = use(params);
+  const { id: idStr } = use(params);
 
   // convert to number once unwrapped
   const id = parseInt(idStr, 10);
@@ -87,72 +87,75 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     <div className="max-w-8xl">
       <Card className="shadow-lg border-t-4 border-b-4 border-b-blue-500 border-t-blue-500 print:shadow-none print:border">
         <CardContent>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Left Side - Product Logs */}
-            <div className="lg:col-span-2 space-y-4">
-              {loading ? (
-                <div className="flex justify-center h-64">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                </div>
-              ) : orderLogData && orderLogData.length > 0 ? (
-                <div>
-                  <h3 className="text-lg font-bold mb-4 text-primary dark:text-primary">Product Logs</h3>
-                  <div className="bg-white dark:bg-gray-800 border rounded-md p-3 space-y-2">
-                    {orderLogData.map((log) => {
-                      const isOpen = openId === log.id;
-                      const editedBy = log.user ? users[log.user]?.name : "Unknown User";
 
-                      return (
-                        <div key={log.id} className="border border-gray-300 dark:border-gray-600 rounded-md">
-                          <button
-                            type="button"
-                            onClick={() => toggle(log.id)}
-                            className="flex w-full items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md transition"
-                          >
-                            <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                              {log.action}
-                            </span>
-                            <svg
-                              className={`w-4 h-4 transform transition-transform ${isOpen ? "rotate-180" : ""}`}
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth={2}
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M19 9l-7 7-7-7" />
-                            </svg>
-                          </button>
-
-                          {isOpen && (
-                            <div className="pl-3 dark:bg-gray-800 text-sm space-y-3 p-2">
-                              <p className="text-gray-800 dark:text-gray-300">
-                                <span className="font-semibold">Edited by:</span>{" "}
-                                {editedBy ?? "Unknown User"}
-                              </p>
-                              <p className="text-gray-600 dark:text-gray-400">
-                                {log.created_at
-                                  ? new Date(log.created_at).toLocaleString("en-US", {
-                                    year: "numeric",
-                                    month: "short",
-                                    day: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })
-                                  : "Date N/A"}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : (
-                <p className="flex justify-end mr-20 text-gray-600  dark:text-gray-400">No logs found.</p>
-              )}
-
+          {loading ? (
+            <div className="flex justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
-          </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {/* Left Side - Product Logs */}
+              <div className="lg:col-span-2 space-y-4">
+                {orderLogData && orderLogData.length > 0 ? (
+                  <div>
+                    <h3 className="text-lg font-bold mb-4 text-primary dark:text-primary">Product Logs</h3>
+                    <div className="bg-white dark:bg-gray-800 border rounded-md p-3 space-y-2">
+                      {orderLogData.map((log) => {
+                        const isOpen = openId === log.id;
+                        const editedBy = log.user ? users[log.user]?.name : "Unknown User";
+
+                        return (
+                          <div key={log.id} className="border border-gray-300 dark:border-gray-600 rounded-md">
+                            <button
+                              type="button"
+                              onClick={() => toggle(log.id)}
+                              className="flex w-full items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md transition"
+                            >
+                              <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                {log.action}
+                              </span>
+                              <svg
+                                className={`w-4 h-4 transform transition-transform ${isOpen ? "rotate-180" : ""}`}
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M19 9l-7 7-7-7" />
+                              </svg>
+                            </button>
+
+                            {isOpen && (
+                              <div className="pl-3 dark:bg-gray-800 text-sm space-y-3 p-2">
+                                <p className="text-gray-800 dark:text-gray-300">
+                                  <span className="font-semibold">Edited by:</span>{" "}
+                                  {editedBy ?? "Unknown User"}
+                                </p>
+                                <p className="text-gray-600 dark:text-gray-400">
+                                  {log.created_at
+                                    ? new Date(log.created_at).toLocaleString("en-US", {
+                                      year: "numeric",
+                                      month: "short",
+                                      day: "numeric",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })
+                                    : "Date N/A"}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="flex justify-end mr-20 text-gray-600  dark:text-gray-400">No logs found.</p>
+                )}
+
+              </div>
+            </div>
+          )}
         </CardContent>
 
         <CardFooter className="bg-gray-50 dark:bg-gray-800 border-t p-4 print:hidden">

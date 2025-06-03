@@ -216,7 +216,7 @@ const rangeHover: Matcher | undefined =
             id="date-range-preset"
             variant="outline"
             className={cn(
-              "justify-between font-semibold text-left w-full md:w-[260px]",
+              "justify-between font-semibold text-left w-full h-[40px] md:w-[260px]",
               !dateRange && "text-muted-foreground dark:!text-black",
             )}
           >

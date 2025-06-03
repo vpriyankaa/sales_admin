@@ -207,77 +207,70 @@ export function Purchase({ className }: { className?: string }) {
 
           <div className="mt-6 dark:!text-white">
             <Card className="mb-4 mx-2 sm:mx-4 xl:mx-8.5">
+
+
               <CardContent className="pt-6 pb-4">
-                {/* Date Range Picker */}
-
-                <div className="flex flex-col gap-4">
-                  {/* First row - Date picker takes full width on mobile */}
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="w-2/4">
-                      <DateRangePicker
-                        initialDateFrom={filters.dateFrom}
-                        initialDateTo={filters.dateTo}
-                        onChange={(range) => {
-                          if (range.dateFrom !== filters.dateFrom || range.dateTo !== filters.dateTo) {
-                            setFilters((prev) => ({
-                              ...prev,
-                              dateFrom: range.dateFrom,
-                              dateTo: range.dateTo,
-                            }))
-                          }
-                        }}
-                      />
-                    </div>
-
-                    <div className="w-2/4">
-                      <Select value={filters.vendor} onValueChange={(value) => handleFilterChange("vendor", value)}>
-                        <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
-                          <SelectValue placeholder="Select Vendor" />
-                        </SelectTrigger>
-                        <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
-                          {vendors.map((c) => (
-                            <SelectItem key={c.id} value={c.name}>
-                              {c.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                <div className="flex flex-wrap items-center gap-4">
+                  {/* Date Range Picker - Fixed width to match the screenshot */}
+                  <div className="w-full sm:w-[250px]">
+                    <DateRangePicker
+                      initialDateFrom={filters.dateFrom}
+                      initialDateTo={filters.dateTo}
+                      onChange={(range) => {
+                        if (range.dateFrom !== filters.dateFrom || range.dateTo !== filters.dateTo) {
+                          setFilters((prev) => ({
+                            ...prev,
+                            dateFrom: range.dateFrom,
+                            dateTo: range.dateTo,
+                          }))
+                        }
+                      }}
+                    />
                   </div>
 
-                  {/* Second row - Customer and Product filters */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Customer */}
+                  {/* Customer Filter - Fixed width to match the screenshot */}
+                  <div className="w-full sm:w-[200px]">
+                    <Select value={filters.vendor} onValueChange={(value) => handleFilterChange("vendor", value)}>
+                      <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
+                        <SelectValue placeholder="Select Vendor" />
+                      </SelectTrigger>
+                      <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                        {vendors.map((c) => (
+                          <SelectItem key={c.id} value={c.name}>
+                            {c.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
+                  {/* Product Filter - Fixed width to match the screenshot */}
+                  <div className="w-full sm:w-[200px]">
+                    <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
+                      <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
+                        <SelectValue placeholder="Select Product" />
+                      </SelectTrigger>
+                      <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                        {products.map((p) => (
+                          <SelectItem key={p.id} value={p.name}>
+                            {p.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                    {/* Product */}
-                    <div className="w-2/4">
-                      <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
-                        <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
-                          <SelectValue placeholder="Select Product" />
-                        </SelectTrigger>
-                        <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
-                          {products.map((p) => (
-                            <SelectItem key={p.id} value={p.name}>
-                              {p.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="w-40">
-                      {hasActiveFilters && (
-                        <Button
-                          variant="outline"
-                          onClick={clearFilters}
-                          className="h-[40px] px-6 bg-blue-500 hover:bg-blue-600 text-white border-blue-500 hover:border-blue-600"
-                        >
-                          Clear Filters
-                        </Button>
-                      )}
-                    </div>
+                  {/* Clear Filters Button - Fixed width to match the screenshot */}
+                  <div className="w-full sm:w-auto sm:ml-auto">
+                    {hasActiveFilters && (
+                      <Button
+                        variant="outline"
+                        onClick={clearFilters}
+                        className="w-full sm:w-[150px] h-[40px] bg-blue-500 hover:bg-blue-600 text-white border-blue-500 hover:border-blue-600"
+                      >
+                        Clear Filters
+                      </Button>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -293,7 +286,7 @@ export function Purchase({ className }: { className?: string }) {
                 <TableHead>Price</TableHead>
                 <TableHead>Payment Status</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Action</TableHead>
+                {/* <TableHead>Action</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -305,7 +298,7 @@ export function Purchase({ className }: { className?: string }) {
                 </TableRow>
               ) : (
                 currentData.map((order) => (
-                  <TableRow className="text-center text-base font-medium text-dark dark:!text-white" key={order.id}>
+                  <TableRow className="text-center text-base font-medium text-dark dark:!text-white group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" key={order.id}>
                     <TableCell className="!text-left">
                       <div>
                         {new Date(order.date).toLocaleDateString("en-US", {
@@ -369,15 +362,14 @@ export function Purchase({ className }: { className?: string }) {
                       {order.status?.trim() ? (
                         <div
                           className={`py-1 px-2 rounded-full text-sm font-semibold dark:!text-white
-                          ${
-                            order.status === "created" || order.status === "completed" 
+                          ${order.status === "created" || order.status === "completed"
                               ? "text-green-900 "
                               : order.status === "cancelled"
                                 ? "text-orange-600"
                                 : order.status === "trashed"
                                   ? "text-red-600"
                                   : "text-gray-700"
-                          }`}
+                            }`}
                         >
                           {order.status === "created"
                             ? "Created"
@@ -385,15 +377,15 @@ export function Purchase({ className }: { className?: string }) {
                               ? "Cancelled"
                               : order.status === "trashed"
                                 ? "Trashed"
-                                :order.status === "completed"
-                                ? "Completed"
-                                : order.status}
+                                : order.status === "completed"
+                                  ? "Completed"
+                                  : order.status}
                         </div>
                       ) : (
                         <span>-</span>
                       )}
                     </TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -429,6 +421,45 @@ export function Purchase({ className }: { className?: string }) {
                           <TooltipContent className="bg-white font-medium text-secondary">View status</TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
+                    </TableCell> */}
+                    <TableCell>
+                      <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              {order.status !== "completed" && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => router.push(`/purchase/edit/${order.id}`)}
+                                  className="h-8 w-8 hover:bg-blue-100 dark:hover:bg-blue-900"
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-white font-medium text-secondary">
+                              Edit purchase
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => router.push(`/detail/${order.id}`)}
+                                className="h-8 w-8 hover:bg-green-100 dark:hover:bg-green-900"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-white font-medium text-secondary">View</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

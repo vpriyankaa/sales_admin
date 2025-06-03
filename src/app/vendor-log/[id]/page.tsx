@@ -87,14 +87,16 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     <div className="max-w-8xl">
       <Card className="shadow-lg border-t-4 border-b-4 border-b-blue-500 border-t-blue-500 print:shadow-none print:border">
         <CardContent className="p-2">
+
+          {loading ? (
+                <div className="flex justify-center">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+          ):(
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
             <div className="lg:col-span-2 space-y-4">
-              {loading ? (
-                <div className="flex justify-center h-64">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                </div>
-              ) : orderLogData && orderLogData.length > 0 ? (
+              {orderLogData && orderLogData.length > 0 ? (
                 <div>
                   <h3 className="text-lg font-bold mb-4 text-primary dark:text-primary">Vendor Logs</h3>
                   <div className="bg-white dark:bg-gray-800 border rounded-md p-3 space-y-2">
@@ -153,6 +155,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
             </div>
           </div>
+          )}
         </CardContent>
 
         <CardFooter className="bg-gray-50 dark:bg-gray-800 border-t p-4 print:hidden">

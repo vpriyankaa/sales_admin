@@ -48,10 +48,10 @@ const InputGroup: React.FC<InputGroupProps> = ({
     value={props.value}
     defaultValue={props.defaultValue}
     className={cn(
-      "w-full rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition focus:border-primary disabled:cursor-default disabled:bg-gray-100 data-[active=true]:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary dark:disabled:bg-dark dark:data-[active=true]:border-primary",
+      "w-full rounded-lg border-[1.5px] border-stroke bg-transparent outline-none transition focus:border-primary disabled:cursor-default disabled:bg-gray-100 dark:border-dark-3",
       type === "file"
         ? getFileStyles(props.fileStyleVariant!)
-        : "px-6 py-3 text-dark placeholder:text-dark-600 dark:text-white text-left",
+        : "px-6 py-3 text-dark placeholder:text-dark-600 text-left",
       props.iconPosition === "left" && "pl-12.5",
       props.height === "sm" && "py-2.5",
     )}
@@ -83,8 +83,8 @@ export default InputGroup;
 function getFileStyles(variant: "style1" | "style2") {
   switch (variant) {
     case "style1":
-      return `file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-[#E2E8F0] file:px-6.5 file:py-[13px] file:text-body-sm file:font-medium file:text-dark-500 file:hover:bg-primary file:hover:bg-opacity-10 dark:file:border-dark-3 dark:file:bg-white/30 dark:file:text-white`;
+      return `file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-[#E2E8F0] file:px-6.5 file:py-[13px] file:text-body-sm file:font-medium file:text-dark-500 file:hover:bg-primary file:hover:bg-opacity-10 `;
     default:
-      return `file:mr-4 file:rounded file:border-[0.5px] file:border-stroke file:bg-stroke file:px-2.5 file:py-1 file:text-body-xs file:font-medium file:text-dark-500 file:focus:border-primary dark:file:border-dark-3 dark:file:bg-white/30 dark:file:text-white px-3 py-[9px]`;
+      return `file:mr-4 file:rounded file:border-[0.5px] file:border-stroke file:bg-stroke file:px-2.5 file:py-1 file:text-body-xs file:font-medium file:text-dark-500 file:focus:border-primary px-3 py-[9px]`;
   }
 }
