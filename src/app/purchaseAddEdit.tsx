@@ -1923,7 +1923,7 @@ export default function Home({ id }: Props) {
                         aria-label="Select vendor"
                         className={cn(
                           "h-10",
-                          "hover:border-black mt-5",
+                          "mt-5",
                            "text-md",
                           isEditMode ? "opacity-60 cursor-not-allowed" : "",
                           orderValidation.vendor ? "border-red-500" : "",
@@ -2172,7 +2172,7 @@ export default function Home({ id }: Props) {
                             "h-10",
                             "text-text-dark-400",
                             "text-md",
-                            "hover:border-black",
+                            // "hover:border-black",
                             orderValidation.cart ? "border-red-500" : "",
                           )}
                         >

@@ -1519,7 +1519,7 @@ export default function Home({ id }: Props) {
 
   const isDark = theme.palette.mode == "dark"
 
-  console.log("isDark", isDark)
+  // console.log("isDark", isDark)
 
   return (
     <>
@@ -1617,7 +1617,7 @@ export default function Home({ id }: Props) {
                         className={cn(
                           "h-10",
                           "text-md",
-                          "hover:border-black mt-5",
+                          "mt-5",
                           orderValidation.customer ? "border-red-500" : "",
                         )}
                       >
@@ -1806,7 +1806,7 @@ export default function Home({ id }: Props) {
                         className={cn(
                           "h-10",
                           "text-md",
-                          "hover:border-black",
+                          // "hover:border-black",
                           orderValidation.cart ? "border-red-500" : "",
                         )}
                       >
