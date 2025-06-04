@@ -1858,7 +1858,7 @@ export default function Home({ id }: Props) {
                                           label="Select date & time"
                                           value={date}
                                           onChange={(v) => setDate(v)}
-                                          views={["year", "month", "day", "hours", "minutes", "seconds"]}
+                                          views={["year", "month", "day", "hours", "minutes"]}
                                           slotProps={{
                                             /* ---------- pop‑up panel ---------- */
                                             popper: {
@@ -1924,16 +1924,16 @@ export default function Home({ id }: Props) {
                         className={cn(
                           "h-10",
                           "hover:border-black mt-5",
-                         
+                           "text-md",
                           isEditMode ? "opacity-60 cursor-not-allowed" : "",
                           orderValidation.vendor ? "border-red-500" : "",
                         )}
                       >
-                        <SelectValue className="text-text-dark-400 dark:!text-white dark:!bg-gray-dark font-semibold" placeholder="Select vendor" />
+                        <SelectValue className="dark:!text-white dark:!bg-gray-dark text-md" placeholder="Select vendor" />
                       </SelectTrigger>
-                      <SelectContent className="z-[999] w-full text-text-dark-400 bg-white dark:!bg-gray-dark shadow-md border rounded-md">
+                      <SelectContent className="z-[999] w-full bg-white text-md dark:!bg-gray-dark dark:!text-white shadow-md border rounded-md">
                         {vendors.map((vendor) => (
-                          <SelectItem key={vendor.id} value={vendor.id.toString()}>
+                          <SelectItem className="text-md" key={vendor.id} value={vendor.id.toString()}>
                             {vendor.name}
                           </SelectItem>
                         ))}
@@ -2163,7 +2163,7 @@ export default function Home({ id }: Props) {
                           }
                         }}
                         
-                        disabled={isEditMode}
+                        // disabled={isEditMode}
                       >
                         <SelectTrigger
                           id="particulars"
@@ -2171,6 +2171,7 @@ export default function Home({ id }: Props) {
                           className={cn(
                             "h-10",
                             "text-text-dark-400",
+                            "text-md",
                             "hover:border-black",
                             orderValidation.cart ? "border-red-500" : "",
                           )}
@@ -2178,9 +2179,9 @@ export default function Home({ id }: Props) {
                           <SelectValue className="text-text-dark-400" placeholder="Select product" />
                         </SelectTrigger>
 
-                        <SelectContent className="z-[999] text-text-dark-400 w-full bg-white dark:!bg-gray-dark shadow-md border rounded-md">
+                        <SelectContent className="z-[999] text-text-dark-400 w-full dark:!text-white bg-white dark:!bg-gray-dark shadow-md border rounded-md">
                           {filteredProducts.map((product) => (
-                            <SelectItem key={product.id} value={product.id}>
+                            <SelectItem className="text-md" key={product.id} value={product.id}>
                               {product.name}
                             </SelectItem>
                           ))}

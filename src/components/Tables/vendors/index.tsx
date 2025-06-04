@@ -19,6 +19,8 @@ import { Loader2, Edit ,Eye} from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useRouter } from "next/navigation"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
+import { ChevronRight, ChevronLeft } from "lucide-react";
+
 
 type Product = {
   id: number
@@ -373,9 +375,9 @@ export function Vendors() {
 
         {/* Add Vendor Dialog */}
         <Dialog open={open} onOpenChange={handleDialogClose}>
-          <DialogContent className="bg-white dark:bg-white max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="bg-white dark:!text-white dark:bg-gray-dark max-w-2xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-dark font-bold text-center">Add New Vendor</DialogTitle>
+              <DialogTitle className="text-dark font-bold dark:!text-white dark:bg-gray-dark text-center">Add New Vendor</DialogTitle>
             </DialogHeader>
 
             <Form {...vendorForm}>
@@ -387,7 +389,7 @@ export function Vendors() {
                     name="name"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">
+                        <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">
                           Name <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
@@ -406,7 +408,7 @@ export function Vendors() {
                     name="phone"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">
+                        <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">
                           Phone <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
@@ -440,7 +442,7 @@ export function Vendors() {
                     name="aadhaar"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">Aadhaar</FormLabel>
+                        <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">Aadhaar</FormLabel>
                         <div className="col-span-3">
                           <FormControl>
                             <Input
@@ -466,7 +468,7 @@ export function Vendors() {
                     name="address"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">Address</FormLabel>
+                        <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">Address</FormLabel>
                         <div className="col-span-3">
                           <FormControl>
                             <Textarea {...field} rows={3} placeholder="Enter vendor address" />
@@ -482,7 +484,7 @@ export function Vendors() {
                     name="products"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-start gap-4">
-                        <FormLabel className="text-right text-black mt-2">
+                        <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark mt-2">
                           Products <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3 space-y-3">
@@ -533,7 +535,7 @@ export function Vendors() {
 
         {/* Edit Vendor Dialog */}
         <Dialog open={openEdit} onOpenChange={handleEditDialogClose}>
-          <DialogContent className="bg-white dark:bg-white max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="bg-white dark:!text-white dark:bg-gray-dark max-w-2xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-dark font-bold text-center">Edit Vendor</DialogTitle>
             </DialogHeader>
@@ -707,7 +709,7 @@ export function Vendors() {
               <SelectTrigger className="w-24 h-8 text-gray-700 dark:!text-white text-center">
                 <SelectValue className="text-gray-700" />
               </SelectTrigger>
-              <SelectContent className="text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+              <SelectContent className="text-gray-700 font-semibold dark:!text-white dark:bg-gray-dark bg-white shadow-md border rounded-md">
                 {[10, 20, 30, 40, 50].map((n) => (
                   <SelectItem key={n} value={n.toString()}>
                     {n}
@@ -725,7 +727,7 @@ export function Vendors() {
               disabled={currentPage === 1}
               className="font-bold dark:!text-white"
             >
-              &lt;
+              <ChevronLeft />
             </button>
 
             <button
@@ -733,7 +735,7 @@ export function Vendors() {
               disabled={currentPage === totalPages}
               className="font-bold dark:!text-white"
             >
-              &gt;
+              <ChevronRight/>
             </button>
           </div>
         </div>

@@ -16,6 +16,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Loader2, Edit, Eye } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
+import { ChevronRight, ChevronLeft } from "lucide-react";
 
 type Unit = {
   id: number
@@ -309,9 +310,9 @@ export function TopProducts() {
 
         {/* Add Product Dialog */}
         <Dialog open={open} onOpenChange={handleDialogClose}>
-          <DialogContent className="bg-white dark:bg-white max-w-2xl">
+          <DialogContent className="bg-white dark:!text-white dark:bg-gray-dark max-w-2xl">
             <DialogHeader>
-              <DialogTitle className="text-dark font-bold text-center">Add New Product</DialogTitle>
+              <DialogTitle className="text-dark font-bold text-center dark:!text-white dark:bg-gray-dark">Add New Product</DialogTitle>
             </DialogHeader>
 
             <Form {...productForm}>
@@ -323,7 +324,7 @@ export function TopProducts() {
                     name="product_name"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black ">
+                        <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark ">
                           Name <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
@@ -342,17 +343,17 @@ export function TopProducts() {
                     name="unit"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black ">
+                        <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">
                           Unit <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
-                              <SelectTrigger className="text-dark">
+                              <SelectTrigger className="text-dark text-md dark:!text-white">
                                 <SelectValue placeholder="Select unit" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent className="bg-white text-dark">
+                            <SelectContent className="bg-white text-dark dark:!text-white dark:bg-gray-dark">
                               {units.map((unit) => (
                                 <SelectItem key={unit.id} value={unit.name}>
                                   {unit.name.charAt(0).toUpperCase() + unit.name.slice(1)}
@@ -372,7 +373,7 @@ export function TopProducts() {
                     name="price"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">
+                        <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">
                           Price <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
@@ -409,7 +410,7 @@ export function TopProducts() {
                     name="quantity"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">
+                        <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">
                           Quantity <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
@@ -462,7 +463,7 @@ export function TopProducts() {
 
         {/* Edit Product Dialog */}
         <Dialog open={openEdit} onOpenChange={handleEditDialogClose}>
-          <DialogContent className="bg-white dark:bg-white max-w-2xl">
+          <DialogContent className="bg-white dark:!text-white dark:bg-gray-dark max-w-2xl">
             <DialogHeader>
               <DialogTitle className="text-dark font-bold text-center">Edit Product</DialogTitle>
             </DialogHeader>
@@ -628,7 +629,7 @@ export function TopProducts() {
               <SelectTrigger className="w-24 h-8 text-gray-700 dark:!text-white text-center">
                 <SelectValue className="text-gray-700 dark:!text-white" />
               </SelectTrigger>
-              <SelectContent className="text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+              <SelectContent className="text-gray-700 font-semibold dark:!text-white dark:bg-gray-dark bg-white shadow-md border rounded-md">
                 {[10, 20, 30, 40, 50].map((n) => (
                   <SelectItem key={n} value={n.toString()}>
                     {n}
@@ -646,7 +647,7 @@ export function TopProducts() {
               disabled={currentPage === 1}
               className="font-bold dark:!text-white"
             >
-              &lt;
+             <ChevronLeft />
             </button>
 
             <button
@@ -654,7 +655,7 @@ export function TopProducts() {
               disabled={currentPage === totalPages}
               className="font-bold dark:!text-white"
             >
-              &gt;
+              <ChevronRight />
             </button>
           </div>
         </div>

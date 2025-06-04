@@ -168,12 +168,12 @@ export function OrderSummary({
         <div className="flex justify-between items-center">
           <label className="font-semibold text-primary">Discount Type</label>
           <Select value={discountType} onValueChange={(v) => setDiscountType(v as "flat" | "percentage")}>
-            <SelectTrigger className="w-36 h-9 dark:!text-white border font-bold">
+            <SelectTrigger className="w-36 h-9 dark:!text-white text-md border">
               <SelectValue placeholder="Type" />
             </SelectTrigger>
-            <SelectContent className="bg-white text-black dark:!text-white dark:!bg-gray-dark">
-              <SelectItem value="flat">Flat (₹)</SelectItem>
-              <SelectItem value="percentage">Percentage (%)</SelectItem>
+            <SelectContent className="bg-white text-md dark:!bg-gray-dark dark:!text-white">
+              <SelectItem className="text-md" value="flat">Flat (₹)</SelectItem>
+              <SelectItem className="text-md" value="percentage">Percentage (%)</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -196,7 +196,7 @@ export function OrderSummary({
                 setDiscount(Math.min(value, 100))
               }
             }}
-            className="border rounded font-bold dark:!text-white dark:!bg-gray-dark px-2 py-1 w-24 text-right"
+            className="border rounded  dark:!text-white dark:!bg-gray-dark px-2 py-1 w-24 text-right"
           />
         </div>
       </div>
@@ -234,13 +234,13 @@ export function OrderSummary({
             }}
           >
             <SelectTrigger
-              className={`w-36 h-9 dark:!text-white border font-bold ${errors.paymentMethod ? "border-red-500" : ""}`}
+              className={`w-36 h-9 dark:!text-white border text-md ${errors.paymentMethod ? "border-red-500" : ""}`}
             >
-              <SelectValue placeholder="Select"/>
+              <SelectValue className="text-md" placeholder="Select"/>
             </SelectTrigger>
-            <SelectContent className="bg-white text-black dark:!text-white dark:!bg-gray-dark">
+            <SelectContent className="bg-white text-md text-base dark:!text-white dark:!bg-gray-dark">
               {paymentMethods.map((method) => (
-                <SelectItem key={method.id} value={method.name}>
+                <SelectItem className="text-md" key={method.id} value={method.name}>
                   {method.name.charAt(0).toUpperCase() + method.name.slice(1).toLowerCase()}
                 </SelectItem>
               ))}

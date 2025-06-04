@@ -207,64 +207,65 @@ export function OverviewCardsGroup() {
       {/* Second Row: Sale Payments and Purchase Payments */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Sale Payments Card */}
-        <Card className="overflow-hidden dark:bg-gray-dark border-0 shadow-lg bg-secondary">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span className="text-lg font-semibold text-primary dark:!text-white">Sale Payments</span>
-              <div className="p-2 bg-orange-200 rounded-lg">
-                <CreditCard className="h-5 w-5 text-orange-400" />
-              </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {/* Total Amount */}
-            <div className="text-center p-4">
-              <p className="text-sm font-bold text-dark-3 dark:!text-white mt-1">Total sale amount</p>
-              <p className="text-3xl font-bold text-primary">₹{metrics.totalSales}</p>
-              
-            </div>
+         <Card className="overflow-hidden dark:bg-gray-dark border-0 shadow-lg bg-secondary">
+  <CardHeader>
+    <CardTitle className="flex items-center justify-between">
+      <span className="text-lg font-semibold text-primary dark:!text-white">Sale Payments</span>
+      <div className="p-2 bg-orange-200 rounded-lg">
+        <CreditCard className="h-5 w-5 text-orange-400" />
+      </div>
+    </CardTitle>
+  </CardHeader>
 
-            {/* Progress Bar */}
-            {metrics.totalSales >0 && (
-            <div className="space-y-2">
-              <div className="w-full bg-purple-200 rounded-full h-3">
-                <div
-                  className={cn(
-                    "h-3 rounded-full transition-all duration-500 ease-out",
-                    metrics.salePaymentPercentage > 70
-                      ? "bg-orange-200"
-                      : metrics.salePaymentPercentage > 40
-                        ? "bg-orange-500"
-                        : "bg-red-500",
-                  )}
-                  style={{ width: `${Math.min(metrics.salePaymentPercentage, 100)}%` }}
-                />
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-bold">{metrics.salePaymentPercentage.toFixed(1)}% collected</span>
-              </div>
-            </div>
+  <CardContent className="space-y-6">
+    {/* Total Amount */}
+    <div className="text-center p-4">
+      <p className="text-sm font-bold text-dark-3 dark:!text-white">Total sale amount</p>
+      <p className="text-3xl font-bold text-primary">₹{metrics.totalSales}</p>
+    </div>
+
+    {/* Progress Bar */}
+    {metrics.totalSales > 0 && (
+      <div className="space-y-2">
+        <div className="w-full bg-purple-200 rounded-full h-3">
+          <div
+            className={cn(
+              "h-3 rounded-full transition-all duration-500 ease-out",
+              metrics.salePaymentPercentage > 70
+                ? "bg-orange-500"
+                : metrics.salePaymentPercentage > 40
+                ? "bg-orange-500"
+                : "bg-red-500"
             )}
+            style={{ width: `${Math.min(metrics.salePaymentPercentage, 100)}%` }}
+          />
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="text-xs font-medium">{metrics.salePaymentPercentage.toFixed(1)}% collected</span>
+        </div>
+      </div>
+    )}
 
-            {/* Payment Details */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-3 bg-white/60 rounded-lg">
-                <div className="flex items-center space-x-2">
-                  <ArrowUpRight className="h-3 w-3 text-green-600" />
-                  <span className="text-xs font-bold text-dark-3 dark:!text-white">Collected</span>
-                </div>
-                <p className="text-lg font-semibold text-green-600">₹{metrics.totalSalePayments}</p>
-              </div>
-              <div className="p-3 bg-white/60 rounded-lg">
-                <div className="flex items-center space-x-2">
-                  <ArrowDownRight className="h-3 w-3 text-orange-600" />
-                  <span className="text-xs font-bold text-dark-3 dark:!text-white">Pending</span>
-                </div>
-                <p className="text-lg font-semibold text-orange-600">₹{metrics.totalSalePending}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+    {/* Payment Details */}
+    <div className="grid grid-cols-2 gap-4">
+      <div className="p-3 bg-white/60 rounded-lg">
+        <div className="flex items-center space-x-2">
+          <ArrowUpRight className="h-3 w-3 text-green-600" />
+          <span className="text-xs font-bold text-dark-3 dark:!text-white">Collected</span>
+        </div>
+        <p className="text-lg font-semibold text-green-600">₹{metrics.totalSalePayments}</p>
+      </div>
+      <div className="p-3 bg-white/60 rounded-lg">
+        <div className="flex items-center space-x-2">
+          <ArrowDownRight className="h-3 w-3 text-orange-600" />
+          <span className="text-xs font-bold text-dark-3 dark:!text-white">Pending</span>
+        </div>
+        <p className="text-lg font-semibold text-orange-600">₹{metrics.totalSalePending}</p>
+      </div>
+    </div>
+  </CardContent>
+</Card>
+
 
         {/* Purchase Payments Card */}
         <Card className="overflow-hidden border-0 dark:bg-gray-dark shadow-lg bg-secondary">

@@ -18,6 +18,7 @@ import { Loader2, Edit ,Eye } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useRouter } from "next/navigation"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
+import { ChevronRight, ChevronLeft } from "lucide-react";
 
 interface Customer {
   id: string
@@ -312,7 +313,7 @@ export function Customers() {
                   <SelectTrigger className="w-24 h-8 text-gray-700 dark:!text-white  text-center">
                     <SelectValue className="text-gray-700" />
                   </SelectTrigger>
-                  <SelectContent className="text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                  <SelectContent className="text-gray-700 font-semibold dark:!text-white dark:bg-gray-dark bg-white shadow-md border rounded-md">
                     {[10, 20, 30, 40, 50].map((n) => (
                       <SelectItem key={n} value={n.toString()}>
                         {n}
@@ -330,7 +331,7 @@ export function Customers() {
                   disabled={currentPage === 1}
                   className="font-bold dark:!text-white"
                 >
-                  &lt;
+                  <ChevronLeft />
                 </button>
 
                 <button
@@ -338,7 +339,7 @@ export function Customers() {
                   disabled={currentPage === totalPages}
                   className="font-bold dark:!text-white"
                 >
-                  &gt;
+                  <ChevronRight />
                 </button>
               </div>
             </div>
@@ -346,9 +347,9 @@ export function Customers() {
 
           {/* Add Customer Dialog */}
           <Dialog open={isAddingCustomer || isEditingCustomer} onOpenChange={handleDialogClose}>
-            <DialogContent className="bg-white dark:bg-white max-w-2xl">
+            <DialogContent className="bg-white dark:!text-white dark:bg-gray-dark max-w-2xl">
               <DialogHeader>
-                <DialogTitle className="text-center text-dark font-bold">
+                <DialogTitle className="text-center text-dark dark:!text-white dark:bg-gray-dark font-bold">
                   {isEditingCustomer ? "Edit Customer" : "Add New Customer"}
                 </DialogTitle>
               </DialogHeader>
@@ -365,7 +366,7 @@ export function Customers() {
                       name="name"
                       render={({ field }) => (
                         <FormItem className="grid grid-cols-4 items-center gap-4">
-                          <FormLabel className="text-right text-black">
+                          <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">
                             Name <span className="text-red-500">*</span>
                           </FormLabel>
                           <div className="col-span-3">
@@ -384,7 +385,7 @@ export function Customers() {
                       name="phone"
                       render={({ field }) => (
                         <FormItem className="grid grid-cols-4 items-center gap-4">
-                          <FormLabel className="text-right text-black">
+                          <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">
                             Phone <span className="text-red-500">*</span>
                           </FormLabel>
                           <div className="col-span-3">
@@ -414,7 +415,7 @@ export function Customers() {
                       name="aadhaar"
                       render={({ field }) => (
                         <FormItem className="grid grid-cols-4 items-center gap-4">
-                          <FormLabel className="text-right text-black">Aadhaar</FormLabel>
+                          <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">Aadhaar</FormLabel>
                           <div className="col-span-3">
                             <FormControl>
                               <Input
@@ -440,7 +441,7 @@ export function Customers() {
                       name="address"
                       render={({ field }) => (
                         <FormItem className="grid grid-cols-4 items-center gap-4">
-                          <FormLabel className="text-right text-black">Address</FormLabel>
+                          <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">Address</FormLabel>
                           <div className="col-span-3">
                             <FormControl>
                               <Textarea {...field} rows={3} placeholder="Enter customer address" />
@@ -475,7 +476,7 @@ export function Customers() {
 
           {/* Success Dialog */}
           <Dialog open={openAdd} onOpenChange={setOpenAdd}>
-            <DialogContent className="bg-white text-black">
+            <DialogContent className="bg-white text-black dark:!text-white dark:bg-gray-dark">
               <DialogHeader>
                 <DialogTitle>Success</DialogTitle>
               </DialogHeader>

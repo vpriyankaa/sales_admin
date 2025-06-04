@@ -224,7 +224,7 @@ const rangeHover: Matcher | undefined =
             <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0 bg-white text-dark-3  dark:!text-black font-semibold" align="start">
+        <PopoverContent className="w-full p-0 bg-white text-dark-3  dark:!text-white dark:bg-gray-dark font-semibold" align="start">
           <Command>
             <CommandInput />
             <CommandList>

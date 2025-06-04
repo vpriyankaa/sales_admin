@@ -727,10 +727,14 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                           </span>
                         </div>
 
+                        {data.remaining_amount > 0 && (
+
                         <div className="flex text-black justify-between items-center dark:!text-white text-sm font-bold pt-3 border-t-2 border-blue-200">
                           <span>Total Payable</span>
                           <span className="text-primary">₹{formatAmount(data.total_payable)}</span>
                         </div>
+                        )}
+                        
                         <div className="flex justify-between items-center">
                           <span className="text-black dark:!text-white font-semibold text-sm">Amount Paid</span>
                           <span className="font-medium text-black dark:!text-white">₹{formatAmount(data.paid_amount || 0)}</span>

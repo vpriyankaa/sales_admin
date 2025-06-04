@@ -1525,7 +1525,7 @@ export default function Home({ id }: Props) {
     <>
       <div className="rounded-[10px] shadow-1 dark:bg-gray-dark dark:shadow-card">
         <div className="flex flex-col md:flex-row justify-evenly gap-4">
-          <div className="w-full md:w-2/3 rounded-[10px] bg-white dark:bg-gray-dark shadow-lg p-4">
+          <div className="w-full md:w-2/3 rounded-[10px] bg-white dark:bg-gray-dark  dark:!text-white shadow-lg p-4">
             <h2 className="text-2xl font-bold text-center text-black dark:!text-white mb-4">
               {isEditMode ? "Edit Order" : "Create Order"}
             </h2>
@@ -1555,13 +1555,13 @@ export default function Home({ id }: Props) {
                         label="Select date & time"
                         value={date}
                         onChange={(v) => setDate(v)}
-                        views={["year", "month", "day", "hours", "minutes", "seconds"]}
+                        views={["year", "month", "day", "hours", "minutes",]}
                         slotProps={{
                           /* ---------- pop‑up panel ---------- */
                           popper: {
                             sx: {
                               "& .MuiPaper-root": {
-                                minWidth: 400, // widen calendar
+                                minWidth: 400, 
                                 bgcolor: isDark ? "#1e1e1e" : "#fff",
                               },
 
@@ -1616,17 +1616,16 @@ export default function Home({ id }: Props) {
                         aria-label="Select customer"
                         className={cn(
                           "h-10",
+                          "text-md",
                           "hover:border-black mt-5",
-                          "font-semibold",
-
                           orderValidation.customer ? "border-red-500" : "",
                         )}
                       >
                         <SelectValue className="font-semibold" placeholder="Select customer" />
                       </SelectTrigger>
-                      <SelectContent className="z-[999] w-full font-bold text-black bg-white shadow-md border rounded-md">
+                      <SelectContent className="z-[999] w-full bg-white dark:bg-gray-dark dark:!text-white shadow-md border rounded-md">
                         {customers.map((customer) => (
-                          <SelectItem key={customer.id} value={customer.id.toString()}>
+                          <SelectItem className="text-md" key={customer.id} value={customer.id.toString()}>
                             {customer.name}
                           </SelectItem>
                         ))}
@@ -1645,9 +1644,9 @@ export default function Home({ id }: Props) {
                         <span className="sr-only">Add new customer</span>
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="bg-white dark:bg-white max-w-2xl">
+                    <DialogContent className="bg-white dark:!text-white dark:bg-gray-dark max-w-2xl">
                       <DialogHeader>
-                        <DialogTitle className="text-center text-dark font-bold">Add New Customer</DialogTitle>
+                        <DialogTitle className="text-center text-dark dark:!text-white dark:bg-gray-dark font-bold">Add New Customer</DialogTitle>
                       </DialogHeader>
 
                       <Form {...customerForm}>
@@ -1659,7 +1658,7 @@ export default function Home({ id }: Props) {
                               name="name"
                               render={({ field }) => (
                                 <FormItem className="grid grid-cols-4 items-center gap-4">
-                                  <FormLabel className="text-right text-black">
+                                  <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">
                                     Name <span className="text-red-500">*</span>
                                   </FormLabel>
                                   <div className="col-span-3">
@@ -1678,7 +1677,7 @@ export default function Home({ id }: Props) {
                               name="phone"
                               render={({ field }) => (
                                 <FormItem className="grid grid-cols-4 items-center gap-4">
-                                  <FormLabel className="text-right text-black">
+                                  <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">
                                     Phone <span className="text-red-500">*</span>
                                   </FormLabel>
                                   <div className="col-span-3">
@@ -1708,7 +1707,7 @@ export default function Home({ id }: Props) {
                               name="aadhaar"
                               render={({ field }) => (
                                 <FormItem className="grid grid-cols-4 items-center gap-4">
-                                  <FormLabel className="text-right text-black">Aadhaar</FormLabel>
+                                  <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">Aadhaar</FormLabel>
                                   <div className="col-span-3">
                                     <FormControl>
                                       <Input
@@ -1734,7 +1733,7 @@ export default function Home({ id }: Props) {
                               name="address"
                               render={({ field }) => (
                                 <FormItem className="grid grid-cols-4 items-center gap-4">
-                                  <FormLabel className="text-right text-black">Address</FormLabel>
+                                  <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">Address</FormLabel>
                                   <div className="col-span-3">
                                     <FormControl>
                                       <Textarea {...field} rows={3} placeholder="Enter customer address" />
@@ -1768,7 +1767,7 @@ export default function Home({ id }: Props) {
               </div>
 
               <div className="grid grid-cols-4 gap-4 items-center">
-                <h3 className="text-right text-lg font-semibold text-dark-2 dark:!text-white pb-4">
+                <h3 className="text-right text-lg font-semibold text-dark-2 dark:bg-gray-dark dark:!text-white pb-4">
                   {isEditMode ? "Product:" : "Product:"}
                 </h3>
                 <div className="col-span-3 w-3/4 mt-2">
@@ -1799,24 +1798,23 @@ export default function Home({ id }: Props) {
                           }
                         }
                       }}
-                      disabled={isEditMode}
+                      // disabled={isEditMode}
                     >
                       <SelectTrigger
                         id="particulars"
                         aria-label="Select product"
                         className={cn(
                           "h-10",
-
-                          "font-semibold",
+                          "text-md",
                           "hover:border-black",
                           orderValidation.cart ? "border-red-500" : "",
                         )}
                       >
-                        <SelectValue className="font-semibold text-black" placeholder="Select product" />
+                        <SelectValue placeholder="Select product" />
                       </SelectTrigger>
-                      <SelectContent className="z-[999] text-black font-semibold w-full bg-white shadow-md border rounded-md">
+                      <SelectContent className="z-[999] w-full bg-white dark:bg-gray-dark dark:!text-white shadow-md border rounded-md">
                         {particulars.map((particular) => (
-                          <SelectItem key={particular.id} value={particular.id}>
+                          <SelectItem className="text-md" key={particular.id} value={particular.id}>
                             {particular.name}
                           </SelectItem>
                         ))}
@@ -1836,7 +1834,7 @@ export default function Home({ id }: Props) {
                 style={{ maxHeight: "400px", overflowY: "auto" }}
               >
                 <Table>
-                  <TableHeader className="sticky top-0 bg-white dark:bg-gray-dark z-10">
+                  <TableHeader className="sticky top-0 bg-white dark:bg-gray-dark dark:!text-white  z-10">
                     <TableRow className="border-none uppercase [&>th]:text-center">
                       <TableHead className="!text-left min-w-[100px]">Product</TableHead>
                       <TableHead className="min-w-[100px]">Quantity</TableHead>
@@ -1849,7 +1847,7 @@ export default function Home({ id }: Props) {
 
                   <TableBody>
                     {cart.map((item) => (
-                      <TableRow key={item.product_id} className="group text-center text-black font-medium">
+                      <TableRow key={item.product_id} className="group text-center text-black dark:!text-white dark:bg-gray-dark  font-medium">
                         <TableCell className="!text-left text-black dark:!text-white">{item.product_name}</TableCell>
 
                         <TableCell>
@@ -1933,7 +1931,7 @@ export default function Home({ id }: Props) {
 
       {isOpen && !isEditMode && (
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="bg-white">
+          <DialogContent className="bg-white dark:!text-white dark:bg-gray-dark">
             <DialogHeader>
               <DialogTitle>Success</DialogTitle>
             </DialogHeader>
@@ -1955,7 +1953,7 @@ export default function Home({ id }: Props) {
 
       {openEdit && isEditMode && (
         <Dialog open={openEdit} onOpenChange={setEditOpen}>
-          <DialogContent className="bg-white">
+          <DialogContent className="bg-white dark:!text-white dark:bg-gray-dark">
             <DialogHeader>
               <DialogTitle>Success</DialogTitle>
             </DialogHeader>

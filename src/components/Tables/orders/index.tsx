@@ -575,6 +575,9 @@ import { OrdersSkeleton } from "./skeleton"
 // import { TextField } from '@mui/material';
 import { getTodayDateRange } from "@/utils/timeframe-extractor"
 import { DateRangePicker } from "@/components/date-range-picker"
+import { ChevronRight, ChevronLeft } from "lucide-react";
+
+
 
 type OrderItem = {
   product_name: string
@@ -742,7 +745,7 @@ export function Orders({ className }: { className?: string }) {
           <div className="mt-6 dark:!text-white">
             <Card className="mb-4 mx-2 sm:mx-4 xl:mx-8.5">
               <CardContent className="pt-6 pb-4">
-                <div className="flex flex-wrap items-center gap-4">
+                <div className="flex flex-wrap items-center gap-8">
                   {/* Date Range Picker - Fixed width to match the screenshot */}
                   <div className="w-full sm:w-[250px]">
                     <DateRangePicker
@@ -766,7 +769,7 @@ export function Orders({ className }: { className?: string }) {
                       <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
                         <SelectValue placeholder="Select Customer" />
                       </SelectTrigger>
-                      <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                      <SelectContent className="z-[999] text-gray-700 font-semibold bg-white dark:!text-white dark:bg-gray-dark shadow-md border rounded-md">
                         {customers.map((c) => (
                           <SelectItem key={c.id} value={c.name}>
                             {c.name}
@@ -782,7 +785,7 @@ export function Orders({ className }: { className?: string }) {
                       <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
                         <SelectValue placeholder="Select Product" />
                       </SelectTrigger>
-                      <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                      <SelectContent className="z-[999] text-gray-700 font-semibold bg-white dark:!text-white dark:bg-gray-dark  shadow-md border rounded-md">
                         {products.map((p) => (
                           <SelectItem key={p.id} value={p.name}>
                             {p.name}
@@ -982,7 +985,7 @@ export function Orders({ className }: { className?: string }) {
                 <SelectTrigger className="w-24 h-8 text-gray-700 dark:!text-white text-center">
                   <SelectValue className="text-gray-700 dark:!text-white" />
                 </SelectTrigger>
-                <SelectContent className="text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                <SelectContent className="text-gray-700 font-semibold bg-white dark:!text-white dark:bg-gray-dark shadow-md border rounded-md">
                   {[10, 20, 30, 40, 50].map((n) => (
                     <SelectItem key={n} value={n.toString()}>
                       {n}
@@ -1000,7 +1003,7 @@ export function Orders({ className }: { className?: string }) {
                 disabled={currentPage === 1}
                 className="font-bold dark:!text-white"
               >
-                &lt;
+                <ChevronLeft />
               </button>
 
               <button
@@ -1008,7 +1011,7 @@ export function Orders({ className }: { className?: string }) {
                 disabled={currentPage === totalPages}
                 className="font-bold dark:!text-white"
               >
-                &gt;
+                <ChevronRight/>
               </button>
             </div>
           </div>
