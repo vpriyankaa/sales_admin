@@ -21,7 +21,8 @@ CREATE TABLE "orderLogs" (
 	"created_at" timestamp with time zone DEFAULT now(),
 	"order_id" bigint NOT NULL,
 	"action" varchar,
-	"comments" text
+	"comments" text,
+	"documents" text
 );
 --> statement-breakpoint
 CREATE TABLE "orders" (
@@ -53,6 +54,12 @@ CREATE TABLE "paymentLogs" (
 	"action" text NOT NULL,
 	"comments" text,
 	"documents" text
+);
+--> statement-breakpoint
+CREATE TABLE "paymentMethods" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now(),
+	"name" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "productLogs" (

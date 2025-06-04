@@ -11,14 +11,8 @@ export const metadata: Metadata = {
 const TablesPage = () => {
   return (
     <>
-      
-
       <div className="space-y-10">
-        
-       
-          <Customers />
-       
-
+        <Customers />
       </div>
     </>
   );

@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Loader2, Edit ,Eye } from "lucide-react"
+import { Loader2, Edit, Eye } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useRouter } from "next/navigation"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
@@ -45,15 +45,16 @@ type CustomerFormData = z.infer<typeof customerFormSchema>
 
 export function Customers() {
   const [data, setData] = useState<Customer[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [itemsPerPageInput, setItemsPerPageInput] = useState("10")
   const [isAddingCustomer, setIsAddingCustomer] = useState(false)
   const [openAdd, setOpenAdd] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [isEditingCustomer, setIsEditingCustomer] = useState(false)
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null)
- const router = useRouter()
+  const router = useRouter()
 
 
   const userStr = sessionStorage.getItem("user");
@@ -74,11 +75,19 @@ export function Customers() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await getCustomers()
-      setData(res)
+      setLoading(true)
+      try {
+        const res = await getCustomers();
+        console.log("hiTamil Fetched customers:", res)
+        setData(res)
+      } catch (error) {
+        console.error("hiTamil Failed to fetch customers:", error)
+      } finally {
+        setLoading(false)
+      }
     }
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setItemsPerPageInput(e.target.value)
@@ -190,10 +199,19 @@ export function Customers() {
     customerForm.reset()
   }
 
+  if (loading) {
+    return <CustomersSkeleton />
+  }
+
   return (
     <>
       {paginatedData.length === 0 && data.length === 0 ? (
-        <CustomersSkeleton />
+        <div className="flex items-center justify-center h-full">
+          <div className="text-gray-500 dark:text-gray-400 text-lg">No customers found</div>
+          <Button type="button" className="ml-4 text-white" onClick={() => setIsAddingCustomer(true)}>
+            Add Customer
+          </Button>
+        </div>
       ) : (
         <>
           <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
@@ -248,24 +266,24 @@ export function Customers() {
                       </>
 
                     </TableCell> */}
-                      <TableCell>
+                    <TableCell>
                       <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                             
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleEditCustomer(customer)}
-                                  className="h-8 w-8 hover:bg-blue-200"
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                            
+
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleEditCustomer(customer)}
+                                className="h-8 w-8 hover:bg-blue-200"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+
                             </TooltipTrigger>
                             <TooltipContent className="bg-white font-medium text-secondary">
-                              Edit 
+                              Edit
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>

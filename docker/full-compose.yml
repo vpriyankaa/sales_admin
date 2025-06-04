@@ -1,0 +1,33 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: tamil_saamy_agency
+      POSTGRES_USER: amenext
+      POSTGRES_PASSWORD: amenext123
+    ports:
+      - "5432:5432"
+    volumes:
+      - sami-agency-data:/var/lib/postgresql/data
+
+  phppgadmin:
+    image: dockage/phppgadmin
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PHP_PG_ADMIN_SERVER_HOST: "db"
+      PHP_PG_ADMIN_SERVER_PORT: "5432"
+      PHP_PG_ADMIN_SERVER_DESC: "Saamy Agency DB"
+      PHP_PG_ADMIN_SERVER_DEFAULTDB: "tamil_saamy_agency"  # 🔧 fixed db name
+      PHP_PG_ADMIN_DEFAULT_LANG: "english"
+      PHP_PG_ADMIN_DEFAULT_USER: "amenext"                # optional: auto-fill login
+      PHP_PG_ADMIN_DEFAULT_PASSWORD: "amenext123"            # optional: auto-fill login
+      PHP_PG_ADMIN_DISABLE_POSTGRES_LOGIN: "false"
+    depends_on:
+      - db
+
+volumes:
+  sami-agency-data:

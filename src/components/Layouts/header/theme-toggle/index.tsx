@@ -16,8 +16,6 @@ const THEMES = [
 
 export function ThemeToggleSwitch() {
 
-  
-  
   const { setTheme, theme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -26,9 +24,6 @@ export function ThemeToggleSwitch() {
   }, []);
 
 
-  console.log("theme",theme);
-
-  
   if (!mounted) {
     return null;
   }

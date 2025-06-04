@@ -10,6 +10,7 @@ import type { Product } from "app-types/product";
 import type { Vendor } from "app-types/vendor";
 import type { OrderInput } from "app-types/order-input";
 import { Unit } from "app-types/unit";
+import { compare } from "bcrypt-ts";
 
 export async function getCustomers() {
   try {
@@ -877,7 +878,10 @@ export async function checkUserCredentials(
         .then(res => res[0]);
     }
 
-    if (!user || user.password !== password) return null;
+    if (!user) return null;
+
+    const isPasswordValid = await compare(password, user.password);
+    if (!isPasswordValid) return null;
 
     const { password: _, ...userWithoutPassword } = user;
 
