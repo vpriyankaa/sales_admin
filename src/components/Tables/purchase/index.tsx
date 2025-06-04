@@ -230,7 +230,7 @@ export function Purchase({ className }: { className?: string }) {
                   {/* Vendor Filter */}
                   <div className="flex-1 min-w-0">
                     <Select value={filters.vendor} onValueChange={(value) => handleFilterChange("vendor", value)}>
-                      <SelectTrigger className="w-full h-[40px] font-medium border rounded px-3">
+                      <SelectTrigger className="w-full h-[40px] font-medium border rounded-md px-3">
                         <SelectValue placeholder="Select Vendor" />
                       </SelectTrigger>
                       <SelectContent className="z-[999] text-gray-700 text-md font-semibold dark:!text-white dark:bg-gray-dark bg-white shadow-md border rounded-md">
@@ -246,7 +246,7 @@ export function Purchase({ className }: { className?: string }) {
                   {/* Product Filter */}
                   <div className="flex-1 min-w-0">
                     <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
-                      <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
+                      <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded-md px-3">
                         <SelectValue placeholder="Select Product" />
                       </SelectTrigger>
                       <SelectContent className="z-[999] text-gray-700 font-semibold dark:!text-white dark:bg-gray-dark bg-white shadow-md border rounded-md">
