@@ -63,12 +63,11 @@ export default function SigninWithPassword() {
       <InputGroup
         type="phone"
         label="Phone"
-        className="mb-4 ml-2 [&_input]:py-[15px]"
+        className="mb-4 [&_input]:py-[15px]"
         placeholder="Enter your Phone Number"
         name="phone"
         handleChange={handleChange}
         value={data.phone}
-        icon={<PhoneIcon />}
         iconPosition="right"
         required
       />
@@ -85,7 +84,7 @@ export default function SigninWithPassword() {
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}
-            className="focus:outline-none"
+            className="focus:outline-none mt-1"
           >
             {showPassword ? <Eye /> : <EyeOff />}
           </button>
@@ -111,7 +110,7 @@ export default function SigninWithPassword() {
         <button
           type="submit"
           disabled={loading}
-          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary p-4 font-medium text-white transition hover:bg-opacity-90 disabled:opacity-50"
+          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary p-3 font-medium text-white transition hover:bg-opacity-90 disabled:opacity-50"
         >
           Sign In
           {loading && (

@@ -11,12 +11,12 @@ export default function Signin() {
         </p>
 
         <p className="w-full max-w-[375px] font-medium text-dark-4 dark:text-dark-600">
-          Please sign in to your account by completing the necessary fields below.
+          Please sign in to your account to proceed
         </p>
         {/* <span className="text-lg font-bold text-dark-3">Sign in</span>
         <span className="text-md font-bold text-dark-3">Enter your details below</span> */}
       </div>
-      <div>
+      <div className="mt-12">
         <SigninWithPassword />
       </div>
 

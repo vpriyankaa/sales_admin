@@ -8,38 +8,11 @@ import { getReports, getPurchaseList } from "@/app/actions"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { ShoppingCart, ShoppingBag, CreditCard, Wallet, ArrowUpRight, ArrowDownRight } from "lucide-react"
+import type { Order } from "app-types/order"
 
 interface FilterState {
   dateFrom: string
   dateTo: string
-}
-
-interface ReportData {
-  id: number
-  created_at: string
-  customer_id?: number
-  customer_name?: string
-  vendor_id?: number
-  vendor_name?: string
-  items: {
-    product_id: number
-    product_name: string
-    quantity: number
-    price: number
-    unit: string
-  }[]
-  total_price: number
-  status: string
-  payment_method: string
-  discount_type: string
-  discount_value: number
-  remaining_amount: number
-  paid_amount: number
-  remarks: string
-  payment_status: string
-  total_payable: number
-  date: string
-  type: "sale" | "purchase"
 }
 
 interface DashboardMetrics {
@@ -57,8 +30,8 @@ interface DashboardMetrics {
 
 export function OverviewCardsGroup() {
   const { dateFrom, dateTo } = getTodayDateRange()
-  const [saleData, setSaleData] = useState<ReportData[]>([])
-  const [purchaseData, setPurchaseData] = useState<ReportData[]>([])
+  const [saleData, setSaleData] = useState<Order[]>([])
+  const [purchaseData, setPurchaseData] = useState<Order[]>([])
   const [metrics, setMetrics] = useState<DashboardMetrics>({
     totalSales: 0,
     totalPurchases: 0,
@@ -90,7 +63,7 @@ export function OverviewCardsGroup() {
 
   useEffect(() => {
     // Filter data based on date range
-    const filterByDateRange = (data: ReportData[]) => {
+    const filterByDateRange = (data: Order[]) => {
       return data.filter((item) => {
         const itemDate = new Date(item.date)
         const fromDate = new Date(filters.dateFrom)
@@ -103,14 +76,14 @@ export function OverviewCardsGroup() {
     const filteredPurchases = filterByDateRange(purchaseData)
 
     // Calculate metrics
-    const totalSales = filteredSales.reduce((sum, item) => sum + item.total_payable, 0)
-    const totalPurchases = filteredPurchases.reduce((sum, item) => sum + item.total_payable, 0)
+    const totalSales = filteredSales.reduce((sum, item) => sum + item.totalPayable, 0)
+    const totalPurchases = filteredPurchases.reduce((sum, item) => sum + item.totalPayable, 0)
 
-    const totalSalePayments = filteredSales.reduce((sum, item) => sum + item.paid_amount, 0)
-    const totalPurchasePayments = filteredPurchases.reduce((sum, item) => sum + item.paid_amount, 0)
+    const totalSalePayments = filteredSales.reduce((sum, item) => sum + (item.paidAmount ?? 0), 0)
+    const totalPurchasePayments = filteredPurchases.reduce((sum, item) => sum + (item.paidAmount ?? 0), 0)
 
-    const totalSalePending = filteredSales.reduce((sum, item) => sum + item.remaining_amount, 0)
-    const totalPurchasePending = filteredPurchases.reduce((sum, item) => sum + item.remaining_amount, 0)
+    const totalSalePending = filteredSales.reduce((sum, item) => sum + (item.remainingAmount ?? 0), 0)
+    const totalPurchasePending = filteredPurchases.reduce((sum, item) => sum + (item.remainingAmount ?? 0), 0)
 
     const saleCount = filteredSales.length
     const purchaseCount = filteredPurchases.length

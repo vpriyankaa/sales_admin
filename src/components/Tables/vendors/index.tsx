@@ -20,28 +20,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useRouter } from "next/navigation"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
 import { ChevronRight, ChevronLeft } from "lucide-react";
-
-
-type Product = {
-  id: number
-  name: string
-  quantity: number
-  price: number
-  unit: string
-}
+import type { Vendor } from "@/types/vendor"
+import type { Product } from "@/types/product"
 
 type VendorProduct = {
   product_id: number
   product_name: string
-}
-
-type Vendor = {
-  id: number
-  name: string
-  phone: string
-  aadhaar?: string
-  address?: string
-  products: VendorProduct[]
 }
 
 const vendorFormSchema = z.object({
@@ -188,9 +172,12 @@ export function Vendors() {
     vendorForm.reset({
       name: vendor.name,
       phone: Number(vendor.phone),
-      aadhaar: vendor.aadhaar || "",
+      aadhaar: vendor.aadhaar?.toString() || "",
       address: vendor.address || "",
-      products: vendor.products || [],
+      products: vendor.products?.map((product) => ({
+        product_id: product.id,
+        product_name: product.name,
+      })) || [],
     })
 
     setOpenEdit(true)
@@ -310,8 +297,8 @@ export function Vendors() {
                   <div className="text-md font-semibold text-gray-800 dark:!text-white">
                     {vendor.products?.map((product, index) => (
                       <span key={index}>
-                        {product.product_name}
-                        {index !== vendor.products.length - 1 && ", "}
+                        {product.name}
+                        {index !== (vendor.products?.length ?? 0) - 1 && ", "}
                       </span>
                     ))}
                   </div>

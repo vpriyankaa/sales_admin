@@ -7,38 +7,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { getPaymentMethods } from "@/app/actions"
-
-interface CartItem {
-  product_id: string
-  product_name: string
-  quantity: number
-  price: number
-  unit: string
-}
-
-interface PaymentOptions {
-  id: string
-  name: string
-}
-
-export interface OrderSummaryData {
-  discountAmount: number
-  discountType: "flat" | "percentage"
-  remarks: string
-  totalAmount: number
-  totalPayable: number
-  paidAmount: number
-  paymentMethod: string
-}
+import type { Product } from "app-types/product"
+import type { PaymentMethod } from "app-types/payment-method"
+import type { OrderSummary } from "app-types/order-summary"
+import { isDiscountType, type DiscountType } from "app-types/discount-type"
 
 interface OrderSummaryProps {
-  cart: CartItem[]
+  cart: Product[]
   selectedUser: string
   isSubmitting: boolean
   isEditMode: boolean
-  editOrderSummary: OrderSummaryData | null
+  editOrderSummary: OrderSummary | null
   onPlaceOrder: (
-    orderData: OrderSummaryData,
+    orderData: OrderSummary,
     errors: { paymentMethod?: string; paidAmount?: string },
   ) => void | Promise<void>
 }
@@ -52,7 +33,7 @@ export function OrderSummary({
   onPlaceOrder,
 }: OrderSummaryProps) {
   const [discount, setDiscount] = useState<number>(0)
-  const [discountType, setDiscountType] = useState<"flat" | "percentage">("flat")
+  const [discountType, setDiscountType] = useState<DiscountType>("flat")
   const [errors, setErrors] = useState<{
     paymentMethod?: string
     paidAmount?: string
@@ -61,7 +42,7 @@ export function OrderSummary({
   const [paymentMethod, setPaymentMethod] = useState<string>("")
   const [remarks, setRemarks] = useState<string>("")
   const [paidAmount, setPaidAmount] = useState<number>(0)
-  const [paymentMethods, setPaymentMethods] = useState<PaymentOptions[]>([])
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
 
   // Initialize with edit data if in edit mode
   useEffect(() => {

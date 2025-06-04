@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback ,use } from "react";
 import { Button } from "@/components/ui/button";
-import { getuser, getCustomerLogsById } from "@/app/actions";
+import { getUser, getCustomerLogsById } from "@/app/actions";
 import { ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Loader2 } from "lucide-react"
@@ -60,7 +60,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       ) as number[];
 
       const userFetches = await Promise.all(
-        uniqueUserIds.map((userId) => getuser(userId))
+        uniqueUserIds.map((userId) => getUser(userId))
       );
 
       const usersById: { [key: number]: User } = {};

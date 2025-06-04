@@ -19,43 +19,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { formatDate } from "@/utils/timeframe-extractor"
-
-// Types
-interface ProductItem {
-  product_name: string
-  quantity: number
-  price: number
-  total_price: number
-  unit: string
-}
-
-interface Order {
-  id: number
-  customer_name?: string
-  vendor_name?:string
-  discount_type?: string
-  discount_value?: number
-  payment_method?: string
-  paid_amount?: number
-  remarks?: string
-  items?: ProductItem[]
-  total_payable?: number
-  total_price: number
-  payment_status: string
-  remaining_amount: number
-  order_date?: string
-  order_id?: string
-  status: string
-}
-
-interface OrderLog {
-  id: number
-  created_at?: string
-  order_id?: number
-  action: string
-  comments: string
-  documents?: string
-}
+import type { Order } from "app-types/order"
+import type { Product } from '@/types/product';
+import type { OrderLog } from "app-types/order-log"
 
 type PaymentStatus = "paid" | "partiallypaid" | "credit"
 
@@ -242,11 +208,11 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     try {
       const [orderDetails, orderLogs, paymentLogs] = await Promise.all([getOrderById(id), getOrderLogsById(id), getPaymentLogsById(id)])
       setData(orderDetails)
-      setType(orderDetails?.type);
+      setType(orderDetails?.type || "sale") // Default to "sale" if type is not set;
       setOrderLogData(orderLogs)
       setPaymentLogData(paymentLogs)
-      if (orderDetails?.payment_status) {
-        setSelectedStatus(orderDetails.payment_status as PaymentStatus)
+      if (orderDetails?.paymentStatus) {
+        setSelectedStatus(orderDetails.paymentStatus as PaymentStatus)
       }
     } catch (error) {
       console.error("Error fetching order data:", error)
@@ -260,7 +226,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   }, [fetchOrderData])
 
   // Products Table Component
-  const ProductsTable = ({ items }: { items?: ProductItem[] }) => (
+  const ProductsTable = ({ items }: { items?: Product[] }) => (
     <div>
       <h3 className="text-lg font-semibold mb-4 text-primary dark:text-primary">Products</h3>
       <div className="overflow-x-auto border rounded-md">
@@ -281,7 +247,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
               items.map((item, index) => (
                 <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                   <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900  dark:text-white">
-                    {item.product_name}
+                    {item.name}
                   </td>
                   <td className="px-3 py-2 whitespace-nowrap text-sm text-center text-gray-700 dark:text-gray-300">
                     {item.quantity}
@@ -348,7 +314,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       setPaymentError("Payment amount is required")
       hasErrors = true
     } else {
-      const maxPayableAmount = Math.min(data.remaining_amount || 0, data.total_payable || 0)
+      const maxPayableAmount = Math.min(data.remainingAmount || 0, data.totalPayable || 0)
       if (paymentAmount > maxPayableAmount) {
         setPaymentError(`Payment amount cannot exceed ₹${formatAmount(maxPayableAmount)}`)
         hasErrors = true
@@ -460,7 +426,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     }
   }
 
-  const maxPayableAmount = Math.min(data.remaining_amount || 0, data.total_payable || 0)
+  const maxPayableAmount = Math.min(data.remainingAmount || 0, data.totalPayable || 0)
 
   const statusOptions = ["Cancel", "Trash"]
 
@@ -472,11 +438,11 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
               <div>
                 <p className="text-sm font-bold text-black dark:!text-white">Order ID</p>
-                <CardTitle className="text-xl font-bold">#{data.order_id || id}</CardTitle>
+                <CardTitle className="text-xl font-bold">#{data.id || id}</CardTitle>
               </div>
               <div className="flex flex-col items-end">
                 <p className="text-sm font-bold text-black dark:!text-white">Order Date</p>
-                <p className="font-medium">{formatDate(data.order_date || new Date())}</p>
+                <p className="font-medium">{formatDate(data.date || new Date())}</p>
               </div>
               {type === "sale" && (
               <div className="flex flex-col items-end">
@@ -512,12 +478,12 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                     type === "sale" ? (
                     <div className="bg-white dark:bg-gray-800 font-bold p-3 rounded-md border">
                       <p className="text-sm text-black dark:!text-white">Customer Name</p>
-                      <p className="font-medium text-lg dark:!text-white">{data.customer_name || "-"}</p>
+                      <p className="font-medium text-lg dark:!text-white">{data.customerName || "-"}</p>
                     </div>
                     ):(
                       <div className="bg-white dark:bg-gray-800 font-bold p-3 rounded-md border">
                       <p className="text-sm text-black dark:!text-white">Vendor Name</p>
-                      <p className="font-medium text-lg dark:!text-white">{data.vendor_name || "-"}</p>
+                      <p className="font-medium text-lg dark:!text-white">{data.vendorName || "-"}</p>
                     </div>
 
                     )}
@@ -574,8 +540,8 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                                 </p>
 
                                 <p className="text-gray-600 dark:text-gray-400">
-                                  {log.created_at
-                                    ? new Date(log.created_at).toLocaleString("en-US", {
+                                  {log.createdAt
+                                    ? new Date(log.createdAt).toLocaleString("en-US", {
                                       year: "numeric",
                                       month: "short",
                                       day: "numeric",
@@ -654,8 +620,8 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                                 </p>
 
                                 <p className="text-gray-600 dark:text-gray-400">
-                                  {log.created_at
-                                    ? new Date(log.created_at).toLocaleString("en-US", {
+                                  {log.createdAt
+                                    ? new Date(log.createdAt).toLocaleString("en-US", {
                                       year: "numeric",
                                       month: "short",
                                       day: "numeric",
@@ -695,24 +661,24 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
                         <div className="flex justify-between items-center">
                           <span className="text-black dark:!text-white font-semibold text-sm">Payment Status</span>
-                          <PaymentStatusBadge status={data.payment_status} />
+                          <PaymentStatusBadge status={`${data.paymentStatus}`} />
                         </div>
 
                        {
-                        data?.discount_type && data?.discount_value && data.discount_value !== 0 ? (
+                        data?.discountType && data?.discountValue && data.discountValue !== 0 ? (
                        
                         <div className="flex justify-between items-center">
                           <span className="text-black dark:!text-white font-semibold text-sm">
                             Discount ({" "}
-                            {data?.discount_type && data?.discount_value && data.discount_value !== 0
-                              ? getDiscountTypeDisplay(data.discount_type)
+                            {data?.discountType && data?.discountValue && data.discountValue !== 0
+                              ? getDiscountTypeDisplay(data.discountType)
                               : "-"}{" "}
                             )
                           </span>
                           <span className="text-red-600 dark:text-red-400">
                             - ₹
-                            {data?.discount_value && data.discount_value !== 0
-                              ? formatAmount(data.discount_value)
+                            {data?.discountValue && data.discountValue !== 0
+                              ? formatAmount(data.discountValue)
                               : "0"}
                           </span>
                         </div>
@@ -723,33 +689,33 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                         <div className="flex text-black dark:!text-white justify-between items-center border-t pt-2">
                           <span className="text-black dark:!text-white font-semibold text-sm">Total After Discount</span>
                           <span className="text-black dark:!text-white font-medium">
-                            ₹{formatAmount((data.total_price || 0) - (data.discount_value || 0))}
+                            ₹{formatAmount((data.totalPrice || 0) - (data.discountValue || 0))}
                           </span>
                         </div>
 
-                        {data.remaining_amount > 0 && (
+                        {(data.remainingAmount ?? 0) > 0 && (
 
                         <div className="flex text-black justify-between items-center dark:!text-white text-sm font-bold pt-3 border-t-2 border-blue-200">
                           <span>Total Payable</span>
-                          <span className="text-primary">₹{formatAmount(data.total_payable)}</span>
+                          <span className="text-primary">₹{formatAmount(data.totalPayable)}</span>
                         </div>
                         )}
                         
                         <div className="flex justify-between items-center">
                           <span className="text-black dark:!text-white font-semibold text-sm">Amount Paid</span>
-                          <span className="font-medium text-black dark:!text-white">₹{formatAmount(data.paid_amount || 0)}</span>
+                          <span className="font-medium text-black dark:!text-white">₹{formatAmount(data.paidAmount || 0)}</span>
                         </div>
 
-                        {data.remaining_amount > 0 && (
+                        {(data.remainingAmount ?? 0) > 0 && (
                           <div className="flex justify-between items-center">
                             <span className="font-semibold text-black dark:!text-white text-sm">Remaining Amount</span>
-                            <span className="font-medium text-red-600">₹{formatAmount(data.remaining_amount)}</span>
+                            <span className="font-medium text-red-600">₹{formatAmount(data.remainingAmount)}</span>
                           </div>
                         )}
 
                   
 
-                        {data.paid_amount !== data.total_payable && data.remaining_amount > 0 && (
+                        {data.paidAmount !== data.totalPayable && (data.remainingAmount ?? 0) > 0 && (
                           <div className="pt-3">
                             <Button
                               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
@@ -790,7 +756,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
             <div className="flex justify-between grid-cols-1 gap-4 text-sm">
 
               <span className="font-bold text-dark-2">Remaining Amount:</span>
-              <p className="font-bold text-dark-2">₹{formatAmount(data.remaining_amount)}</p>
+              <p className="font-bold text-dark-2">₹{formatAmount(data.remainingAmount)}</p>
 
             </div>
 

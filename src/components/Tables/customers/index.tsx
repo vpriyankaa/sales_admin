@@ -19,14 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useRouter } from "next/navigation"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
 import { ChevronRight, ChevronLeft } from "lucide-react";
-
-interface Customer {
-  id: string
-  name: string
-  phone: string
-  aadhaar?: string
-  address?: string
-}
+import { Customer } from "@/types/customer"
 
 const customerFormSchema = z.object({
   name: z
@@ -184,7 +177,7 @@ export function Customers() {
     // Pre-populate form with customer data
     customerForm.reset({
       name: customer.name,
-      phone: customer.phone,
+      phone: customer.phone?.toString() || "",
       aadhaar: customer.aadhaar || "",
       address: customer.address || "",
     })

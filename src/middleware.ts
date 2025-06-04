@@ -2,14 +2,17 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
   const auth = request.cookies.get("auth")?.value;
   const path = request.nextUrl.pathname;
 
-  // console.log("🔥 Middleware HIT:", path);
+  if (pathname.startsWith("/ping")) {
+    return new Response("pong", { status: 200 });
+  }
   // console.log("✅ Auth cookie value:", auth);
 
   // List of public routes
-  const publicRoutes = ["/auth/sign-in"];
+  const publicRoutes = ["/auth/sign-in", "/auth/forgot-password"];
 
   // If not authenticated AND not visiting a public route
   if (!auth && !publicRoutes.includes(path)) {
@@ -26,28 +29,8 @@ export function middleware(request: NextRequest) {
 
 
 export const config = {
-    matcher: [
-      '/',
-    '/dashboard/:path*',
-    '/dashboard',
-    '/sales/:path*',
-    '/sales',
-    '/purchase/:path*',
-    '/purchase',
-    '/products/:path*',
-    '/products',
-    '/vendors/:path*',
-    '/vendors',
-    '/customers/:path*',
-    '/customers',
-    '/reports/:path*',
-    '/reports',
-    '/purchase-reports/:path*',
-    '/purchase-reports',
-    '/product-log/:path*',
-    '/customer-log/:path*',
-    '/vendor-log/:path*',
-    '/detail/:path*',
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|api/auth|sign-in|sign-up).*)",
   ],
 };
 

@@ -20,9 +20,14 @@ export default function SignIn() {
               className="object-cover"
               priority
             />
-            <span className="text-4xl font-bold text-white mt-4">
-              சாமி ஏஜென்சி
-            </span>
+            <Image
+              src="/images/brand/saamy-agency-tamil.png"
+              alt="Saamy Logo"
+              width={400}
+              height={300}
+              className="object-cover my-8"
+              priority
+            />
           </div>
 
           <div className="w-full lg:w-1/2 p-6 flex items-center justify-center">

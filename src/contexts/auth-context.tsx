@@ -4,14 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { Loader2 } from "lucide-react"
 import { setCookie } from "cookies-next";
 import { deleteCookie, getCookie } from "cookies-next";
-
-type User = {
-  id: number;
-  name: string;
-  phone: number | string;
-  email: string | null;
-  created_at: string;
-};
+import { User } from "@/types/user"; // Adjust the import path as needed
 
 type AuthContextType = {
   user: User | null;
