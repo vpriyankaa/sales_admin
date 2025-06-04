@@ -48,7 +48,6 @@ export const config = {
     '/customer-log/:path*',
     '/vendor-log/:path*',
     '/detail/:path*',
-
   ],
 };
 

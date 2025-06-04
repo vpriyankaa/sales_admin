@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Loader2 } from "lucide-react"
 import { setCookie } from "cookies-next";
-import { deleteCookie } from "cookies-next";
+import { deleteCookie, getCookie } from "cookies-next";
 
 type User = {
   id: number;
@@ -36,6 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
 
+
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -54,46 +55,83 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   }, []);
 
-  
 
-const login = (u: User) => {
-  setIsLoggingIn(true); // ✅ show loader
-  sessionStorage.setItem("user", JSON.stringify(u));
-  setCookie("auth", "true", {
-  path: "/",
-  maxAge: 60 * 60 * 24, // 1 day
-  sameSite: "lax",
-}); // 1 day
-  
-  setUser(u);
-  router.push("/dashboard");
-};
+
+  const login = (u: User) => {
+    setIsLoggingIn(true); // ✅ show loader
+    sessionStorage.setItem("user", JSON.stringify(u));
+    setCookie("auth", "true", {
+      path: "/",
+      maxAge: 60 * 60 * 24, // 1 day
+      sameSite: "lax",
+    }); // 1 day
+
+    setUser(u);
+    router.push("/dashboard");
+  };
 
 
 
 
   const logout = () => {
-  setIsLoggingOut(true);
-  sessionStorage.removeItem("user");
-  deleteCookie("auth", { path: "/" });
-  setUser(null);
-  router.replace("/auth/sign-in");
-  window.location.reload();
-};
+    setIsLoggingOut(true);
+    sessionStorage.removeItem("user");
+    deleteCookie("auth", { path: "/" });
+    setUser(null);
+    router.replace("/auth/sign-in");
+    window.location.reload();
+  };
 
 
-   useEffect(() => {
-  if (pathname === "/dashboard") {
-    setIsLoggingIn(false);
-  }
+  // On unload, clear sessionStorage + cookie
+useEffect(() => {
+  const handleUnload = () => {
+    sessionStorage.clear();
+    deleteCookie("auth", { path: "/" });
+  };
 
-  if (pathname === "/auth/sign-in") {
-    setIsLoggingOut(false);
-  }
-}, [pathname]);
+  window.addEventListener("beforeunload", handleUnload);
+  return () => window.removeEventListener("beforeunload", handleUnload);
+}, []);
+
+// Periodic check for sessionStorage cleared manually
+useEffect(() => {
+  const interval = setInterval(() => {
+    if (!sessionStorage.getItem("user")) {
+      deleteCookie("auth", { path: "/" });
+      setUser(null);
+    }
+  }, 3000);
+
+  return () => clearInterval(interval);
+}, []);
 
 
 
+  useEffect(() => {
+    if (pathname === "/dashboard") {
+      setIsLoggingIn(false);
+    }
+
+    if (pathname === "/auth/sign-in") {
+      setIsLoggingOut(false);
+    }
+  }, [pathname]);
+
+
+  const cookie = getCookie("auth");
+  const isAuthenticated = !!user || !!cookie;
+
+
+  //   useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     router.push("/auth/sign-in");
+  //   }
+  // }, [isAuthenticated, router]);
+
+  // if (!isAuthenticated) {
+  //   return null; 
+  // }
 
   return (
     <AuthContext.Provider
@@ -103,7 +141,7 @@ const login = (u: User) => {
         isLoggingOut,
         login,
         logout,
-        isAuthenticated: !!user,
+        isAuthenticated,
       }}
     >
       {/* {children} */}

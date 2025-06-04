@@ -8,9 +8,13 @@ import { Header } from "@/components/Layouts/header";
 export default function AuthGate({ children }: PropsWithChildren) {
   const { isAuthenticated, loading } = useAuth();
 
+  
   if (loading) return null;
 
+  // If NOT authenticated (no user and no cookie), show only children (e.g., login page) and NO sidebar/header
   if (!isAuthenticated) return <>{children}</>;
+
+
 
   return (
     <div className="flex min-h-screen">
