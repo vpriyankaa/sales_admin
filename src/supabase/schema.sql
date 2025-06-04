@@ -25,7 +25,6 @@ create table if not exists customerLogs (
   action text not null,
   user bigint not null,
   customer_id bigint not null,
-  
 );
 
 

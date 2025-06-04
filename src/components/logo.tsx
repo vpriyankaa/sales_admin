@@ -1,12 +1,13 @@
 import darkLogo from "@/assets/logos/dark.svg";
 import logo from "@/assets/logos/main.svg";
+import saamyAgencyFull from "@/assets/logos/saamy-agency-full.svg";
 import Image from "next/image";
 
 export function Logo() {
   return (
-    <div className="relative h-8 max-w-[10.847rem]">
+    <div className="relative h-16 w-full bg-primary dark:bg-primary-dark">
       <Image
-        src={logo}
+        src={saamyAgencyFull}
         fill
         className="dark:hidden"
         alt="Saamy Agency"
@@ -15,7 +16,7 @@ export function Logo() {
       />
 
       <Image
-        src={darkLogo}
+        src={saamyAgencyFull}
         fill
         className="hidden dark:block"
         alt="Saamy Agency"

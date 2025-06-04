@@ -14,7 +14,7 @@
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
+    --primary: 228 100% 20.6%;
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
@@ -42,7 +42,7 @@
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
+    --primary: 228 100% 70%;
     --primary-foreground: 0 0% 9%;
     --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
@@ -86,7 +86,7 @@
   }
 
   .bg-primary {
-    background-color: #3b82f6 !important;
+    background-color: #001D6B !important;
   }
 
   .dark {
@@ -98,7 +98,7 @@
   }
 
   .text-primary {
-    color: #3b82f6 !important;
+    color: #001D6B !important;
   }
 
   .text-secondary{
@@ -107,7 +107,7 @@
 
 
   .border-primary {
-    border-color: #3b82f6 !important;
+    border-color: #001D6B !important;
   }
 
   .fill-dark-5 {
