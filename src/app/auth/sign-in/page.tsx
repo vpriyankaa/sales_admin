@@ -65,31 +65,21 @@ export const metadata: Metadata = {
 export default function SignIn() {
   return (
     <>
-      <div className="flex min-h-screen items-center justify-center bg-white p-4">
+      <div className="flex min-h-screen items-center justify-center bg-white">
         <div className="w-full max-w-6xl rounded-[10px] shadow-1 dark:bg-boxdark-2">
           <div className="flex flex-wrap items-center">
             {/* Left section: Welcome message and image (hidden on smaller screens) */}
             <div className="w-full xl:block xl:w-1/2">
-              <div className="custom-gradient-1 overflow-hidden rounded-2xl px-12.5 pt-12.5">
-                <p className="mb-3 text-xl font-medium text-dark dark:text-white">
-                  Sign in to your account
-                </p>
+              <div className="custom-gradient-1 overflow-hidden no-scrollbar::-webkit-scrollbar rounded-2xl px-12.5 pt-12.5">
+               
 
-                <h1 className="mb-4 text-2xl font-bold text-dark dark:text-white sm:text-heading-3">
-                  Welcome Back!
-                </h1>
-
-                <p className="w-full max-w-[375px] font-medium text-dark-4 dark:text-dark-600">
-                  Please sign in to your account by completing the necessary fields below.
-                </p>
-
-                <div className="mt-10">
+                <div>
                   <Image
                     src={"/images/logo/saamylogo.jpg"}
                     alt="Saamy Logo"
                     width={500}
                     height={50} 
-                    className="max-h-96"
+                    className="max-h-screen"
                   />
                 </div>
               </div>

@@ -81,8 +81,8 @@ export default function ResetPassword() {
 
   return (
     <div className="flex min-h-screen bg-transparent items-center justify-center p-4">
-      <div className="p-6 bg-white rounded shadow relative">
-        <h2 className="mb-6 text-2xl font-bold text-center">Reset your password</h2>
+      <div className="p-4 bg-white rounded shadow relative w-full max-w-lg">
+        <h2 className="mb-6 w-full text-2xl text-dark font-bold text-center">Reset your password</h2>
         <form onSubmit={handleSubmit} noValidate>
           {/* Phone */}
           <label htmlFor="phone" className="block mb-1 font-medium">
