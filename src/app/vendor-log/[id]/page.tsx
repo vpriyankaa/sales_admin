@@ -150,7 +150,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                   </div>
                 </div>
               ) : (
-                <p className="flex justify-end mr-20 text-gray-600  dark:text-gray-400">No logs found.</p>
+                <p className="flex justify-end mr-20 text-gray-600 p-5 dark:text-gray-400">No logs found.</p>
               )}
 
             </div>

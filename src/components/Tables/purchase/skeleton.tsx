@@ -141,10 +141,7 @@ export function PurchaseSkeleton() {
                     <SelectValue placeholder="Select Product" />
                   </SelectTrigger>
                   <SelectContent className="z-[999] text-gray-700 font-semibold dark:!text-white dark:bg-gray-dark bg-white shadow-md border rounded-md">
-                    <SelectItem value="">
-                       Select
-                    </SelectItem>
-                                  
+                   
                     {products.map((p) => (
                       <SelectItem key={p.id} value={p.name}>
                         {p.name}

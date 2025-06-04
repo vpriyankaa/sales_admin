@@ -349,11 +349,11 @@ export function TopProducts() {
                         <div className="col-span-3">
                           <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
-                              <SelectTrigger className="text-dark text-md dark:!text-white">
-                                <SelectValue placeholder="Select unit" />
+                              <SelectTrigger className="text-gray-400 dark:!text-white">
+                                <SelectValue className="text-gray-300" placeholder="Select unit" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent className="bg-white text-dark dark:!text-white dark:bg-gray-dark">
+                            <SelectContent className="bg-white text-md dark:!text-white dark:bg-gray-dark">
                               {units.map((unit) => (
                                 <SelectItem key={unit.id} value={unit.name}>
                                   {unit.name.charAt(0).toUpperCase() + unit.name.slice(1)}

@@ -230,12 +230,12 @@ export function Purchase({ className }: { className?: string }) {
                   {/* Vendor Filter */}
                   <div className="flex-1 min-w-0">
                     <Select value={filters.vendor} onValueChange={(value) => handleFilterChange("vendor", value)}>
-                      <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
+                      <SelectTrigger className="w-full h-[40px] font-medium border rounded px-3">
                         <SelectValue placeholder="Select Vendor" />
                       </SelectTrigger>
-                      <SelectContent className="z-[999] text-gray-700 font-semibold dark:!text-white dark:bg-gray-dark bg-white shadow-md border rounded-md">
+                      <SelectContent className="z-[999] text-gray-700 text-md font-semibold dark:!text-white dark:bg-gray-dark bg-white shadow-md border rounded-md">
                         {vendors.map((c) => (
-                          <SelectItem key={c.id} value={c.name}>
+                          <SelectItem className="text-md" key={c.id} value={c.name}>
                             {c.name}
                           </SelectItem>
                         ))}
@@ -294,7 +294,7 @@ export function Purchase({ className }: { className?: string }) {
             <TableBody>
               {currentData.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center text-md py-8 text-gray-700 dark:!text-white font-semibold">
+                  <TableCell colSpan={8} className="text-center text-lg py-8 text-gray-700  dark:!text-white">
                     {hasActiveFilters ? "No orders found" : "No orders found"}
                   </TableCell>
                 </TableRow>

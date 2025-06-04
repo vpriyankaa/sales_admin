@@ -766,12 +766,12 @@ export function Orders({ className }: { className?: string }) {
                   {/* Customer Filter */}
                   <div className="flex-1 min-w-0">
                     <Select value={filters.customer} onValueChange={(value) => handleFilterChange("customer", value)}>
-                      <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
+                      <SelectTrigger className="w-full h-[40px] font-medium border rounded px-3">
                         <SelectValue placeholder="Select Customer" />
                       </SelectTrigger>
-                      <SelectContent className="z-[999] text-gray-700 font-semibold bg-white dark:!text-white dark:bg-gray-dark shadow-md border rounded-md">
+                      <SelectContent className="z-[999] text-gray-700 text-md font-semibold bg-white dark:!text-white dark:bg-gray-dark shadow-md border rounded-md">
                         {customers.map((c) => (
-                          <SelectItem key={c.id} value={c.name}>
+                          <SelectItem className="text-md" key={c.id} value={c.name}>
                             {c.name}
                           </SelectItem>
                         ))}
@@ -828,7 +828,7 @@ export function Orders({ className }: { className?: string }) {
             <TableBody>
               {currentData.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center text-md py-8 text-gray-700 font-semibold">
+                  <TableCell colSpan={8} className="text-center text-lg py-8 text-gray-700 dark:!text-white">
                     {hasActiveFilters ? "No orders found" : "No orders found"}
                   </TableCell>
                 </TableRow>
