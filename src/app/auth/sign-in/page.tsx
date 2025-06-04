@@ -1,59 +1,3 @@
-// import Signin from "@/components/Auth/Signin"
-// import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb"
-// import type { Metadata } from "next"
-// import Image from "next/image"
-// import Link from "next/link"
-
-// export const metadata: Metadata = {
-//   title: "Sign in",
-// }
-
-// export default function SignIn() {
-//   return (
-//     <>
-  
-//       <div className="flex min-h-screen bg-white items-center justify-center p-4">
-//         <div className="w-full max-w-6xl rounded-[10px] shadow-1">
-//           <div className="flex flex-wrap items-center">
-//             <div className="hidden w-full p-7.5 xl:block xl:w-1/2">
-//               <div className="custom-gradient-1 overflow-hidden rounded-2xl px-12.5 pt-12.5">
-             
-//                 <p className="mb-3 text-xl font-medium text-dark dark:text-white">Sign in to your account</p>
-
-//                 <h1 className="mb-4 text-2xl font-bold text-dark dark:text-white sm:text-heading-3">Welcome Back!</h1>
-
-//                 <p className="w-full max-w-[375px] font-medium text-dark-4 dark:text-dark-600">
-//                   Please sign in to your account by completing the necessary fields below
-//                 </p>
-                
-//                 <div className="mt-10">
-//                   <Image
-//                     src={"/images/logo/saamylogo.jpg"}
-//                     alt="Logo"
-//                     width={405}
-//                     height={325}
-//                     className="mx-auto dark:opacity-30"
-//                   />
-//                 </div>
-//               </div>
-//             </div>
-
-//             <div className="w-full xl:w-1/2">
-//               <div className="flex min-h-[600px] items-center justify-center w-full p-4 sm:p-12.5 xl:p-15">
-//                 <div className="w-full max-w-md">
-//                   <Signin />
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </>
-//   )
-// }
-
-
-
 import Signin from "@/components/Auth/Signin";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -65,37 +9,32 @@ export const metadata: Metadata = {
 export default function SignIn() {
   return (
     <>
-      <div className="flex min-h-screen items-center justify-center bg-white">
-        <div className="w-full max-w-6xl rounded-[10px] shadow-1 dark:bg-boxdark-2">
-          <div className="flex flex-wrap items-center">
-            {/* Left section: Welcome message and image (hidden on smaller screens) */}
-            <div className="w-full xl:block xl:w-1/2">
-              <div className="custom-gradient-1 overflow-hidden no-scrollbar::-webkit-scrollbar rounded-2xl px-12.5 pt-12.5">
-               
-
-                <div>
-                  <Image
-                    src={"/images/logo/saamylogo.jpg"}
-                    alt="Saamy Logo"
-                    width={500}
-                    height={50} 
-                    className="max-h-screen"
-                  />
-                </div>
-              </div>
+       <div className="h-screen w-full flex items-center justify-center bg-white p-4">
+      <div className="w-full max-w-6xl h-auto max-h-[90vh] rounded-lg">
+        <div className="flex flex-col md:flex-row h-full">
+          {/* Left section: Logo */}
+          <div className="w-full md:w-1/2 custom-gradient-1 flex items-center justify-center p-4">
+            <div className="relative w-full h-full flex items-center justify-center">
+              <Image
+                src="/images/logo/saamylogo.jpg"
+                alt="Saamy Logo"
+                width={500}
+                height={50}
+                className="w-auto max-h-[70vh] object-contain"
+                priority
+              />
             </div>
+          </div>
 
-            {/* Right section: Sign-in form */}
-            <div className="w-full xl:w-1/2">
-              <div className="flex min-h-[600px] w-full items-center justify-center p-4 sm:p-12.5 xl:p-15">
-                <div className="w-full max-w-md mt-10">
-                  <Signin />
-                </div>
-              </div>
+          {/* Right section: Sign-in form */}
+          <div className="w-full md:w-1/2 flex items-center justify-center">
+            <div className="w-full max-w-md p-4 md:p-6">
+              <Signin />
             </div>
           </div>
         </div>
       </div>
+    </div>
     </>
   );
 }
