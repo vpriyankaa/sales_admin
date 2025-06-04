@@ -78,6 +78,7 @@ const login = (u: User) => {
   deleteCookie("auth", { path: "/" });
   setUser(null);
   router.replace("/auth/sign-in");
+  window.location.reload();
 };
 
 
