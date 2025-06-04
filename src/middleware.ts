@@ -44,6 +44,11 @@ export const config = {
     '/reports',
     '/purchase-reports/:path*',
     '/purchase-reports',
+    '/product-log/:path*',
+    '/customer-log/:path*',
+    '/vendor-log/:path*',
+    '/detail/:path*',
+
   ],
 };
 
