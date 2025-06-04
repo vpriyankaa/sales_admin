@@ -4,10 +4,21 @@ import { useAuth } from "@/contexts/auth-context";
 import { PropsWithChildren } from "react";
 import { Sidebar } from "@/components/Layouts/sidebar";
 import { Header } from "@/components/Layouts/header";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 
 export default function AuthGate({ children }: PropsWithChildren) {
   const { isAuthenticated, loading } = useAuth();
+const auth = useAuth();
+  const router = useRouter();
 
+  
+  useEffect(() => {
+  if (!loading && !isAuthenticated) {
+    router.push("/auth/sign-in");
+  }
+}, [loading, isAuthenticated, router]);
   
   if (loading) return null;
 
