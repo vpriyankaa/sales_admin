@@ -88,7 +88,7 @@ export default function SignIn() {
             {/* Right section: Sign-in form */}
             <div className="w-full xl:w-1/2">
               <div className="flex min-h-[600px] w-full items-center justify-center p-4 sm:p-12.5 xl:p-15">
-                <div className="w-full max-w-md">
+                <div className="w-full max-w-md mt-10">
                   <Signin />
                 </div>
               </div>
