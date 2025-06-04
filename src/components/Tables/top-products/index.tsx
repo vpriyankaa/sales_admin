@@ -274,7 +274,7 @@ export function TopProducts() {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleEditProduct(product)}
-                            className="h-8 w-8 hover:bg-blue-100 dark:hover:bg-blue-900"
+                            className="h-8 w-8 hover:bg-blue-200"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -293,7 +293,7 @@ export function TopProducts() {
                             variant="ghost"
                             size="icon"
                             onClick={() => router.push(`/product-log/${product.id}`)}
-                            className="h-8 w-8 hover:bg-green-100 dark:hover:bg-green-900"
+                            className="h-8 w-8 hover:bg-blue-200"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>

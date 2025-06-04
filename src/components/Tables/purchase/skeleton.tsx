@@ -97,15 +97,12 @@ export function PurchaseSkeleton() {
         </div>
       </div>
 
-
-      <div className="mt-6">
+      <div className="mt-6 dark:!text-white">
         <Card className="mb-4 mx-2 sm:mx-4 xl:mx-8.5">
-
-
           <CardContent className="pt-6 pb-4">
-            <div className="flex flex-wrap items-center gap-4">
-              {/* Date Range Picker - Fixed width to match the screenshot */}
-              <div className="w-full sm:w-[250px]">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+              {/* Date Range Picker */}
+              <div className="flex-2 min-w-0">
                 <DateRangePicker
                   initialDateFrom={filters.dateFrom}
                   initialDateTo={filters.dateTo}
@@ -121,13 +118,13 @@ export function PurchaseSkeleton() {
                 />
               </div>
 
-              {/* Customer Filter - Fixed width to match the screenshot */}
-              <div className="w-full sm:w-[200px]">
+              {/* Vendor Filter */}
+              <div className="flex-1 min-w-0">
                 <Select value={filters.vendor} onValueChange={(value) => handleFilterChange("vendor", value)}>
                   <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
                     <SelectValue placeholder="Select Vendor" />
                   </SelectTrigger>
-                  <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                  <SelectContent className="z-[999] text-gray-700 font-semibold dark:!text-white dark:bg-gray-dark bg-white shadow-md border rounded-md">
                     {vendors.map((c) => (
                       <SelectItem key={c.id} value={c.name}>
                         {c.name}
@@ -137,13 +134,17 @@ export function PurchaseSkeleton() {
                 </Select>
               </div>
 
-              {/* Product Filter - Fixed width to match the screenshot */}
-              <div className="w-full sm:w-[200px]">
+              {/* Product Filter */}
+              <div className="flex-1 min-w-0">
                 <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
                   <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
                     <SelectValue placeholder="Select Product" />
                   </SelectTrigger>
-                  <SelectContent className="z-[999] text-gray-700 font-semibold bg-white shadow-md border rounded-md">
+                  <SelectContent className="z-[999] text-gray-700 font-semibold dark:!text-white dark:bg-gray-dark bg-white shadow-md border rounded-md">
+                    <SelectItem value="">
+                       Select
+                    </SelectItem>
+                                  
                     {products.map((p) => (
                       <SelectItem key={p.id} value={p.name}>
                         {p.name}
@@ -153,13 +154,13 @@ export function PurchaseSkeleton() {
                 </Select>
               </div>
 
-              {/* Clear Filters Button - Fixed width to match the screenshot */}
-              <div className="w-full sm:w-auto sm:ml-auto">
+              {/* Clear Filters Button */}
+              <div className="flex-shrink-0">
                 {hasActiveFilters && (
                   <Button
                     variant="outline"
                     onClick={clearFilters}
-                    className="w-full sm:w-[150px] h-[40px] bg-blue-500 hover:bg-blue-600 text-white border-blue-500 hover:border-blue-600"
+                    className="w-full sm:w-auto h-[40px] px-6 bg-blue-500 hover:bg-blue-600 text-white border-blue-500 hover:border-blue-600 whitespace-nowrap"
                   >
                     Clear Filters
                   </Button>

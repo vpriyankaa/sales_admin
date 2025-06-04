@@ -7,14 +7,16 @@ import InputGroup from "../FormElements/InputGroup";
 import { Checkbox } from "../FormElements/checkbox";
 import { checkUserCredentials } from '@/app/actions';
 import { useAuth } from "@/contexts/auth-context";
+import { Eye, EyeOff } from "lucide-react";
+
 
 export default function SigninWithPassword() {
   const router = useRouter();
   const { login } = useAuth();
 
   const [data, setData] = useState({
-    phone: process.env.NEXT_PUBLIC_DEMO_USER_MAIL || "",
-    password: process.env.NEXT_PUBLIC_DEMO_USER_PASS || "",
+    phone: "",
+    password:"",
     remember: false,
   });
 
@@ -85,7 +87,7 @@ export default function SigninWithPassword() {
             onClick={() => setShowPassword((prev) => !prev)}
             className="focus:outline-none"
           >
-            {showPassword ? <EyeIcon /> : <EyeOffIcon />}
+            {showPassword ? <Eye /> : <EyeOff />}
           </button>
         }
         iconPosition="right"
