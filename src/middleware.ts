@@ -9,6 +9,10 @@ export function middleware(request: NextRequest) {
   if (pathname.startsWith("/ping")) {
     return new Response("pong", { status: 200 });
   }
+
+  if (pathname.startsWith("/images")) {
+  return NextResponse.next(); // skip auth check for images
+}
   // console.log("✅ Auth cookie value:", auth);
 
   // List of public routes
