@@ -214,7 +214,7 @@ export default function Home({ id }: Props) {
       address: "",
       products: [],
     },
-    mode: "onChange",
+    mode: "onSubmit",
   })
 
   const [isLoading, setIsLoading] = useState(false)
@@ -663,12 +663,23 @@ export default function Home({ id }: Props) {
                       >
                         <SelectValue className="dark:!text-white dark:!bg-gray-dark text-md" placeholder="Select vendor" />
                       </SelectTrigger>
+
                       <SelectContent className="z-[999] w-full bg-white text-md dark:!bg-gray-dark dark:!text-white shadow-md border rounded-md">
-                        {vendors.map((vendor) => (
-                          <SelectItem className="text-md" key={vendor.id} value={vendor.id.toString()}>
-                            {vendor.name}
-                          </SelectItem>
-                        ))}
+                        {vendors.length === 0 ? (
+                          <div className="flex justify-center items-center h-20">
+                            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                          </div>
+                        ) : vendors.length > 0 ? (
+                          vendors.map((vendor) => (
+                            <SelectItem className="text-md" key={vendor.id} value={vendor.id.toString()}>
+                              {vendor.name}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <div className="text-center text-sm py-2 text-gray-500">
+                            No vendors available
+                          </div>
+                        )}
                       </SelectContent>
                     </Select>
                     {orderValidation.vendor && <p className="text-md text-red-500 mt-1">{orderValidation.vendor}</p>}
@@ -701,7 +712,16 @@ export default function Home({ id }: Props) {
                                     </FormLabel>
                                     <div className="col-span-3">
                                       <FormControl>
-                                        <Input {...field} maxLength={20} placeholder="Enter vendor name" />
+                                        <Input {...field} maxLength={20}
+                                          placeholder="Enter vendor name"
+                                          onChange={(e) => {
+                                            const rawValue = e.target.value;
+                                            const correctedValue =
+                                              rawValue.charAt(0).toUpperCase() + rawValue.slice(1);
+                                            field.onChange(correctedValue);
+                                          }}
+
+                                        />
                                       </FormControl>
                                       <FormMessage />
                                     </div>
@@ -733,9 +753,7 @@ export default function Home({ id }: Props) {
                                               field.onChange(undefined)
                                             }
                                           }}
-                                          onBlur={() => {
-                                            vendorForm.trigger("phone")
-                                          }}
+
                                           className={vendorForm.formState.errors.phone ? "border-red-500" : ""}
                                         />
                                       </FormControl>
@@ -912,13 +930,20 @@ export default function Home({ id }: Props) {
                       >
                         <SelectValue className="text-text-dark-400" placeholder="Select product" />
                       </SelectTrigger>
-
                       <SelectContent className="z-[999] text-text-dark-400 w-full dark:!text-white bg-white dark:!bg-gray-dark shadow-md border rounded-md">
-                        {filteredProducts.map((product) => (
-                          <SelectItem className="text-md" key={product.id} value={product.id.toString()}>
-                            {product.name}
-                          </SelectItem>
-                        ))}
+                        {filteredProducts.length === 0 ? (
+                          <div className="flex justify-center items-center h-20">
+                            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                          </div>
+                        ) : filteredProducts.length > 0 ? (
+                          filteredProducts.map((product) => (
+                            <SelectItem className="text-md" key={product.id} value={product.id.toString()}>
+                              {product.name}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <div className="text-center text-sm py-2 text-gray-500">No products found</div>
+                        )}
                       </SelectContent>
                     </Select>
                     {orderValidation.cart && <p className="text-md text-red-500 mt-1">{orderValidation.cart}</p>}

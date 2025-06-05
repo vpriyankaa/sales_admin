@@ -279,12 +279,13 @@ export function OrderSummary({
       <Button
         type="button"
         size="lg"
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white mt-4"
+        className="w-full mt-5"
         onClick={handlePlaceOrder}
         disabled={isSubmitting}
       >
         {isSubmitting ? "Processing..." : isEditMode ? "Update Order" : "Place Order"}
       </Button>
+      
     </div>
   )
 }

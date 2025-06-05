@@ -115,7 +115,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     selectedStatus: string,
     setData: React.Dispatch<React.SetStateAction<Order | null>>,
     setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    statusChangeComments:string
+    statusChangeComments: string
   ) => {
     if (!selectedOrder || !selectedStatus) return
 
@@ -138,7 +138,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     // Update the single order data
     setData((prev) => (prev ? { ...prev, status: newStatus } : null))
 
-    const orderStatus = await changeOrderStatus(selectedOrder.id, newStatus,statusChangeComments)
+    const orderStatus = await changeOrderStatus(selectedOrder.id, newStatus, statusChangeComments)
 
     if (orderStatus) {
       setIsModalOpen(false)
@@ -228,7 +228,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   // Products Table Component
   const ProductsTable = ({ items }: { items?: Product[] }) => (
     <div>
-      <h3 className="text-lg font-semibold mb-4 text-primary dark:text-primary">Products</h3>
+      <h3 className="text-lg font-semibold mb-4 text-primary">Products</h3>
       <div className="overflow-x-auto border rounded-md">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-800 dark:!text-white">
@@ -433,7 +433,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   return (
     <>
       <div className="max-w-6xl mx-auto p-4 print:p-0 print:shadow-none">
-        <Card className="shadow-lg border-t-4 border-b-4 border-b-blue-500 border-t-blue-500 print:shadow-none print:border">
+        <Card className="shadow-lg border-t-primary border-b-primary print:shadow-none print:border">
           <CardHeader className="bg-gray-50 dark:bg-gray-800 border-b dark:!text-white">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
               <div>
@@ -444,19 +444,19 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                 <p className="text-sm font-bold text-black dark:!text-white">Order Date</p>
                 <p className="font-medium">{formatDate(data.date || new Date())}</p>
               </div>
-              {type === "sale" && (
-              <div className="flex flex-col items-end">
-                <button
-                  onClick={() => {
-                    setSelectedOrder(data)
-                    setSelectedOrderStatus(statusOptions[0]) // Set to first option "Cancel"
-                    setIsModalOpen(true)
-                  }}
-                  className="text-primary hover:text-primary font-medium"
-                >
-                  Change status
-                </button>
-              </div>
+              {type === "sale" && (data.status === 'created' || data.status === 'completed') && (
+                <div className="flex flex-col items-end">
+                  <button
+                    onClick={() => {
+                      setSelectedOrder(data);
+                      setSelectedOrderStatus(statusOptions[0]);
+                      setIsModalOpen(true);
+                    }}
+                    className="text-primary hover:text-primary font-medium"
+                  >
+                    Change status
+                  </button>
+                </div>
               )}
             </div>
           </CardHeader>
@@ -468,25 +468,25 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                   {
                     type === "sale" ? (
                       <h3 className="text-lg font-semibold mb-4 text-primary dark:text-primary">Customer Information</h3>
-                    ) :(
+                    ) : (
                       <h3 className="text-lg font-semibold mb-4 text-primary dark:text-primary">Vendor Information</h3>
                     )
                   }
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {
-                    type === "sale" ? (
-                    <div className="bg-white dark:bg-gray-800 font-bold p-3 rounded-md border">
-                      <p className="text-sm text-black dark:!text-white">Customer Name</p>
-                      <p className="font-medium text-lg dark:!text-white">{data.customerName || "-"}</p>
-                    </div>
-                    ):(
-                      <div className="bg-white dark:bg-gray-800 font-bold p-3 rounded-md border">
-                      <p className="text-sm text-black dark:!text-white">Vendor Name</p>
-                      <p className="font-medium text-lg dark:!text-white">{data.vendorName || "-"}</p>
-                    </div>
+                      type === "sale" ? (
+                        <div className="bg-white dark:bg-gray-800 font-bold p-3 rounded-md border">
+                          <p className="text-sm text-black dark:!text-white">Customer Name</p>
+                          <p className="font-medium text-lg dark:!text-white">{data.customerName || "-"}</p>
+                        </div>
+                      ) : (
+                        <div className="bg-white dark:bg-gray-800 font-bold p-3 rounded-md border">
+                          <p className="text-sm text-black dark:!text-white">Vendor Name</p>
+                          <p className="font-medium text-lg dark:!text-white">{data.vendorName || "-"}</p>
+                        </div>
 
-                    )}
+                      )}
                     {data.remarks && (
                       <div className="bg-white dark:bg-gray-800 font-bold p-3 rounded-md border">
                         <p className="text-sm text-black dark:!text-white">Remarks</p>
@@ -502,7 +502,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                 {/* Order Logs - Only show if there are logs */}
                 {paymentLogData && paymentLogData.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-bold mb-4 text-primary dark:text-primary">Payment Logs</h3>
+                    <h3 className="text-lg font-semibold mb-4 text-primary dark:text-primary">Payment Logs</h3>
                     <div className="bg-white dark:bg-gray-800 border rounded-md p-3 space-y-2">
                       {paymentLogData.map((log) => {
                         const isOpen = openId === log.id
@@ -520,7 +520,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                               <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
                                 {log.action}
                               </span>
-                              {/* chevron */}
+
                               <svg
                                 className={`w-4 h-4 transform transition-transform ${isOpen ? "rotate-180" : ""}`}
                                 fill="none"
@@ -664,27 +664,27 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                           <PaymentStatusBadge status={`${data.paymentStatus}`} />
                         </div>
 
-                       {
-                        data?.discountType && data?.discountValue && data.discountValue !== 0 ? (
-                       
-                        <div className="flex justify-between items-center">
-                          <span className="text-black dark:!text-white font-semibold text-sm">
-                            Discount ({" "}
-                            {data?.discountType && data?.discountValue && data.discountValue !== 0
-                              ? getDiscountTypeDisplay(data.discountType)
-                              : "-"}{" "}
-                            )
-                          </span>
-                          <span className="text-red-600 dark:text-red-400">
-                            - ₹
-                            {data?.discountValue && data.discountValue !== 0
-                              ? formatAmount(data.discountValue)
-                              : "0"}
-                          </span>
-                        </div>
-                        ):(
-                          ""
-                        )}
+                        {
+                          data?.discountType && data?.discountValue && data.discountValue !== 0 ? (
+
+                            <div className="flex justify-between items-center">
+                              <span className="text-black dark:!text-white font-semibold text-sm">
+                                Discount ({" "}
+                                {data?.discountType && data?.discountValue && data.discountValue !== 0
+                                  ? getDiscountTypeDisplay(data.discountType)
+                                  : "-"}{" "}
+                                )
+                              </span>
+                              <span className="text-red-600 dark:text-red-400">
+                                - ₹
+                                {data?.discountValue && data.discountValue !== 0
+                                  ? formatAmount(data.discountValue)
+                                  : "0"}
+                              </span>
+                            </div>
+                          ) : (
+                            ""
+                          )}
 
                         <div className="flex text-black dark:!text-white justify-between items-center border-t pt-2">
                           <span className="text-black dark:!text-white font-semibold text-sm">Total After Discount</span>
@@ -695,12 +695,12 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
                         {(data.remainingAmount ?? 0) > 0 && (
 
-                        <div className="flex text-black justify-between items-center dark:!text-white text-sm font-bold pt-3 border-t-2 border-blue-200">
-                          <span>Total Payable</span>
-                          <span className="text-primary">₹{formatAmount(data.totalPayable)}</span>
-                        </div>
+                          <div className="flex text-black justify-between items-center dark:!text-white text-sm font-bold pt-3 border-t-2 border-blue-200">
+                            <span>Total Payable</span>
+                            <span className="text-primary">₹{formatAmount(data.totalPayable)}</span>
+                          </div>
                         )}
-                        
+
                         <div className="flex justify-between items-center">
                           <span className="text-black dark:!text-white font-semibold text-sm">Amount Paid</span>
                           <span className="font-medium text-black dark:!text-white">₹{formatAmount(data.paidAmount || 0)}</span>
@@ -713,12 +713,12 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                           </div>
                         )}
 
-                  
+
 
                         {data.paidAmount !== data.totalPayable && (data.remainingAmount ?? 0) > 0 && (
                           <div className="pt-3">
                             <Button
-                              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                              className="w-full"
                               onClick={() => setPaymentDialogOpen(true)}
                             >
                               Pay Remaining Amount
@@ -734,9 +734,9 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
             </div>
           </CardContent>
 
-          <CardFooter className="bg-gray-50 dark:bg-gray-800 border-t p-4 print:hidden">
+          <CardFooter>
             <div className="flex justify-end w-full">
-              <Button className="bg-blue-600 text-white" variant="outline" onClick={() => window.history.back()}>
+              <Button onClick={() => window.history.back()}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back
               </Button>
@@ -969,7 +969,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                   selectedOrderStatus,
                   setData,
                   setIsModalOpen,
-                  statusChangeComments 
+                  statusChangeComments
                 )
               }
               disabled={!statusChangeComments.trim()}
@@ -989,7 +989,13 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
             </DialogHeader>
             <div>Order Status Changed!</div>
             <DialogFooter>
-              <Button className="w-full md:w-auto text-white mb-5 mr-2" onClick={() => setOpenAdd(false)}>
+              <Button
+                className="w-full md:w-auto text-white mb-5 mr-2"
+                onClick={() => {
+                  setOpenAdd(false);
+                  fetchOrderData()
+                }}
+              >
                 Close
               </Button>
             </DialogFooter>

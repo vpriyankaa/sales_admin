@@ -6,23 +6,8 @@ import { getUser, getProductLogsById } from "@/app/actions";
 import { ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Loader2 } from "lucide-react"
-
-// Types
-interface OrderLog {
-  id: number;
-  created_at?: string;
-  order_id?: number;
-  action: string;
-  user?: number;
-}
-
-interface User {
-  id: number;
-  created_at?: string;
-  name: string;
-  email: string;
-  phone: number;
-}
+import type { ProductLog } from "app-types/product-logs";
+import type { User } from "app-types/user";
 
 interface OrderDetailPageProps {
   params: Promise<{ id: string }>;   // was { id: string }
@@ -37,7 +22,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   const id = parseInt(idStr, 10);
 
   const [users, setUsers] = useState<{ [key: number]: User }>({});
-  const [orderLogData, setOrderLogData] = useState<OrderLog[] | null>(null);
+  const [orderLogData, setOrderLogData] = useState<ProductLog[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [openId, setOpenId] = useState<number | null>(null);
 
@@ -56,7 +41,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       setOrderLogData(orderLogs);
 
       const uniqueUserIds = Array.from(
-        new Set(orderLogs.map((log: OrderLog) => log.user).filter(Boolean))
+        new Set(orderLogs.map((log: ProductLog) => log.user).filter(Boolean))
       ) as number[];
 
       const userFetches = await Promise.all(
@@ -66,7 +51,11 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       const usersById: { [key: number]: User } = {};
       uniqueUserIds.forEach((userId, index) => {
         if (userFetches[index]) {
-          usersById[userId] = userFetches[index];
+          usersById[userId] = {
+            ...userFetches[index],
+            phone: String(userFetches[index].phone),            // ← convert number to string
+            createdAt: userFetches[index].createdAt?.toISOString() ?? null, // ← ensure string
+          };
         }
       });
 
@@ -85,7 +74,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
   return (
     <div className="max-w-8xl">
-      <Card className="shadow-lg border-t-4 border-b-4 border-b-blue-500 border-t-blue-500 print:shadow-none print:border">
+      <Card className="shadow-lg border-b-primary border-t-primary print:shadow-none print:border">
         <CardContent>
 
           {loading ? (
@@ -132,8 +121,8 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                                   {editedBy ?? "Unknown User"}
                                 </p>
                                 <p className="text-gray-600 dark:text-gray-400">
-                                  {log.created_at
-                                    ? new Date(log.created_at).toLocaleString("en-US", {
+                                  {log.createdAt
+                                    ? new Date(log.createdAt).toLocaleString("en-US", {
                                       year: "numeric",
                                       month: "short",
                                       day: "numeric",
@@ -161,10 +150,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
         <CardFooter className="bg-gray-50 dark:bg-gray-800 border-t p-4 print:hidden">
           <div className="flex justify-end w-full">
             <Button
-              className="bg-blue-600 text-white"
-              variant="outline"
-              onClick={() => window.history.back()}
-            >
+              onClick={() => window.history.back()}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>

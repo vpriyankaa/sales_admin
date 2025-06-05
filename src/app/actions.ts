@@ -1,20 +1,72 @@
-"use server"
+"use server";
 
-import { changeProductQuantity } from "@/utils/inventory"
 import { db } from "@/lib/db/pg/db.pg";
-import { users, customers, products, vendors, vendorLogs, customerLogs, orders, paymentLogs, paymentMethods, productLogs, orderLogs, units } from "@/lib/db/pg/schema.pg";
+import {
+  users,
+  customers,
+  products,
+  vendors,
+  vendorLogs,
+  customerLogs,
+  orders,
+  paymentLogs,
+  paymentMethods,
+  productLogs,
+  orderLogs,
+  units,
+} from "@/lib/db/pg/schema.pg";
 import { eq, or, gt, desc, isNull } from "drizzle-orm";
 import type { User } from "@/types/user";
-import type { Order } from "app-types/order"
+import type { Order } from "app-types/order";
 import type { Product } from "app-types/product";
 import type { Vendor } from "app-types/vendor";
 import type { OrderInput } from "app-types/order-input";
 import { Unit } from "app-types/unit";
 import { compare } from "bcrypt-ts";
+import { formatStatus, formatChange } from "@/utils/formatStatus";
+
+export async function changeProductQuantity(
+  productId: number,
+  quantity: number,
+  type: "sale" | "purchase",
+): Promise<boolean> {
+  try {
+    const adjustedDelta = type === "sale" ? -quantity : quantity;
+
+    // console.log("productId",productId);
+    // console.log("quantity",quantity);
+
+    const [current] = await db
+      .select({ quantity: products.quantity })
+      .from(products)
+      .where(eq(products.id, productId));
+
+    // console.log("current",current);
+
+    if (!current) {
+      throw new Error(`Product with ID ${productId} not found.`);
+    }
+
+    const newQuantity = (current.quantity ?? 0) + adjustedDelta;
+
+    await db
+      .update(products)
+      .set({ quantity: newQuantity })
+      .where(eq(products.id, productId));
+
+    return true;
+  } catch (error) {
+    console.error("Failed to change product quantity:", error);
+    throw error;
+  }
+}
 
 export async function getCustomers() {
   try {
-    const result = await db.select().from(customers).orderBy(desc(customers.id));
+    const result = await db
+      .select()
+      .from(customers)
+      .orderBy(desc(customers.id));
     return result;
   } catch (err) {
     console.error("Error fetching customers:", err);
@@ -115,24 +167,37 @@ export async function editCustomer(customerData: {
         aadhaar: true,
         address: true,
       },
-      where: eq(customers.id, Number(id))
+      where: eq(customers.id, Number(id)),
     });
 
     if (!current) throw new Error("Customer not found.");
 
-    await db.update(customers)
+    await db
+      .update(customers)
       .set(sanitized)
       .where(eq(customers.id, Number(id)));
 
     const changes: string[] = [];
-    if (current.name !== sanitized.name)
-      changes.push(`name: changed from "${current.name}" to "${sanitized.name}"`);
-    if (current.phone !== sanitized.phone)
-      changes.push(`phone: changed from ${current.phone} to ${sanitized.phone}`);
-    if (current.aadhaar !== sanitized.aadhaar)
-      changes.push(`aadhaar: changed from "${current.aadhaar ?? "null"}" to "${sanitized.aadhaar ?? "null"}"`);
-    if (current.address !== sanitized.address)
-      changes.push(`address: changed from "${current.address ?? "null"}" to "${sanitized.address ?? "null"}"`);
+
+    const nameChange = formatChange("name", current.name, sanitized.name);
+    if (nameChange) changes.push(nameChange);
+
+    const phoneChange = formatChange("phone", current.phone, sanitized.phone);
+    if (phoneChange) changes.push(phoneChange);
+
+    const aadhaarChange = formatChange(
+      "aadhaar",
+      current.aadhaar,
+      sanitized.aadhaar,
+    );
+    if (aadhaarChange) changes.push(aadhaarChange);
+
+    const addressChange = formatChange(
+      "address",
+      current.address,
+      sanitized.address,
+    );
+    if (addressChange) changes.push(addressChange);
 
     const actionText = changes.length
       ? changes.join(", ")
@@ -153,12 +218,12 @@ export async function editCustomer(customerData: {
 
 // place order
 export type OrderItem = {
-  product_id: string
-  product_name: string
-  quantity: number
-  price: number
-  unit: string
-}
+  product_id: string;
+  product_name: string;
+  quantity: number;
+  price: number;
+  unit: string;
+};
 
 export async function addOrder(order: OrderInput): Promise<string> {
   const reserved: typeof order.items = [];
@@ -175,7 +240,7 @@ export async function addOrder(order: OrderInput): Promise<string> {
       .insert(orders)
       .values({
         customerId: Number(order.customer_id),
-        customerName: order.customer_name?.trim() || '',
+        customerName: order.customer_name?.trim() || "",
         vendorId: Number(order.vendor_id),
         vendorName: order.vendor_name?.trim() || null,
         items: order.items,
@@ -232,56 +297,81 @@ export interface OrderUpdateInput {
   remarks?: string;
 }
 
-export async function updateOrder(orderId: number, order: OrderInput): Promise<void> {
-  const current = await db.query.orders.findFirst({
-    columns: { items: true },
-    where: eq(orders.id, orderId)
-  }) as { items: OrderItem[] } | undefined;
+export async function updateOrder(
+  orderId: number,
+  order: OrderInput,
+): Promise<void> {
+  // console.log("orderId", orderId);
+  // console.log("OrderInput", order);
 
+  const current = (await db.query.orders.findFirst({
+    columns: { items: true },
+    where: eq(orders.id, orderId),
+  })) as { items: OrderItem[] } | undefined;
 
   if (!current) throw new Error("Order not found");
 
-  const prevMap = new Map<string, number>(
-    current.items.map((i: any) => [i.product_id, i.quantity])
+  // Use correct ID field and key type
+  const prevMap = new Map<number, number>(
+    current.items.map((i: any) => [i.id, i.quantity]), // assuming i.id is the product/item ID
   );
 
-  // Handle stock difference
   try {
     for (const item of order.items) {
-      const oldQty = prevMap.get(item.id.toString()) ?? 0;
-      const delta = item.quantity - oldQty;
+      const oldQty = prevMap.get(item.id) ?? 0;
 
-      if (delta !== 0) {
+      if (item.quantity !== oldQty) {
+        const delta = item.quantity - oldQty;
+
+        // console.log(`Product ${item.id} quantity changed from ${oldQty} to ${item.quantity}`);
+
         await changeProductQuantity(
           item.id,
           Math.abs(delta),
-          delta > 0 ? order.type : order.type === "sale" ? "purchase" : "sale"
+          delta > 0 ? order.type : order.type === "sale" ? "purchase" : "sale",
         );
       }
 
-      prevMap.delete(item.id.toString());
+      // Remove processed items
+      prevMap.delete(item.id);
     }
 
-    // Revert any removed items
-    for (const [prodId, qty] of prevMap) {
+    // Handle removed items
+    for (const [removedProdId, removedQty] of prevMap.entries()) {
+      // console.log(`Product ${removedProdId} was removed. Reverting ${removedQty}`);
       await changeProductQuantity(
-        parseInt(prodId),
-        qty,
-        order.type === "sale" ? "purchase" : "sale"
+        removedProdId,
+        removedQty,
+        order.type === "sale" ? "purchase" : "sale",
       );
     }
-  } catch (stockErr) {
-    throw stockErr;
+  } catch (err) {
+    console.error("Stock update failed:", err);
+    throw err;
   }
 
-  // Sanitize and update
-  await db.update(orders)
+  // Update order in DB
+  await db
+    .update(orders)
     .set({
       ...order,
       customerId: Number(order.customer_id),
-      vendorId: Number(order.vendor_id),
-      customerName: order.customer_name?.trim() || '',
+      vendorId: Number(order.vendor_id) || null,
+      customerName: order.customer_name?.trim() || "",
       vendorName: order.vendor_name?.trim() || null,
+      items: order?.items,
+      totalPrice: order?.total_price,
+      status: order?.status,
+      paymentMethod: order?.payment_method,
+      discountType: order?.discount_type,
+      discountValue: order?.discount_value,
+      remainingAmount: order?.remaining_amount,
+      paidAmount: order?.paid_amount,
+      remarks: order?.remarks,
+      paymentStatus: order?.payment_status,
+      totalPayable: order?.total_payable,
+      date: order?.date,
+      type: order?.type,
     })
     .where(eq(orders.id, orderId));
 }
@@ -337,7 +427,8 @@ export async function editProduct(productData: {
 
   if (!current) throw new Error("Product not found.");
 
-  await db.update(products)
+  await db
+    .update(products)
     .set({
       name,
       quantity,
@@ -426,7 +517,8 @@ export async function editVendor(vendorData: any): Promise<boolean> {
     products,
   };
 
-  await db.update(vendors)
+  await db
+    .update(vendors)
     .set(sanitizedVendor)
     .where(eq(vendors.id, Number(id)));
 
@@ -434,20 +526,68 @@ export async function editVendor(vendorData: any): Promise<boolean> {
   const changes: string[] = [];
 
   if (current.name !== sanitizedVendor.name)
-    changes.push(`name: changed from ${current.name} to ${sanitizedVendor.name}`);
+    changes.push(
+      `name: changed from ${current.name} to ${sanitizedVendor.name}`,
+    );
   if (current.phone !== sanitizedVendor.phone)
-    changes.push(`phone: changed from ${current.phone} to ${sanitizedVendor.phone}`);
+    changes.push(
+      `phone: changed from ${current.phone} to ${sanitizedVendor.phone}`,
+    );
   if (current.aadhaar !== sanitizedVendor.aadhaar)
-    changes.push(`aadhaar: changed from ${current.aadhaar ?? "null"} to ${sanitizedVendor.aadhaar ?? "null"}`);
+    changes.push(
+      `aadhaar: changed from ${current.aadhaar ?? "null"} to ${sanitizedVendor.aadhaar ?? "null"}`,
+    );
   if (current.address !== sanitizedVendor.address)
-    changes.push(`address: changed from ${current.address ?? "null"} to ${sanitizedVendor.address ?? "null"}`);
+    changes.push(
+      `address: changed from ${current.address ?? "null"} to ${sanitizedVendor.address ?? "null"}`,
+    );
 
-  const productsChanged = JSON.stringify(current.products || []) !== JSON.stringify(products);
-  if (productsChanged) changes.push("products list updated");
+  const productsChanged =
+    JSON.stringify(current.products || []) !== JSON.stringify(products);
+  // if (productsChanged) changes.push("products list updated");
 
-  const actionText = changes.length > 0
-    ? changes.join(", ")
-    : "No changes – update called but data identical.";
+  const currentProducts: Product[] = (current.products as Product[]) || [];
+  const newProducts: Product[] = products as Product[];
+
+  const oldProductIds = currentProducts.map((p) => p.id);
+  const newProductIds = newProducts.map((p) => p.id);
+
+  const addedProductIds = newProductIds.filter(
+    (id) => !oldProductIds.includes(id),
+  );
+  const removedProductIds = oldProductIds.filter(
+    (id) => !newProductIds.includes(id),
+  );
+
+  const addedNames = newProducts
+    .filter((p) => addedProductIds.includes(p.id))
+    .map((p) => p.name);
+
+  const removedNames = currentProducts
+    .filter((p) => removedProductIds.includes(p.id))
+    .map((p) => p.name);
+
+  let productChangeText = "";
+
+  if (addedNames.length || removedNames.length) {
+    const addedText = addedNames.length
+      ? `${addedNames.join(", ")} added to`
+      : "";
+    const removedText = removedNames.length
+      ? ` ${removedNames.join(", ")} removed from`
+      : "";
+
+    productChangeText += `${[addedText, removedText].filter(Boolean).join("; ")}   Products`;
+  } else {
+    productChangeText += " (order or non-ID fields may have changed)";
+  }
+
+  changes.push(productChangeText);
+
+  const actionText =
+    changes.length > 0
+      ? changes.join(", ")
+      : "No changes – update called but data identical.";
 
   await db.insert(vendorLogs).values({
     vendorId: Number(id),
@@ -457,7 +597,6 @@ export async function editVendor(vendorData: any): Promise<boolean> {
 
   return true;
 }
-
 
 export async function getReports(): Promise<Order[]> {
   try {
@@ -542,11 +681,7 @@ export async function getProductLogsById(productId: number) {
 
 export async function getUser(id: number) {
   try {
-    const user = await db
-      .select()
-      .from(users)
-      .where(eq(users.id, id))
-      .limit(1);
+    const user = await db.select().from(users).where(eq(users.id, id)).limit(1);
 
     return user[0] || null;
   } catch (error) {
@@ -554,7 +689,6 @@ export async function getUser(id: number) {
     return null;
   }
 }
-
 
 export async function getVendorLogsById(vendorId: number) {
   try {
@@ -594,6 +728,8 @@ export async function getOrderById(orderId: number): Promise<Order | null> {
       .where(eq(orders.id, orderId))
       .limit(1);
 
+    // console.log("order details",data);
+
     if (data.length === 0) return null;
 
     const order = data[0];
@@ -609,11 +745,10 @@ export async function getOrderById(orderId: number): Promise<Order | null> {
 }
 
 export async function revertStockForCancelledOrder(orderId: number) {
-  // Step 1: Fetch order by ID
   const orderResult = await db
     .select({
       type: orders.type,
-      items: orders.items
+      items: orders.items,
     })
     .from(orders)
     .where(eq(orders.id, orderId))
@@ -621,15 +756,19 @@ export async function revertStockForCancelledOrder(orderId: number) {
 
   const order = orderResult[0];
 
+  // console.log("order",order);
+
   if (!order) throw new Error("Order not found while reverting stock.");
 
-  const reverseType = "purchase"; // assuming 'purchase' always used to reverse
+  const reverseType = "purchase";
 
-  const items = order.items as { product_id: number; quantity: number }[];
+  const items = order.items as { id: number; quantity: number }[];
 
-  // Step 2: Loop and revert stock
-  for (const { product_id, quantity } of items) {
-    await changeProductQuantity(product_id, quantity, reverseType);
+  for (const { id, quantity } of items) {
+    console.log(
+      `Reverting stock for product ID ${id} with quantity ${quantity}`,
+    );
+    await changeProductQuantity(Number(id), quantity, reverseType);
   }
 }
 
@@ -637,10 +776,11 @@ export async function changeOrderStatus(
   orderId: number,
   status: string,
   comments = "",
-  documents = ""
+  documents = "",
 ): Promise<boolean> {
   try {
-    // 1. Fetch existing order
+    // console.log("orderId",orderId);
+
     const existing = await db
       .select({ status: orders.status })
       .from(orders)
@@ -651,31 +791,17 @@ export async function changeOrderStatus(
 
     const oldStatus = existing[0].status;
 
-    // 2. If status unchanged just write a log
-    if (oldStatus === status) {
-      await db.insert(orderLogs).values({
-        orderId: orderId,
-        action: `Status unchanged: remains ${oldStatus}.`,
-        comments,
-      });
-      return true;
-    }
-
     // 3. If changing to "cancelled", revert stock
-    if (
-      status.toLowerCase() === "cancelled" &&
-      oldStatus.toLowerCase() !== "cancelled"
-    ) {
+    if (status.toLowerCase() === "cancelled" && oldStatus !== "cancelled") {
       await revertStockForCancelledOrder(orderId);
     }
 
     // 4. Update order status
     await db.update(orders).set({ status }).where(eq(orders.id, orderId));
 
-    // 5. Log the transition
     await db.insert(orderLogs).values({
       orderId: Number(orderId),
-      action: `Status changed from ${oldStatus} → ${status}.`,
+      action: `Status changed from ${formatStatus(oldStatus)} to ${formatStatus(status)}.`,
       comments,
     });
 
@@ -688,7 +814,7 @@ export async function changeOrderStatus(
 
 export async function changeOrderPaymentStatus(
   orderId: number,
-  newStatus: string
+  newStatus: string,
 ): Promise<boolean> {
   try {
     // 1. Fetch current order data
@@ -725,15 +851,11 @@ export async function changeOrderPaymentStatus(
     }
 
     // 3. Update orders table
-    await db
-      .update(orders)
-      .set(updatePayload)
-      .where(eq(orders.id, orderId));
+    await db.update(orders).set(updatePayload).where(eq(orders.id, orderId));
 
-    // 4. Insert into orderLogs
     await db.insert(orderLogs).values({
       orderId,
-      action: `Order payment status changed from ${oldStatus} to ${newStatus}.`,
+      action: `Order payment status changed from ${formatStatus(oldStatus)} to ${formatStatus(newStatus)}.`,
     });
 
     return true;
@@ -747,7 +869,7 @@ export async function changeOrderPayment(
   orderId: number,
   amount: number,
   comments: string,
-  documents: string
+  documents: string,
 ): Promise<boolean> {
   if (amount <= 0) {
     console.error("Amount must be greater than 0.");
@@ -781,8 +903,10 @@ export async function changeOrderPayment(
     // 2. Calculate new values
     const newPaidAmount = Math.min((paidAmount ?? 0) + amount, totalPayable);
     const newRemainingAmount = Math.max(totalPayable - newPaidAmount, 0);
-    const newPaymentStatus = newRemainingAmount === 0 ? "paid" : "partiallypaid";
-    const newOrderStatus = newRemainingAmount === 0 ? "completed" : oldOrderStatus;
+    const newPaymentStatus =
+      newRemainingAmount === 0 ? "paid" : "partiallypaid";
+    const newOrderStatus =
+      newRemainingAmount === 0 ? "completed" : oldOrderStatus;
 
     const updatePayload: {
       paidAmount: number;
@@ -800,23 +924,20 @@ export async function changeOrderPayment(
     }
 
     // 3. Update orders table
-    await db
-      .update(orders)
-      .set(updatePayload)
-      .where(eq(orders.id, orderId));
+    await db.update(orders).set(updatePayload).where(eq(orders.id, orderId));
 
     // 4. Construct status change log
     const changes: string[] = [];
+
     if (newPaymentStatus !== oldPaymentStatus) {
-      changes.push(`payment_status: ${oldPaymentStatus} → ${newPaymentStatus}`);
-    }
-    if (updatePayload.status && updatePayload.status !== oldOrderStatus) {
-      changes.push(`status: ${oldOrderStatus} → ${updatePayload.status}`);
+      changes.push(
+        `Payment Status Changed from ${formatStatus(oldPaymentStatus)} to ${formatStatus(newPaymentStatus)}`,
+      );
     }
 
     const actionText =
-      `Payment of ₹${amount.toFixed(2)} received.` +
-      (changes.length ? ` Status changed (${changes.join(", ")}).` : "");
+      `Payment of ₹${amount} received.` +
+      (changes.length ? ` ${changes.join(", ")}.` : "");
 
     // 5. Insert into paymentLogs
     await db.insert(paymentLogs).values({
@@ -836,6 +957,8 @@ export async function changeOrderPayment(
 export async function getUnits(): Promise<Unit[]> {
   try {
     const data = await db.select().from(units);
+
+    // console.log("unitss",data)
     return data ?? [];
   } catch (error) {
     console.error("Failed to fetch units:", error);
@@ -855,7 +978,7 @@ export async function getPaymentMethods() {
 
 export async function checkUserCredentials(
   phoneOrEmail: string,
-  password: string
+  password: string,
 ): Promise<Omit<User, "password"> | null> {
   try {
     let user;
@@ -867,7 +990,7 @@ export async function checkUserCredentials(
         .from(users)
         .where(eq(users.phone, Number(phoneOrEmail)))
         .limit(1)
-        .then(res => res[0]);
+        .then((res) => res[0]);
     } else {
       // login with email
       user = await db
@@ -875,7 +998,7 @@ export async function checkUserCredentials(
         .from(users)
         .where(eq(users.email, phoneOrEmail))
         .limit(1)
-        .then(res => res[0]);
+        .then((res) => res[0]);
     }
 
     if (!user) return null;
@@ -896,7 +1019,10 @@ export async function checkUserCredentials(
   }
 }
 
-export async function resetPassword(phone: string, newPassword: string): Promise<boolean> {
+export async function resetPassword(
+  phone: string,
+  newPassword: string,
+): Promise<boolean> {
   try {
     const result = await db
       .update(users)

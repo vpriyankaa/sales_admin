@@ -7,28 +7,28 @@ import {
   DropdownTrigger,
 } from "@/components/ui/dropdown";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
-import Link from "next/link";
+import { useState, useMemo,  } from "react";
+import { LogOutIcon, } from "./icons";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/auth-context";
-import { useState, useMemo, useEffect, useCallback } from "react";
-import { LogOutIcon, SettingsIcon, UserIcon, Profile } from "./icons";
-import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react"
 
-
-interface User {
-  name: string;
-  img: string;
-  phone: string;
-}
 
 export function UserInfo() {
   const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter();
+
+  const USER = {
+    name: "John Smith",
+    email: "johnson@nextadmin.com",
+    img: "/images/user/user-03.png",
+  };
+
 
   const { user, logout } = useAuth();
-
   const [isLoading, setIsLoading] = useState(false)
+
 
   const memoizedUser = useMemo(() => user, [user]);
 
@@ -56,7 +56,7 @@ export function UserInfo() {
     );
   }
 
-  if (isLoading) {
+    if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -71,69 +71,61 @@ export function UserInfo() {
 
         <figure className="flex items-center gap-3">
 
+          <Avatar className="h-9 w-9 bg-primary text-white font-medium text-base">
+            <AvatarImage src={memoizedUser?.name} alt={memoizedUser?.name} />             <AvatarFallback>
+              {memoizedUser?.name?.charAt(0).toUpperCase() || "U"}
+            </AvatarFallback>
+          </Avatar>
+          <figcaption className="flex items-center gap-1 font-medium text-dark dark:text-dark-6 max-[1024px]:sr-only">
+            <span>{memoizedUser.name}</span>
 
-
-
-          {/* <figcaption className="hidden lg:flex items-center gap-1 font-medium text-dark dark:text-dark-600">
-            <Profile />
-            <span >{memoizedUser.name}</span>
             <ChevronUpIcon
-              aria-hidden="true"
+              aria-hidden
               className={cn(
                 "rotate-180 transition-transform",
-                isOpen && "rotate-0"
+                isOpen && "rotate-0",
               )}
               strokeWidth={1.5}
             />
-          </figcaption> */}
-
-          <figure className="flex items-center gap-3">
-            <figcaption className="flex items-center gap-1 font-medium text-dark dark:!text-white">
-              <Profile />
-              <span>{memoizedUser.name}</span>
-              <ChevronUpIcon
-                aria-hidden="true"
-                className={cn(
-                  "rotate-180 transition-transform",
-                  isOpen && "rotate-0"
-                )}
-                strokeWidth={1.5}
-              />
-            </figcaption>
-          </figure>
-
-
+          </figcaption>
         </figure>
       </DropdownTrigger>
 
       <DropdownContent
-        className="border border-stroke bg-white shadow-md dark:border-dark-3 dark:bg-gray-dark dark:!text-white min-[230px]:min-w-[17.5rem]"
+        className="border border-stroke bg-white shadow-md dark:border-dark-3 dark:bg-gray-dark min-[230px]:min-w-[17.5rem]"
         align="end"
       >
         <h2 className="sr-only">User information</h2>
 
         <figure className="flex items-center gap-2.5 px-5 py-3.5">
+          <Avatar className="h-9 w-9 bg-primary text-white font-medium text-base">
+            <AvatarImage src={memoizedUser?.name} alt={memoizedUser?.name} />             <AvatarFallback>
+              {memoizedUser?.name?.charAt(0).toUpperCase() || "U"}
+            </AvatarFallback>
+          </Avatar>
 
           <figcaption className="space-y-1 text-base font-medium">
-            <div className="mb-2 leading-none text-dark dark:!text-white">
+            <div className="mb-2 leading-none text-dark dark:text-white">
               {memoizedUser.name}
             </div>
-            <div className="leading-none text-gray-6">
-              {memoizedUser.phone}
-            </div>
+
+            <div className="leading-none text-gray-6">{memoizedUser.email}</div>
           </figcaption>
         </figure>
 
         <hr className="border-[#E8E8E8] dark:border-dark-3" />
 
+
+
         <hr className="border-[#E8E8E8] dark:border-dark-3" />
 
-        <div className="p-2 text-base text-[#4B5563] dark:!text-white">
+        <div className="p-2 text-base text-[#4B5563] dark:text-dark-6">
           <button
-            className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-100 hover:text-dark dark:hover:bg-dark-3 dark:hover:!text-white"
+            className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
             onClick={handleLogout}
           >
             <LogOutIcon />
+
             <span className="text-base font-medium">Log out</span>
           </button>
         </div>

@@ -110,12 +110,12 @@ export function OrdersSkeleton() {
                        {/* Customer Filter */}
                        <div className="flex-1 min-w-0">
                          <Select value={filters.customer} onValueChange={(value) => handleFilterChange("customer", value)}>
-                           <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
+                           <SelectTrigger className="w-full h-[40px] font-medium border rounded-md px-3">
                              <SelectValue placeholder="Select Customer" />
                            </SelectTrigger>
-                           <SelectContent className="z-[999] text-gray-700 font-semibold bg-white dark:!text-white dark:bg-gray-dark shadow-md border rounded-md">
+                           <SelectContent className="z-[999] text-gray-700 text-md font-semibold bg-white dark:!text-white dark:bg-gray-dark shadow-md border rounded-md">
                              {customers.map((c) => (
-                               <SelectItem key={c.id} value={c.name}>
+                               <SelectItem className="text-md" key={c.id} value={c.name}>
                                  {c.name}
                                </SelectItem>
                              ))}
@@ -126,7 +126,7 @@ export function OrdersSkeleton() {
                        {/* Product Filter */}
                        <div className="flex-1 min-w-0">
                          <Select value={filters.product} onValueChange={(value) => handleFilterChange("product", value)}>
-                           <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded px-3">
+                           <SelectTrigger className="w-full h-[40px] text-sm font-medium border rounded-md px-3">
                              <SelectValue placeholder="Select Product" />
                            </SelectTrigger>
                            <SelectContent className="z-[999] text-gray-700 font-semibold bg-white dark:!text-white dark:bg-gray-dark shadow-md border rounded-md">
@@ -142,13 +142,13 @@ export function OrdersSkeleton() {
                        {/* Clear Filters Button */}
                        <div className="flex-shrink-0">
                          {hasActiveFilters && (
-                           <Button
-                             variant="outline"
-                             onClick={clearFilters}
-                             className="w-full sm:w-auto h-[40px] px-6 bg-blue-500 hover:bg-blue-600 text-white border-blue-500 hover:border-blue-600 whitespace-nowrap"
-                           >
-                             Clear Filters
-                           </Button>
+                          <Button
+                           variant="outline"
+                           onClick={clearFilters}
+                           className="w-full sm:w-auto h-10 px-6 bg-primary text-white hover:bg-primary"
+                         >
+                           Clear Filters
+                         </Button>
                          )}
                        </div>
                      </div>

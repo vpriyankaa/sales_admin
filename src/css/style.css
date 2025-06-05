@@ -89,6 +89,14 @@
     background-color: #001D6B !important;
   }
 
+  .border-t-primary {
+  border-top: 4px solid #001D6B !important;
+}
+
+.border-b-primary {
+  border-bottom: 4px solid #001D6B !important;
+}
+
   .dark {
   --foreground: 0 0% 100%; /* white */
 }
@@ -102,7 +110,7 @@
   }
 
   .text-secondary{
-    color:#60a5fa !important;
+    color: #0288d1 !important;
   }
 
 

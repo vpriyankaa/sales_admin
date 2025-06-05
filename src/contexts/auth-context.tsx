@@ -36,39 +36,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
 
-  useEffect(() => {
-    const stored = sessionStorage.getItem("user");
+   useEffect(() => {
+    // const stored = sessionStorage.getItem("user");
+    const stored = localStorage.getItem("user");
+    
     if (stored) {
-      try {
+      
         setUser(JSON.parse(stored));
-      } catch {
-        sessionStorage.removeItem("user");
-      }
+     
     }
     setLoading(false);
   }, []);
 
+   useEffect(() => {
+    console.log("sessionStorage user at load:", sessionStorage.getItem("user"));
+    }, []);
+
+
 
 
   const login = (u: User) => {
-    setIsLoggingIn(true); // ✅ show loader
+    setIsLoggingIn(true); 
     sessionStorage.setItem("user", JSON.stringify(u));
+    localStorage.setItem("user", JSON.stringify(u));
     setCookie("auth", "true", {
       path: "/",
-      maxAge: 60 * 60 * 24, // 1 day
+      maxAge: 60 * 60 * 24, 
       sameSite: "lax",
-    }); // 1 day
+    }); 
 
     setUser(u);
     router.push("/dashboard");
   };
 
 
-
-
   const logout = () => {
     setIsLoggingOut(true);
     sessionStorage.removeItem("user");
+    localStorage.removeItem("user");
     deleteCookie("auth", { path: "/" });
     setUser(null);
     router.replace("/auth/sign-in");
@@ -76,31 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
 
-  // On unload, clear sessionStorage + cookie
-useEffect(() => {
-  const handleUnload = () => {
-    sessionStorage.clear();
-    deleteCookie("auth", { path: "/" });
-  };
-
-  window.addEventListener("beforeunload", handleUnload);
-  return () => window.removeEventListener("beforeunload", handleUnload);
-}, []);
-
-// Periodic check for sessionStorage cleared manually
-useEffect(() => {
-  const interval = setInterval(() => {
-    if (!sessionStorage.getItem("user")) {
-      deleteCookie("auth", { path: "/" });
-      setUser(null);
-    }
-  }, 3000);
-
-  return () => clearInterval(interval);
-}, []);
-
-
-
+  
   useEffect(() => {
     if (pathname === "/dashboard") {
       setIsLoggingIn(false);
@@ -114,6 +95,8 @@ useEffect(() => {
 
   const cookie = getCookie("auth");
   const isAuthenticated = !!user || !!cookie;
+
+
 
 
   //   useEffect(() => {

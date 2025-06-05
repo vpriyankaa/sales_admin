@@ -70,7 +70,7 @@ export function Customers() {
       aadhaar: "",
       address: "",
     },
-    mode: "onChange",
+    mode: "onSubmit",
   })
 
   useEffect(() => {
@@ -237,76 +237,63 @@ export function Customers() {
               </TableHeader>
 
               <TableBody>
-                {paginatedData.map((customer) => (
-                  <TableRow className="text-left text-base font-medium text-dark dark:!text-white group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" key={customer.id}>
-                    <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{customer.name}</TableCell>
-                    <TableCell>{customer.phone}</TableCell>
-                    <TableCell>{customer.aadhaar || "-"}</TableCell>
-                    <TableCell className="max-w-xs truncate">{customer.address || "-"}</TableCell>
-                    {/* <TableCell className="text-center">
-                      <>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEditCustomer(customer)}
-                          className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-black"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                           <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => router.push(`/customer-log/${customer.id}`)}
-                                            className="h-8 w-8"
-                                          >
-                                            <Eye className="h-4 w-4" />
-                                          </Button>
 
-                     
-                      </>
-
-                    </TableCell> */}
-                    <TableCell>
-                      <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleEditCustomer(customer)}
-                                className="h-8 w-8 hover:bg-blue-200"
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-
-                            </TooltipTrigger>
-                            <TooltipContent className="bg-white font-medium text-secondary">
-                              Edit
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => router.push(`/customer-log/${customer.id}`)}
-                                className="h-8 w-8 hover:bg-blue-200"
-                              >
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent className="bg-white font-medium text-secondary">View</TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
+                {paginatedData.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-7 text-md font-semibold text-dark-2 dark:text-white">
+                      No Customers found
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  paginatedData.map((customer) => (
+                    <TableRow className="text-left text-base font-medium text-dark dark:!text-white group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" key={customer.id}>
+                      <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{customer.name}</TableCell>
+                      <TableCell>{customer.phone}</TableCell>
+                      <TableCell>{customer.aadhaar || "-"}</TableCell>
+                      <TableCell className="max-w-xs truncate">{customer.address || "-"}</TableCell>
+
+                      <TableCell>
+                        <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleEditCustomer(customer)}
+                                  className="h-8 w-8 hover:bg-blue-200"
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-white font-medium text-secondary">
+                                Edit
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => router.push(`/customer-log/${customer.id}`)}
+                                  className="h-8 w-8 hover:bg-blue-200"
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-white font-medium text-secondary">View</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
 
@@ -410,8 +397,7 @@ export function Customers() {
                                 onChange={(e) => {
                                   const value = e.target.value.replace(/\D/g, "")
                                   field.onChange(value)
-                                }}
-                                onBlur={() => customerForm.trigger("phone")}
+                                }}   
                               />
                             </FormControl>
                             <FormMessage />

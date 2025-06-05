@@ -107,7 +107,7 @@ export function OverviewCardsGroup() {
 
   return (
     // <div className="-mt-8 no-scrollbar::-webkit-scrollbar">
-        <div className="space-y-6">
+    <div className="space-y-6 overflow-hidden no-scrollbar::-webkit-scrollbar">
       {/* Date Range Picker */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
         <div>
@@ -149,7 +149,7 @@ export function OverviewCardsGroup() {
               <div className="text-center">
                 <p className="text-sm font-bold text-dark-3 dark:!text-white mt-2">Total transactions</p>
                 <p className="text-4xl font-bold text-primary">{compactFormat(metrics.saleCount)}</p>
-                
+
               </div>
             </div>
           </CardContent>
@@ -168,9 +168,9 @@ export function OverviewCardsGroup() {
           <CardContent>
             <div className="flex items-center justify-center p-6">
               <div className="text-center">
-                 <p className="text-sm font-bold text-dark-3 dark:!text-white mt-2">Total transactions</p>
+                <p className="text-sm font-bold text-dark-3 dark:!text-white mt-2">Total transactions</p>
                 <p className="text-4xl font-bold text-primary">{compactFormat(metrics.purchaseCount)}</p>
-               
+
               </div>
             </div>
           </CardContent>
@@ -180,64 +180,64 @@ export function OverviewCardsGroup() {
       {/* Second Row: Sale Payments and Purchase Payments */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Sale Payments Card */}
-         <Card className="overflow-hidden dark:bg-gray-dark border-0 shadow-lg bg-secondary">
-  <CardHeader>
-    <CardTitle className="flex items-center justify-between">
-      <span className="text-lg font-semibold text-primary dark:!text-white">Sale Payments</span>
-      <div className="p-2 bg-orange-200 rounded-lg">
-        <CreditCard className="h-5 w-5 text-orange-400" />
-      </div>
-    </CardTitle>
-  </CardHeader>
+        <Card className="overflow-hidden dark:bg-gray-dark border-0 shadow-lg bg-secondary">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span className="text-lg font-semibold text-primary dark:!text-white">Sale Payments</span>
+              <div className="p-2 bg-orange-200 rounded-lg">
+                <CreditCard className="h-5 w-5 text-orange-400" />
+              </div>
+            </CardTitle>
+          </CardHeader>
 
-  <CardContent className="space-y-6">
-    {/* Total Amount */}
-    <div className="text-center p-4">
-      <p className="text-sm font-bold text-dark-3 dark:!text-white">Total sale amount</p>
-      <p className="text-3xl font-bold text-primary">₹{metrics.totalSales}</p>
-    </div>
+          <CardContent className="space-y-6">
+            {/* Total Amount */}
+            <div className="text-center p-4">
+              <p className="text-sm font-bold text-dark-3 dark:!text-white">Total sale amount</p>
+              <p className="text-3xl font-bold text-primary">₹{metrics.totalSales}</p>
+            </div>
 
-    {/* Progress Bar */}
-    {metrics.totalSales > 0 && (
-      <div className="space-y-2">
-        <div className="w-full bg-purple-200 rounded-full h-3">
-          <div
-            className={cn(
-              "h-3 rounded-full transition-all duration-500 ease-out",
-              metrics.salePaymentPercentage > 70
-                ? "bg-orange-500"
-                : metrics.salePaymentPercentage > 40
-                ? "bg-orange-500"
-                : "bg-red-500"
+            {/* Progress Bar */}
+            {metrics.totalSales > 0 && (
+              <div className="space-y-2">
+                <div className="w-full bg-purple-200 rounded-full h-3">
+                  <div
+                    className={cn(
+                      "h-3 rounded-full transition-all duration-500 ease-out",
+                      metrics.salePaymentPercentage > 70
+                        ? "bg-orange-500"
+                        : metrics.salePaymentPercentage > 40
+                          ? "bg-orange-500"
+                          : "bg-red-500"
+                    )}
+                    style={{ width: `${Math.min(metrics.salePaymentPercentage, 100)}%` }}
+                  />
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-medium">{metrics.salePaymentPercentage.toFixed(1)}% collected</span>
+                </div>
+              </div>
             )}
-            style={{ width: `${Math.min(metrics.salePaymentPercentage, 100)}%` }}
-          />
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-xs font-medium">{metrics.salePaymentPercentage.toFixed(1)}% collected</span>
-        </div>
-      </div>
-    )}
 
-    {/* Payment Details */}
-    <div className="grid grid-cols-2 gap-4">
-      <div className="p-3 bg-white/60 rounded-lg">
-        <div className="flex items-center space-x-2">
-          <ArrowUpRight className="h-3 w-3 text-green-600" />
-          <span className="text-xs font-bold text-dark-3 dark:!text-white">Collected</span>
-        </div>
-        <p className="text-lg font-semibold text-green-600">₹{metrics.totalSalePayments}</p>
-      </div>
-      <div className="p-3 bg-white/60 rounded-lg">
-        <div className="flex items-center space-x-2">
-          <ArrowDownRight className="h-3 w-3 text-orange-600" />
-          <span className="text-xs font-bold text-dark-3 dark:!text-white">Pending</span>
-        </div>
-        <p className="text-lg font-semibold text-orange-600">₹{metrics.totalSalePending}</p>
-      </div>
-    </div>
-  </CardContent>
-</Card>
+            {/* Payment Details */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-3 bg-white/60 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <ArrowUpRight className="h-3 w-3 text-green-600" />
+                  <span className="text-xs font-bold text-dark-3 dark:!text-white">Collected</span>
+                </div>
+                <p className="text-lg font-semibold text-green-600">₹{metrics.totalSalePayments}</p>
+              </div>
+              <div className="p-3 bg-white/60 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <ArrowDownRight className="h-3 w-3 text-orange-600" />
+                  <span className="text-xs font-bold text-dark-3 dark:!text-white">Pending</span>
+                </div>
+                <p className="text-lg font-semibold text-orange-600">₹{metrics.totalSalePending}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
 
         {/* Purchase Payments Card */}
@@ -253,33 +253,33 @@ export function OverviewCardsGroup() {
           <CardContent className="space-y-6">
             {/* Total Amount */}
             <div className="text-center p-4">
-            
+
               <p className="text-sm font-bold text-dark-3 mt-1 dark:!text-white">Total purchase amount</p>
-                <p className="text-3xl font-bold text-primary">₹{metrics.totalPurchases}</p>
+              <p className="text-3xl font-bold text-primary">₹{metrics.totalPurchases}</p>
             </div>
 
             {/* Progress Bar */}
 
-              {metrics.totalPurchases >0 && (
-            <div className="space-y-2">
-              <div className="w-full bg-purple-200 rounded-full h-3">
-                <div
-                  className={cn(
-                    "h-3 rounded-full transition-all duration-500 ease-out",
-                    metrics.purchasePaymentPercentage > 70
-                      ? "bg-orange-500"
-                      : metrics.purchasePaymentPercentage > 40
+            {metrics.totalPurchases > 0 && (
+              <div className="space-y-2">
+                <div className="w-full bg-purple-200 rounded-full h-3">
+                  <div
+                    className={cn(
+                      "h-3 rounded-full transition-all duration-500 ease-out",
+                      metrics.purchasePaymentPercentage > 70
                         ? "bg-orange-500"
-                        : "bg-red-500",
-                  )}
-                  style={{ width: `${Math.min(metrics.purchasePaymentPercentage, 100)}%` }}
-                />
+                        : metrics.purchasePaymentPercentage > 40
+                          ? "bg-orange-500"
+                          : "bg-red-500",
+                    )}
+                    style={{ width: `${Math.min(metrics.purchasePaymentPercentage, 100)}%` }}
+                  />
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-medium">{metrics.purchasePaymentPercentage.toFixed(1)}% paid</span>
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-medium">{metrics.purchasePaymentPercentage.toFixed(1)}% paid</span>
-              </div>
-            </div>
-              )}
+            )}
 
             {/* Payment Details */}
             <div className="grid grid-cols-2 gap-4">

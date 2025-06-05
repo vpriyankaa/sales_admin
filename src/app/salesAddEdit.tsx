@@ -204,13 +204,11 @@ export default function Home({ id }: Props) {
       aadhaar: "",
       address: "",
     },
-    mode: "onChange",
+    mode: "onSubmit",
+
   })
 
   const [isOpen, setIsOpen] = useState(false)
-
-  const openDialog = () => setIsOpen(true)
-  const closeDialog = () => setIsOpen(false)
 
   useEffect(() => {
     setDate(new Date())
@@ -325,10 +323,6 @@ export default function Home({ id }: Props) {
       customerForm.reset()
       setIsAddingCustomer(false)
 
-      toast({
-        title: "Success",
-        description: "Customer added successfully",
-      })
     } catch (err) {
       console.error(err)
       customerForm.setError("phone", {
@@ -348,7 +342,7 @@ export default function Home({ id }: Props) {
     }
 
     if (cart.length === 0) {
-      errors.cart = "Please add at least one product to the cart"
+      errors.cart = "Please Select anny Product"
     }
 
     return errors
@@ -453,6 +447,7 @@ export default function Home({ id }: Props) {
   }
 
   const handleDialogClose = () => {
+
     setIsAddingCustomer(false)
     customerForm.reset()
   }
@@ -475,22 +470,6 @@ export default function Home({ id }: Props) {
               <div className="grid grid-cols-4 gap-4 items-center">
                 <h3 className="text-right text-lg font-semibold text-dark-2 dark:!text-white">Date:</h3>
                 <div className="col-span-3 w-3/4 dark:!text-white">
-                  {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <DateTimePicker
-                      value={date}
-                      onChange={(newValue: Date | null) => setDate(newValue)}
-                      views={["year", "month", "day", "hours", "minutes", "seconds"]}
-                      slotProps={{
-                        textField: {
-                          fullWidth: true,
-                          variant: "outlined",
-                          size: "small",
-                        } as TextFieldProps,
-                      }}
-
-                    />
-                  </LocalizationProvider> */}
-
                   <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                       <DateTimePicker
@@ -503,7 +482,7 @@ export default function Home({ id }: Props) {
                           popper: {
                             sx: {
                               "& .MuiPaper-root": {
-                                minWidth: 400, 
+                                minWidth: 400,
                                 bgcolor: isDark ? "#1e1e1e" : "#fff",
                               },
 
@@ -566,11 +545,21 @@ export default function Home({ id }: Props) {
                         <SelectValue className="font-semibold" placeholder="Select customer" />
                       </SelectTrigger>
                       <SelectContent className="z-[999] w-full bg-white dark:bg-gray-dark dark:!text-white shadow-md border rounded-md">
-                        {customers.map((customer) => (
-                          <SelectItem className="text-md" key={customer.id} value={customer.id.toString()}>
-                            {customer.name}
-                          </SelectItem>
-                        ))}
+                        {customers.length === 0 ? (
+                          <div className="flex justify-center items-center h-20">
+                            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                          </div>
+                        ) : customers.length > 0 ? (
+                          customers.map((customer) => (
+                            <SelectItem className="text-md" key={customer.id} value={customer.id.toString()}>
+                              {customer.name}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <div className="text-center text-sm py-2 text-gray-500">
+                            No customers available
+                          </div>
+                        )}
                       </SelectContent>
                     </Select>
                     {orderValidation.customer && (
@@ -634,7 +623,7 @@ export default function Home({ id }: Props) {
                                           const value = e.target.value.replace(/\D/g, "")
                                           field.onChange(value)
                                         }}
-                                        onBlur={() => customerForm.trigger("phone")}
+
                                       />
                                     </FormControl>
                                     <FormMessage />
@@ -710,7 +699,7 @@ export default function Home({ id }: Props) {
 
               <div className="grid grid-cols-4 gap-4 items-center">
                 <h3 className="text-right text-lg font-semibold text-dark-2 dark:bg-gray-dark dark:!text-white pb-4">
-                  {isEditMode ? "Product:" : "Product:"}
+                  Product:
                 </h3>
                 <div className="col-span-3 w-3/4 mt-2">
                   <div className="h-[60px]">
@@ -744,7 +733,7 @@ export default function Home({ id }: Props) {
                           }
                         }
                       }}
-                      // disabled={isEditMode}
+                    // disabled={isEditMode}
                     >
                       <SelectTrigger
                         id="particulars"
@@ -759,15 +748,25 @@ export default function Home({ id }: Props) {
                         <SelectValue placeholder="Select product" />
                       </SelectTrigger>
                       <SelectContent className="z-[999] w-full bg-white dark:bg-gray-dark dark:!text-white shadow-md border rounded-md">
-                        {particulars.map((particular) => (
-                          <SelectItem className="text-md" key={particular.id} value={`${particular.id}`}>
-                            {particular.name}
+                        {particulars.length === 0 ? (
+                          <div className="flex justify-center items-center h-20">
+                            <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                          </div>
+                        ) : particulars.length > 0 ? (
+                          particulars.map((particular) => (
+                            <SelectItem className="text-md" key={particular.id} value={`${particular.id}`}>
+                              {particular.name}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="no-particulars" disabled>
+                            No Products available
                           </SelectItem>
-                        ))}
+                        )}
                       </SelectContent>
                     </Select>
                     {orderValidation.cart && <p className="text-md text-red-500 mt-1">{orderValidation.cart}</p>}
-                    
+
                   </div>
                 </div>
               </div>

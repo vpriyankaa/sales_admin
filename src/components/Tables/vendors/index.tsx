@@ -15,18 +15,13 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Loader2, Edit ,Eye} from "lucide-react"
+import { Loader2, Edit, Eye } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useRouter } from "next/navigation"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import type { Vendor } from "@/types/vendor"
 import type { Product } from "@/types/product"
-
-type VendorProduct = {
-  product_id: number
-  product_name: string
-}
 
 const vendorFormSchema = z.object({
   name: z
@@ -54,8 +49,8 @@ const vendorFormSchema = z.object({
   products: z
     .array(
       z.object({
-        product_id: z.number(),
-        product_name: z.string(),
+        id: z.number(),
+        name: z.string(),
       }),
     )
     .min(1, "Please select any product"),
@@ -88,7 +83,7 @@ export function Vendors() {
       address: "",
       products: [],
     },
-    mode: "onChange",
+    mode: "onSubmit",
   })
 
   // Fetch vendors and products
@@ -107,29 +102,58 @@ export function Vendors() {
     fetchData()
   }, [])
 
-  const handleProductSelection = (productId: number, checked: boolean) => {
-    const currentProducts = vendorForm.getValues("products")
+  // const handleProductSelection = (productId: number, checked: boolean) => {
+  //   const currentProducts = vendorForm.getValues("products")
 
-    if (checked) {
-      const product = products.find((p) => p.id === productId)
-      if (product) {
-        const newProducts = [
-          ...currentProducts,
-          {
-            product_id: productId,
-            product_name: product.name,
-          },
-        ]
-        vendorForm.setValue("products", newProducts)
-      }
-    } else {
-      const newProducts = currentProducts.filter((p) => p.product_id !== productId)
+  //   console.log("currentProducts",currentProducts);
+
+
+  //   if (checked) {
+  //     const product = products.find((p) => p.id === productId)
+  //     if (product) {
+  //       const newProducts = [
+  //         ...currentProducts,
+  //         {
+  //           product_id: productId,
+  //           product_name: product.name,
+  //         },
+  //       ]
+  //       vendorForm.setValue("products", newProducts)
+  //     }
+  //   } else {
+  //     const newProducts = currentProducts.filter((p) => p.product_id !== productId)
+  //     vendorForm.setValue("products", newProducts)
+  //   }
+
+  //   // Trigger validation for products field
+  //   vendorForm.trigger("products")
+  // }
+
+  const handleProductSelection = (productId: number, checked: boolean) => {
+  const currentProducts = vendorForm.getValues("products") ?? []
+
+  if (checked) {
+    const product = products.find((p) => p.id === productId)
+
+    const alreadyExists = currentProducts.some(p => p.id === productId)
+    if (product && !alreadyExists) {
+      const newProducts = [
+        ...currentProducts,
+        {
+          id: productId,
+          name: product.name,
+        },
+      ]
       vendorForm.setValue("products", newProducts)
     }
-
-    // Trigger validation for products field
-    vendorForm.trigger("products")
+  } else {
+    const newProducts = currentProducts.filter((p) => p.id !== productId)
+    vendorForm.setValue("products", newProducts)
   }
+
+  vendorForm.trigger("products") // trigger validation
+}
+
 
   const handleAddVendor = async (data: VendorFormData) => {
     setIsSubmitting(true)
@@ -141,18 +165,16 @@ export function Vendors() {
         aadhaar: data.aadhaar?.trim() || undefined,
         address: data.address?.trim() || undefined,
         products: data.products.map((product) => ({
-          product_id: product.product_id,
-          product_name: product.product_name,
+          id: product.id,
+          name: product.name,
         })),
       }
 
       await addVendor(vendorData)
 
-      // Close dialog and show success
       setOpen(false)
       setOpenAdd(true)
 
-      // Reset form
       vendorForm.reset()
 
       // Refresh vendors list
@@ -175,8 +197,8 @@ export function Vendors() {
       aadhaar: vendor.aadhaar?.toString() || "",
       address: vendor.address || "",
       products: vendor.products?.map((product) => ({
-        product_id: product.id,
-        product_name: product.name,
+        id: product.id,
+        name: product.name,
       })) || [],
     })
 
@@ -196,8 +218,8 @@ export function Vendors() {
         aadhaar: data.aadhaar?.trim() || undefined,
         address: data.address?.trim() || undefined,
         products: data.products.map((product) => ({
-          product_id: product.product_id,
-          product_name: product.product_name,
+          id: product.id,
+          name: product.name,
         })),
         user: user?.id
 
@@ -223,6 +245,9 @@ export function Vendors() {
       setIsSubmitting(false)
     }
   }
+
+
+  console.log("products",products);
 
   const handleDialogClose = () => {
     setOpen(false)
@@ -287,23 +312,31 @@ export function Vendors() {
           </TableHeader>
 
           <TableBody>
-            {paginatedData.map((vendor) => (
-              <TableRow className="text-left text-base font-medium text-dark dark:!text-white group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" key={vendor.id}>
-                <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{vendor.name}</TableCell>
-                <TableCell>{vendor.phone}</TableCell>
-                <TableCell>{vendor.aadhaar || "-"}</TableCell>
-                <TableCell className="max-w-xs truncate">{vendor.address || "-"}</TableCell>
-                <TableCell>
-                  <div className="text-md font-semibold text-gray-800 dark:!text-white">
-                    {vendor.products?.map((product, index) => (
-                      <span key={index}>
-                        {product.name}
-                        {index !== (vendor.products?.length ?? 0) - 1 && ", "}
-                      </span>
-                    ))}
-                  </div>
+
+            {paginatedData.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-7 text-md font-semibold text-dark-2 dark:text-white">
+                  No vendors found
                 </TableCell>
-                {/* <TableCell className="text-center">
+              </TableRow>
+            ) : (
+              paginatedData.map((vendor) => (
+                <TableRow className="text-left text-base font-medium text-dark dark:!text-white group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" key={vendor.id}>
+                  <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">{vendor.name}</TableCell>
+                  <TableCell>{vendor.phone}</TableCell>
+                  <TableCell>{vendor.aadhaar || "-"}</TableCell>
+                  <TableCell className="max-w-xs truncate">{vendor.address || "-"}</TableCell>
+                  <TableCell>
+                    <div className="text-md font-semibold text-gray-800 dark:!text-white">
+                      {vendor.products?.map((product, index) => (
+                        <span key={index}>
+                          {product.name}
+                          {index !== (vendor.products?.length ?? 0) - 1 && ", "}
+                        </span>
+                      ))}
+                    </div>
+                  </TableCell>
+                  {/* <TableCell className="text-center">
                   <Button variant="ghost" size="sm" onClick={() => handleEditVendor(vendor)} className="h-8 w-8 p-0">
                     <Edit className="h-4 w-4" />
                   </Button>
@@ -316,47 +349,51 @@ export function Vendors() {
                     <Eye className="h-4 w-4" />
                   </Button>
                 </TableCell> */}
-                <TableCell>
-                      <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                             
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => handleEditVendor(vendor)}
-                                  className="h-8 w-8 hover:bg-blue-200"
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                            
-                            </TooltipTrigger>
-                            <TooltipContent className="bg-white font-medium text-secondary">
-                              Edit 
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                  <TableCell>
+                    <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
 
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => router.push(`/vendor-log/${vendor.id}`)}
-                                className="h-8 w-8 hover:bg-blue-200"
-                              >
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent className="bg-white font-medium text-secondary">View</TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                    </TableCell>
-              </TableRow>
-            ))}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleEditVendor(vendor)}
+                              className="h-8 w-8 hover:bg-blue-200"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-white font-medium text-secondary">
+                            Edit
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => router.push(`/vendor-log/${vendor.id}`)}
+                              className="h-8 w-8 hover:bg-blue-200"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-white font-medium text-secondary">View</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  </TableCell>
+                </TableRow>
+
+              ))
+            )}
+
+
           </TableBody>
         </Table>
 
@@ -414,7 +451,7 @@ export function Vendors() {
                                   field.onChange(undefined)
                                 }
                               }}
-                              onBlur={() => vendorForm.trigger("phone")}
+                              
                             />
                           </FormControl>
                           <FormMessage />
@@ -481,7 +518,7 @@ export function Vendors() {
                                 <div className="flex items-center space-x-2">
                                   <Checkbox
                                     id={`product-${product.id}`}
-                                    checked={field.value.some((p) => p.product_id === product.id)}
+                                    checked={field.value.some((p) => p.id === product.id)}
                                     onCheckedChange={(checked) =>
                                       handleProductSelection(product.id, checked as boolean)
                                     }
@@ -641,13 +678,13 @@ export function Vendors() {
                                 <div className="flex items-center space-x-2">
                                   <Checkbox
                                     id={`edit-product-${product.id}`}
-                                    checked={field.value.some((p) => p.product_id === product.id)}
+                                    checked={field.value.some((p) => p.id === product.id)}
                                     onCheckedChange={(checked) =>
                                       handleProductSelection(product.id, checked as boolean)
                                     }
                                   />
                                   <Label htmlFor={`edit-product-${product.id}`} className="text-dark font-medium">
-                                    {product.name} ({product.unit})
+                                    {product.name}
                                   </Label>
                                 </div>
                               </div>
@@ -722,7 +759,7 @@ export function Vendors() {
               disabled={currentPage === totalPages}
               className="font-bold dark:!text-white"
             >
-              <ChevronRight/>
+              <ChevronRight />
             </button>
           </div>
         </div>

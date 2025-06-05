@@ -19,21 +19,8 @@ import { TextField } from '@mui/material';
 import { getTodayDateRange, formatForDateTimeLocal } from '@/utils/timeframe-extractor'
 import { DateRangePicker } from "@/components/date-range-picker"
 import { ChevronRight, ChevronLeft } from "lucide-react";
+import type { Product } from "app-types/product"
 
-type OrderItem = {
-  product_name: string
-  quantity: number
-}
-
-interface Order {
-  id: number
-  date: string
-  customer_name: string
-  items: OrderItem[]
-  total_price: number
-  payment_status: string
-  status: string
-}
 
 interface FilterState {
   dateFrom: string
@@ -67,13 +54,14 @@ export function Purchase({ className }: { className?: string }) {
   })
 
 
-  // console.log("filters", filters);
+  // console.log("data", data);
   // const [showFilters, setShowFilters] = useState(false)
 
   // State for status change modal
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedOrder, setSelectedOrder] = useState<any>(null)
   const [selectedStatus, setSelectedStatus] = useState("Cancel")
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
@@ -82,17 +70,21 @@ export function Purchase({ className }: { className?: string }) {
       const uniqueCustomers = await getVendors()
       const uniqueProducts = await getProducts()
 
+      console.log("reports", reports);
       // console.log("uniqueCustomers", uniqueCustomers);
       // console.log("uniqueProducts", uniqueProducts);
 
       setVendors(uniqueCustomers)
       setProducts(uniqueProducts)
       setData(reports)
+      setLoading(false);
       setFilteredData(reports)
 
     }
     fetchData()
   }, [])
+
+
 
   // Filter logic
   useEffect(() => {
@@ -108,13 +100,13 @@ export function Purchase({ className }: { className?: string }) {
 
     // vendor filter
     if (filters.vendor && filters.vendor !== "all") {
-      filtered = filtered.filter((order) => order.vendor_name.includes(filters.vendor))
+      filtered = filtered.filter((order) => order.vendorName.includes(filters.vendor))
     }
 
     // Product filter
     if (filters.product && filters.product !== "all") {
       filtered = filtered.filter((order) =>
-        order.items.some((item: OrderItem) => item.product_name.includes(filters.product)),
+        order.items.some((item: Product) => item.name.includes(filters.product)),
       )
     }
 
@@ -132,11 +124,11 @@ export function Purchase({ className }: { className?: string }) {
   const [openAdd, setOpenAdd] = useState(false)
 
 
-  // console.log("currentData", currentData);
+  // console.log("filteredData", filteredData);
 
   const openStatusModal = (order: any) => {
     setSelectedOrder(order)
-    setSelectedStatus(order.payment_status)
+    setSelectedStatus(order.paymentStatus)
     setIsModalOpen(true)
   }
 
@@ -187,14 +179,14 @@ export function Purchase({ className }: { className?: string }) {
 
   const uniqueCustomers = [...new Set(data.map((order) => order.customer_name))].sort()
   const uniqueProducts = [
-    ...new Set(data.flatMap((order) => order.items.map((item: OrderItem) => item.product_name))),
+    ...new Set(data.flatMap((order) => order.items.map((item: Product) => item.name))),
   ].sort()
 
   const statusOptions = ["Cancel", "Trash"]
 
   return (
     <>
-      {data.length === 0 ? (
+      {loading ? (
         <PurchaseSkeleton />
       ) : (
         <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
@@ -268,7 +260,7 @@ export function Purchase({ className }: { className?: string }) {
                       <Button
                         variant="outline"
                         onClick={clearFilters}
-                        className="w-full sm:w-auto h-[40px] px-6 bg-blue-500 hover:bg-blue-600 text-white border-blue-500 hover:border-blue-600 whitespace-nowrap"
+                        className="w-full sm:w-auto h-[40px] px-6 bg-primary text-white whitespace-nowrap"
                       >
                         Clear Filters
                       </Button>
@@ -280,7 +272,7 @@ export function Purchase({ className }: { className?: string }) {
           </div>
           <Table>
             <TableHeader>
-              <TableRow className="border-none uppercase [&>th]:text-center">
+              <TableRow className="border-none uppercase text-secondary [&>th]:text-center">
                 <TableHead className="!text-left">Date</TableHead>
                 <TableHead>Vendor Name</TableHead>
                 <TableHead>Products</TableHead>
@@ -294,8 +286,8 @@ export function Purchase({ className }: { className?: string }) {
             <TableBody>
               {currentData.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center text-lg py-8 text-gray-700  dark:!text-white">
-                    {hasActiveFilters ? "No orders found" : "No orders found"}
+                  <TableCell colSpan={8} className="text-center text-md py-8 font-semibold text-gray-700  dark:!text-white">
+                    No purchases found
                   </TableCell>
                 </TableRow>
               ) : (
@@ -311,11 +303,11 @@ export function Purchase({ className }: { className?: string }) {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="pl-5 sm:pl-6 xl:pl-7.5">{order.vendor_name}</div>
+                      <div className="pl-5 sm:pl-6 xl:pl-7.5">{order.vendorName}</div>
                     </TableCell>
                     <TableCell>
-                      {order.items.slice(0, 2).map((item: OrderItem, index: number) => (
-                        <div key={index}>{item.product_name}</div>
+                      {order.items.slice(0, 2).map((item: Product, index: number) => (
+                        <div key={index}>{item.name}</div>
                       ))}
 
                       {order.items.length > 2 && (
@@ -329,32 +321,33 @@ export function Purchase({ className }: { className?: string }) {
                     </TableCell>
 
                     <TableCell>
-                      {order.items.slice(0, 2).map((item: OrderItem, index: number) => (
+
+                      {order.items.slice(0, 2).map((item: Product, index: number) => (
                         <div key={index}>{item.quantity}</div>
                       ))}
                       {order.items.length > 2 && <span className="invisible">+{order.items.length - 2} more</span>}
                     </TableCell>
                     <TableCell>Rs.{order.total_price}</TableCell>
                     <TableCell>
-                      {order.payment_status?.trim() ? (
+                      {order.paymentStatus?.trim() ? (
                         <div
                           className={`py-1 rounded-md text-sm font-semibold
-                          ${order.payment_status === "paid"
+                          ${order.paymentStatus === "paid"
                               ? "bg-green-200 text-green-600"
-                              : order.payment_status === "partiallypaid"
+                              : order.paymentStatus === "partiallypaid"
                                 ? "bg-yellow-200 text-yellow-900"
-                                : order.payment_status === "credit"
+                                : order.paymentStatus === "credit"
                                   ? "bg-blue-200 text-primary"
                                   : "bg-gray-300 text-gray-700"
                             }`}
                         >
-                          {order.payment_status === "paid"
+                          {order.paymentStatus === "paid"
                             ? "Paid"
-                            : order.payment_status === "partiallypaid"
+                            : order.paymentStatus === "partiallypaid"
                               ? "Partially Paid"
-                              : order.payment_status === "credit"
+                              : order.paymentStatus === "credit"
                                 ? "Credit"
-                                : order.payment_status}
+                                : order.paymentStatus}
                         </div>
                       ) : (
                         <span>-</span>
@@ -387,43 +380,7 @@ export function Purchase({ className }: { className?: string }) {
                         <span>-</span>
                       )}
                     </TableCell>
-                    {/* <TableCell>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            {order.status !== "completed" && (
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => router.push(`/purchase/edit/${order.id}`)}
-                                className="h-8 w-8"
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </TooltipTrigger>
-                          <TooltipContent className="bg-white font-medium text-secondary">
-                            Edit order status
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
 
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => router.push(`/detail/${order.id}`)}
-                              className="h-8 w-8"
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent className="bg-white font-medium text-secondary">View status</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </TableCell> */}
                     <TableCell>
                       <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         <TooltipProvider>
@@ -563,9 +520,9 @@ export function Purchase({ className }: { className?: string }) {
               </DialogHeader>
 
               <div className="max-h-64 overflow-y-auto space-y-2 font-bold">
-                {openOrderItems?.map((item: OrderItem, index: number) => (
+                {openOrderItems?.map((item: Product, index: number) => (
                   <div key={index} className="flex justify-between border-b pb-1">
-                    <div className="font-medium">{item.product_name}</div>
+                    <div className="font-medium">{item.name}</div>
                     <div className="text-sm text-gray-600 dark:!text-white"> {item.quantity}</div>
                   </div>
                 ))}
