@@ -177,11 +177,11 @@ export function PurchaseSkeleton() {
             <TableHead className="min-w-[120px] !text-left">Date</TableHead>
             <TableHead className="!text-left">Vendor Name</TableHead>
             <TableHead>Products</TableHead>
-            <TableHead className="!text-right">Quantity</TableHead>
+            <TableHead>Quantity</TableHead>
             <TableHead>Price</TableHead>
             <TableHead>Payment Status</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Action</TableHead>
+            
           </TableRow>
         </TableHeader>
 
@@ -209,9 +209,7 @@ export function PurchaseSkeleton() {
               <TableCell className="!text-right">
                 <Skeleton className="h-4 w-24" />
               </TableCell >
-              <TableCell className="!text-right">
-                <Skeleton className="h-4 w-24" />
-              </TableCell>
+             
 
             </TableRow>
           ))}

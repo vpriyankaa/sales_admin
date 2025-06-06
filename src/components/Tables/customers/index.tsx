@@ -51,6 +51,7 @@ export function Customers() {
   const [itemsPerPageInput, setItemsPerPageInput] = useState("10")
   const [isAddingCustomer, setIsAddingCustomer] = useState(false)
   const [openAdd, setOpenAdd] = useState(false)
+  const [openEdit, setOpenEdit] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [isEditingCustomer, setIsEditingCustomer] = useState(false)
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null)
@@ -158,7 +159,11 @@ export function Customers() {
       }
 
 
-      await editCustomer(customerData)
+      const edit = await editCustomer(customerData)
+      if (edit) {
+        setOpenEdit(true);
+
+      }
       setIsEditingCustomer(false)
       setEditingCustomer(null)
 
@@ -369,7 +374,17 @@ export function Customers() {
                           </FormLabel>
                           <div className="col-span-3">
                             <FormControl>
-                              <Input {...field} maxLength={20} placeholder="Enter customer name" />
+                              <Input
+                                {...field}
+                                maxLength={20}
+                                placeholder="Enter customer name"
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  const capitalized =
+                                    value.charAt(0).toUpperCase() + value.slice(1);
+                                  field.onChange(capitalized);
+                                }}
+                              />
                             </FormControl>
                             <FormMessage />
                           </div>
@@ -397,7 +412,7 @@ export function Customers() {
                                 onChange={(e) => {
                                   const value = e.target.value.replace(/\D/g, "")
                                   field.onChange(value)
-                                }}   
+                                }}
                               />
                             </FormControl>
                             <FormMessage />
@@ -485,6 +500,21 @@ export function Customers() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
+
+          <Dialog open={openEdit} onOpenChange={setOpenEdit}>
+            <DialogContent className="bg-white text-black dark:!text-white dark:bg-gray-dark">
+              <DialogHeader>
+                <DialogTitle>Success</DialogTitle>
+              </DialogHeader>
+              <div>Customer Edited successfully!</div>
+              <DialogFooter>
+                <Button className="w-full md:w-auto text-white mb-5 mr-2" onClick={() => setOpenEdit(false)}>
+                  Close
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
         </>
       )}
     </>

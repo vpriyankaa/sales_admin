@@ -163,11 +163,11 @@ export function OrdersSkeleton() {
             <TableHead className="!text-left min-w-[120px]">Date</TableHead>
             <TableHead className="!text-left">Customer Name</TableHead>
             <TableHead>Products</TableHead>
-            <TableHead className="!text-right">Quantity</TableHead>
+            <TableHead>Quantity</TableHead>
             <TableHead>Price</TableHead>
             <TableHead>Payment Status</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Action</TableHead>
+           
           </TableRow>
         </TableHeader>
 
@@ -186,7 +186,7 @@ export function OrdersSkeleton() {
               <TableCell className="!text-right">
                 <Skeleton className="h-4 w-24" />
               </TableCell>
-              <TableCell className="!text-right">
+              <TableCell>
                 <Skeleton className="h-4 w-24" />
               </TableCell>
               <TableCell className="!text-right">
@@ -195,10 +195,7 @@ export function OrdersSkeleton() {
               <TableCell className="!text-right">
                 <Skeleton className="h-4 w-24" />
               </TableCell >
-              <TableCell className="!text-right">
-                <Skeleton className="h-4 w-24" />
-              </TableCell>
-
+             
             </TableRow>
           ))}
         </TableBody>

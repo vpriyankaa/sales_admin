@@ -76,7 +76,7 @@ export function UserInfo() {
               {memoizedUser?.name?.charAt(0).toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
-          <figcaption className="flex items-center gap-1 font-medium text-dark dark:text-dark-6 max-[1024px]:sr-only">
+          <figcaption className="flex items-center gap-1 font-medium text-dark dark:!text-white max-[1024px]:sr-only">
             <span>{memoizedUser.name}</span>
 
             <ChevronUpIcon
@@ -105,11 +105,11 @@ export function UserInfo() {
           </Avatar>
 
           <figcaption className="space-y-1 text-base font-medium">
-            <div className="mb-2 leading-none text-dark dark:text-white">
+            <div className="mb-2 leading-none text-dark dark:!text-white">
               {memoizedUser.name}
             </div>
 
-            <div className="leading-none text-gray-6">{memoizedUser.email}</div>
+            <div className="leading-none text-gray-6 dark:!text-white">{memoizedUser.email}</div>
           </figcaption>
         </figure>
 
@@ -119,9 +119,9 @@ export function UserInfo() {
 
         <hr className="border-[#E8E8E8] dark:border-dark-3" />
 
-        <div className="p-2 text-base text-[#4B5563] dark:text-dark-6">
+        <div className="p-2 text-base text-[#4B5563] dark:!text-white">
           <button
-            className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
+            className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:!text-white"
             onClick={handleLogout}
           >
             <LogOutIcon />

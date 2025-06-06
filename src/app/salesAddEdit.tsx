@@ -478,7 +478,7 @@ export default function Home({ id }: Props) {
                         onChange={(v) => setDate(v)}
                         views={["year", "month", "day", "hours", "minutes",]}
                         slotProps={{
-                          /* ---------- pop‑up panel ---------- */
+                        
                           popper: {
                             sx: {
                               "& .MuiPaper-root": {
@@ -487,31 +487,26 @@ export default function Home({ id }: Props) {
                               },
 
                               "& .MuiTypography-root, \
-                 & .MuiPickersDay-root, \
-                 & .MuiDayCalendar-weekDayLabel, \
-                 & .MuiPickersCalendarHeader-label": {
+                                & .MuiPickersDay-root, \
+                                & .MuiDayCalendar-weekDayLabel, \
+                                & .MuiPickersCalendarHeader-label": {
                                 color: isDark ? "#fff" : "#000 !important",
                               },
                             },
                           },
 
-                          /* ---------- text field ---------- */
+                        
                           textField: {
                             fullWidth: true,
                             variant: "outlined",
                             size: "small",
                             sx: {
-                              /* Input text */
                               "& .MuiInputBase-input, & .MuiOutlinedInput-input": {
                                 color: isDark ? "#fff" : "#000", // Correct now
                               },
-
-                              /* Calendar icon */
                               "& .MuiSvgIcon-root": {
                                 color: isDark ? "#fff" : "#000", // Also correct
                               },
-
-                              /* Floating label */
                               "& .MuiInputLabel-root": {
                                 color: isDark ? "#bbb" : "#555",
                               },
@@ -594,7 +589,17 @@ export default function Home({ id }: Props) {
                                   </FormLabel>
                                   <div className="col-span-3">
                                     <FormControl>
-                                      <Input {...field} maxLength={20} placeholder="Enter customer name" />
+                                      <Input
+                                        {...field}
+                                        maxLength={20}
+                                        placeholder="Enter customer name"
+                                        onChange={(e) => {
+                                          const value = e.target.value;
+                                          const capitalized =
+                                            value.charAt(0).toUpperCase() + value.slice(1);
+                                          field.onChange(capitalized);
+                                        }}
+                                      />
                                     </FormControl>
                                     <FormMessage />
                                   </div>

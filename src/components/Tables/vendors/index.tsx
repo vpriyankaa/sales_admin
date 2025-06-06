@@ -67,6 +67,7 @@ export function Vendors() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null)
   const [openEdit, setOpenEdit] = useState(false)
+  const [openEditSuccess, setOpenEditSuccess] = useState(false)
 
   const router = useRouter()
 
@@ -130,29 +131,29 @@ export function Vendors() {
   // }
 
   const handleProductSelection = (productId: number, checked: boolean) => {
-  const currentProducts = vendorForm.getValues("products") ?? []
+    const currentProducts = vendorForm.getValues("products") ?? []
 
-  if (checked) {
-    const product = products.find((p) => p.id === productId)
+    if (checked) {
+      const product = products.find((p) => p.id === productId)
 
-    const alreadyExists = currentProducts.some(p => p.id === productId)
-    if (product && !alreadyExists) {
-      const newProducts = [
-        ...currentProducts,
-        {
-          id: productId,
-          name: product.name,
-        },
-      ]
+      const alreadyExists = currentProducts.some(p => p.id === productId)
+      if (product && !alreadyExists) {
+        const newProducts = [
+          ...currentProducts,
+          {
+            id: productId,
+            name: product.name,
+          },
+        ]
+        vendorForm.setValue("products", newProducts)
+      }
+    } else {
+      const newProducts = currentProducts.filter((p) => p.id !== productId)
       vendorForm.setValue("products", newProducts)
     }
-  } else {
-    const newProducts = currentProducts.filter((p) => p.id !== productId)
-    vendorForm.setValue("products", newProducts)
-  }
 
-  vendorForm.trigger("products") // trigger validation
-}
+    vendorForm.trigger("products") // trigger validation
+  }
 
 
   const handleAddVendor = async (data: VendorFormData) => {
@@ -226,8 +227,12 @@ export function Vendors() {
       }
 
       // You'll need to create this action
-      await editVendor(vendorData)
+      const edit = await editVendor(vendorData)
 
+      if (edit) {
+        setOpenEditSuccess(true);
+
+      }
       // Close dialog and show success
       setOpenEdit(false)
       setOpenAdd(true)
@@ -247,7 +252,7 @@ export function Vendors() {
   }
 
 
-  console.log("products",products);
+  console.log("products", products);
 
   const handleDialogClose = () => {
     setOpen(false)
@@ -301,7 +306,7 @@ export function Vendors() {
 
         <Table>
           <TableHeader>
-            <TableRow className="text-center text-base font-medium text-dark dark:!text-white group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <TableRow className="text-center text-base font-medium text-dark dark:!text-white">
               <TableHead className="!text-left pl-6">Vendor Name</TableHead>
               <TableHead className="!text-left">Phone</TableHead>
               <TableHead className="!text-left">Aadhaar</TableHead>
@@ -418,7 +423,15 @@ export function Vendors() {
                         </FormLabel>
                         <div className="col-span-3">
                           <FormControl>
-                            <Input {...field} maxLength={20} placeholder="Enter vendor name" />
+                            <Input {...field} maxLength={20}
+                              placeholder="Enter vendor name"
+                              onChange={(e) => {
+                                const rawValue = e.target.value;
+                                const correctedValue =
+                                  rawValue.charAt(0).toUpperCase() + rawValue.slice(1);
+                                field.onChange(correctedValue);
+                              }}
+                            />
                           </FormControl>
                           <FormMessage />
                         </div>
@@ -451,7 +464,7 @@ export function Vendors() {
                                   field.onChange(undefined)
                                 }
                               }}
-                              
+
                             />
                           </FormControl>
                           <FormMessage />
@@ -578,7 +591,17 @@ export function Vendors() {
                         </FormLabel>
                         <div className="col-span-3">
                           <FormControl>
-                            <Input {...field} maxLength={20} placeholder="Enter vendor name" />
+                            <FormControl>
+                            <Input {...field} maxLength={20}
+                              placeholder="Enter vendor name"
+                              onChange={(e) => {
+                                const rawValue = e.target.value;
+                                const correctedValue =
+                                  rawValue.charAt(0).toUpperCase() + rawValue.slice(1);
+                                field.onChange(correctedValue);
+                              }}
+                            />
+                          </FormControl>
                           </FormControl>
                           <FormMessage />
                         </div>
@@ -611,7 +634,7 @@ export function Vendors() {
                                   field.onChange(undefined)
                                 }
                               }}
-                              onBlur={() => vendorForm.trigger("phone")}
+                              // onBlur={() => vendorForm.trigger("phone")}
                             />
                           </FormControl>
                           <FormMessage />
@@ -771,7 +794,7 @@ export function Vendors() {
           <DialogHeader>
             <DialogTitle>Success</DialogTitle>
           </DialogHeader>
-          <div>{editingVendor ? "Vendor updated successfully!" : "Vendor added successfully!"}</div>
+          <div>{openEditSuccess ? "Vendor updated successfully!" : "Vendor added successfully!"}</div>
           <DialogFooter>
             <Button className="w-full md:w-auto text-white mb-5 mr-2" onClick={() => setOpenAdd(false)}>
               Close

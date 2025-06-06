@@ -8,10 +8,7 @@ export function CustomersSkeleton() {
         <h2 className="text-2xl font-bold text-dark dark:!text-white">Customers</h2>
       </div>
 
-      <div className="flex justify-end mb-5 mr-2">
-        <Skeleton className="h-10 w-32" />
-      </div>
-
+      
       <Table>
         <TableHeader>
           <TableRow className="border-none uppercase [&>th]:text-center">

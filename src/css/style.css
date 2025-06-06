@@ -89,6 +89,10 @@
     background-color: #001D6B !important;
   }
 
+   .bg-calendar {
+    background-color: #88a4f0 !important;
+  }
+
   .border-t-primary {
   border-top: 4px solid #001D6B !important;
 }

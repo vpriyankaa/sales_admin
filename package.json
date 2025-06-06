@@ -47,6 +47,7 @@
     "dayjs": "^1.11.13",
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.44.2",
+    "firebase-admin": "^13.4.0",
     "flatpickr": "^4.6.13",
     "jsvectormap": "^1.6.0",
     "lucide-react": "^0.511.0",
@@ -63,6 +64,7 @@
     "sonner": "^2.0.3",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
+    "uuid": "^11.1.0",
     "zod": "^3.25.32"
   },
   "devDependencies": {
@@ -70,6 +72,7 @@
     "@types/pg": "^8.15.4",
     "@types/react": "19.0.8",
     "@types/react-dom": "19.0.3",
+    "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.20",
     "drizzle-kit": "^0.31.1",
     "eslint": "^9",

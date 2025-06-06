@@ -67,6 +67,7 @@ export function TopProducts() {
 
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [openEdit, setOpenEdit] = useState(false)
+  const [openEditSuccess, setOpenEditSuccess] = useState(false)
 
   const userStr = sessionStorage.getItem("user");
 
@@ -174,8 +175,11 @@ export function TopProducts() {
       }
 
       // You'll need to create an updateProduct action
-      await editProduct(productData)
+      const edit = await editProduct(productData)
 
+      if (edit) {
+        setOpenEditSuccess(true);
+      }
       setOpenEdit(false)
       editProductForm.reset()
       setEditingProduct(null)
@@ -201,19 +205,6 @@ export function TopProducts() {
   const totalPages = Math.ceil(data.length / itemsPerPage)
   const paginatedData = data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
-  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setItemsPerPageInput(e.target.value)
-  }
-
-  const handleItemsPerPageSubmit = () => {
-    const newItemsPerPage = Number.parseInt(itemsPerPageInput)
-    if (!isNaN(newItemsPerPage) && newItemsPerPage >= 1) {
-      setItemsPerPage(newItemsPerPage)
-      setCurrentPage(1)
-    } else {
-      setItemsPerPageInput(itemsPerPage.toString())
-    }
-  }
 
   if (loading) {
     return <TopProductsSkeleton />
@@ -235,7 +226,7 @@ export function TopProducts() {
 
         <Table>
           <TableHeader>
-            <TableRow className="text-center text-base font-medium text-dark dark:!text-white group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <TableRow className="text-center text-base font-medium text-dark dark:!text-white">
               <TableHead className="!text-left pl-6">Product Name</TableHead>
               <TableHead className="!text-left">Quantity</TableHead>
               <TableHead className="!text-left">Unit</TableHead>
@@ -326,8 +317,18 @@ export function TopProducts() {
                         </FormLabel>
                         <div className="col-span-3">
                           <FormControl>
-                            <Input {...field} placeholder="Enter product name" />
+                            <Input
+                              {...field}
+                              placeholder="Enter product name"
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                const capitalized =
+                                  value.charAt(0).toUpperCase() + value.slice(1);
+                                field.onChange(capitalized);
+                              }}
+                            />
                           </FormControl>
+
                           <FormMessage />
                         </div>
                       </FormItem>
@@ -392,7 +393,7 @@ export function TopProducts() {
                                   }
                                 }
                               }}
-                              
+
                             />
                           </FormControl>
                           <FormMessage />
@@ -428,7 +429,7 @@ export function TopProducts() {
                                   }
                                 }
                               }}
-                              
+
                             />
                           </FormControl>
                           <FormMessage />
@@ -479,7 +480,19 @@ export function TopProducts() {
                         </FormLabel>
                         <div className="col-span-3">
                           <FormControl>
-                            <Input {...field} placeholder="Enter product name" />
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="Enter product name"
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  const capitalized =
+                                    value.charAt(0).toUpperCase() + value.slice(1);
+                                  field.onChange(capitalized);
+                                }}
+                              />
+                            </FormControl>
+
                           </FormControl>
                           <FormMessage />
                         </div>
@@ -545,7 +558,7 @@ export function TopProducts() {
                                   }
                                 }
                               }}
-                              
+
                             />
                           </FormControl>
                           <FormMessage />
@@ -581,7 +594,7 @@ export function TopProducts() {
                                   }
                                 }
                               }}
-                              
+
                             />
                           </FormControl>
                           <FormMessage />
@@ -667,6 +680,20 @@ export function TopProducts() {
           <div>Product added successfully!</div>
           <DialogFooter>
             <Button className="w-full md:w-auto text-white mb-5 mr-2" onClick={() => setOpenAdd(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={openEditSuccess} onOpenChange={setOpenEditSuccess}>
+        <DialogContent className="bg-white text-black dark:!text-white dark:bg-gray-dark">
+          <DialogHeader>
+            <DialogTitle>Success</DialogTitle>
+          </DialogHeader>
+          <div>Product Edited successfully!</div>
+          <DialogFooter>
+            <Button className="w-full md:w-auto text-white mb-5 mr-2" onClick={() => setOpenEditSuccess(false)}>
               Close
             </Button>
           </DialogFooter>

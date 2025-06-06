@@ -439,13 +439,13 @@ export async function editProduct(productData: {
 
   const changes: string[] = [];
   if (current.name !== name)
-    changes.push(`name: changed from "${current.name}" to "${name}"`);
+    changes.push(`name: changed from ${current.name} to ${name}`);
   if (current.quantity !== quantity)
     changes.push(`quantity: changed from ${current.quantity} to ${quantity}`);
   if (current.price !== price)
     changes.push(`price: changed from ${current.price} to ${price}`);
   if (current.unit !== unit)
-    changes.push(`unit: changed from "${current.unit}" to "${unit}"`);
+    changes.push(`unit: changed from ${current.unit} to ${unit}`);
 
   const actionText = changes.length
     ? changes.join(", ")

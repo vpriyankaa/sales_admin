@@ -82,10 +82,22 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   }, [])
 
   const getImageUrl = (filename: string): string => {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ""
-    const bucketName = "uploads"
-    return `${supabaseUrl}/storage/v1/object/public/${bucketName}/documents/${filename}`
-  }
+
+    const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "";
+   
+    const token = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_TOKEN || "";
+
+    const encodedPath = encodeURIComponent(`documents/${filename}`);
+
+    let url = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
+
+    if (token) {
+      url += `&token=${token}`;
+    }
+
+    console.log("image" ,url)
+    return url;
+  };
 
   const handleImageClick = (filename: string) => {
     setSelectedImage(getImageUrl(filename))
@@ -101,6 +113,8 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       method: "POST",
       body: formData,
     })
+
+    console.log("image uplloading response", response);
 
     if (!response.ok) {
       throw new Error("File upload failed")
@@ -159,13 +173,10 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       "image/jpeg",
       "image/png",
       "image/gif",
-      "application/pdf",
-      "text/plain",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+
     ]
     if (!allowedTypes.includes(file.type)) {
-      setFileUploadError("Please select a valid file type (JPEG, PNG, GIF, PDF, TXT, DOC, DOCX)")
+      setFileUploadError("Please select a valid file type (JPEG, PNG, GIF)")
       return
     }
 
