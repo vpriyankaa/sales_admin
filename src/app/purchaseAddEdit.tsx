@@ -525,7 +525,7 @@ export default function Home({ id }: Props) {
     )
   }
 
-  const isDark = theme.palette.mode == "dark"
+  const isDark = document.documentElement.classList.contains("dark")
 
   return (
     <>
@@ -587,67 +587,68 @@ export default function Home({ id }: Props) {
 
                   <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
-                      <DateTimePicker
-                        label="Select date & time"
-                        value={date}
-                        onChange={(v) => setDate(v)}
-                        views={["year", "month", "day", "hours", "minutes",]}
-                        slotProps={{
-                          popper: {
-                            sx: {
-                              "& .MuiPaper-root": {
-                                minWidth: 400,
-                                bgcolor: isDark ? "#1e1e1e" : "#fff",
-                              },
-
-                              // 🌙 Dark mode text
-                              "& .MuiTypography-root, \
-                                               & .MuiPickersDay-root, \
-                                               & .MuiDayCalendar-weekDayLabel, \
-                                               & .MuiPickersCalendarHeader-label": {
-                                color: isDark ? "#fff !important" : "#000",
-                              },
-
-                              // ✅ FORCE AM/PM column to show both values, remove scroll
-                              "& .MuiMultiSectionDigitalClockSection-root:last-of-type": {
-                                maxHeight: "none",
-                                height: "auto !important",
-                                overflow: "visible !important",
-                                justifyContent: "flex-start",
-                                "& .MuiMultiSectionDigitalClockSection-item": {
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  height: "40px",
-                                  fontWeight: "bold",
-                                },
-                              },
-                            },
-                          },
-                          textField: {
-                            fullWidth: true,
-                            variant: "outlined",
-                            size: "small",
-                            sx: {
-                              "& .MuiInputBase-input, & .MuiOutlinedInput-input": {
-                                color: isDark ? "#fff" : "#000",
-                              },
-                              "& .MuiSvgIcon-root": {
-                                color: isDark ? "#fff" : "#000",
-                              },
-                              "& .MuiInputAdornment-root svg": {
-                                color: isDark ? "#fff !important" : "#000",
-                              },
-                              "& .MuiInputLabel-root": {
-                                color: isDark ? "#bbb" : "#555",
-                              },
-                              "& .Mui-focused.MuiInputLabel-root": {
-                                color: isDark ? "#fff" : "#000",
-                              },
-                            },
-                          } as TextFieldProps,
-                        }}
-
-                      />
+                       <DateTimePicker
+                                              label="Select date & time"
+                                              value={date}
+                                              onChange={(v) => setDate(v)}
+                                              views={["year", "month", "day", "hours", "minutes",]}
+                                              slotProps={{
+                                                popper: {
+                                                  sx: {
+                                                    "& .MuiPaper-root": {
+                                                      minWidth: 400,
+                                                      bgcolor: isDark ? "#1e1e1e" : "#fff",
+                                                    },
+                      
+                                                    // 🌙 Dark mode text
+                                                    "& .MuiTypography-root, \
+                                                    & .MuiPickersDay-root, \
+                                                    & .MuiDayCalendar-weekDayLabel, \
+                                                    & .MuiPickersCalendarHeader-label": {
+                                                      color: isDark ? "#fff" : "#000 !important",
+                                                    },
+                      
+                                                    // ✅ FORCE AM/PM column to show both values, remove scroll
+                                                    "& .MuiMultiSectionDigitalClockSection-root:last-of-type": {
+                                                      maxHeight: "none",
+                                                      height: "auto !important",
+                                                      overflow: "visible !important",
+                                                      justifyContent: "flex-start",
+                                                      "& .MuiMultiSectionDigitalClockSection-item": {
+                                                        display: "flex",
+                                                        justifyContent: "center",
+                                                        height: "40px",
+                                                        fontWeight: "bold",
+                                                      },
+                                                    },
+                                                  },
+                                                },
+                      
+                                                textField: {
+                                                  fullWidth: true,
+                                                  variant: "outlined",
+                                                  size: "small",
+                                                  sx: {
+                                                    "& .MuiInputBase-input, & .MuiOutlinedInput-input": {
+                                                      color: isDark ? "#fff" : "#000",
+                                                    },
+                                                    "& .MuiSvgIcon-root": {
+                                                      color: isDark ? "#fff" : "#000",
+                                                    },
+                                                    "& .MuiInputAdornment-root svg": {
+                                                      color: isDark ? "#fff !important" : "",
+                                                    },
+                                                    "& .MuiInputLabel-root": {
+                                                      color: isDark ? "#bbb" : "#555",
+                                                    },
+                                                    "& .Mui-focused.MuiInputLabel-root": {
+                                                      color: isDark ? "#fff" : "#000",
+                                                    },
+                                                  },
+                                                } as TextFieldProps,
+                                              }}
+                      
+                                            />
                     </LocalizationProvider>
                   </ThemeProvider>
                 </div>

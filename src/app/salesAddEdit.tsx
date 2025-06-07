@@ -452,9 +452,9 @@ export default function Home({ id }: Props) {
     customerForm.reset()
   }
 
-  const isDarkMode = document.documentElement.classList.contains("dark")
+  const isDark = document.documentElement.classList.contains("dark")
 
-  const isDark = theme.palette.mode == "dark"
+  // const isDark = theme.palette.mode == "dark"
 
   // console.log("isDark", isDark)
 
@@ -469,7 +469,7 @@ export default function Home({ id }: Props) {
             <div className="space-y-4">
               <div className="grid grid-cols-4 gap-4 items-center">
                 <h3 className="text-right text-lg font-semibold text-dark-2 dark:!text-white">Date:</h3>
-                <div className="col-span-3 w-3/4">
+                <div className="col-span-3 w-3/4 dark:!text-white">
                   <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                       <DateTimePicker
@@ -490,7 +490,7 @@ export default function Home({ id }: Props) {
                               & .MuiPickersDay-root, \
                               & .MuiDayCalendar-weekDayLabel, \
                               & .MuiPickersCalendarHeader-label": {
-                                color: isDark ? "#fff !important" : "#000",
+                                color: isDark ? "#fff" : "#000 !important",
                               },
 
                               // ✅ FORCE AM/PM column to show both values, remove scroll
@@ -508,6 +508,7 @@ export default function Home({ id }: Props) {
                               },
                             },
                           },
+
                           textField: {
                             fullWidth: true,
                             variant: "outlined",
