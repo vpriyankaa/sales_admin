@@ -229,6 +229,9 @@ export default function Home({ id }: Props) {
   const theme = useTheme()
 
   const [cart, setCart] = useState<Product[]>([])
+    const [isVendorLoad, setIsVendorLoad] = useState(true)
+    const [isProductLoad, setIsProductLoad] = useState(true)
+  
   const [selectedParticular, setSelectedParticular] = useState<string>("")
   const [currentQuantity, setCurrentQuantity] = useState<string>("1")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -250,6 +253,9 @@ export default function Home({ id }: Props) {
 
         setUnits(unitsData)
         setVendors(vendorsData)
+
+        setIsVendorLoad(false)
+        setIsProductLoad(false)
         setProducts(productsData)
 
         // If in edit mode, fetch order details
@@ -678,7 +684,7 @@ export default function Home({ id }: Props) {
                       </SelectTrigger>
 
                       <SelectContent className="z-[999] w-full bg-white text-md dark:!bg-gray-dark dark:!text-white shadow-md border rounded-md">
-                        {vendors.length === 0 ? (
+                        {isVendorLoad ? (
                           <div className="flex justify-center items-center h-20">
                             <Loader2 className="h-5 w-5 animate-spin text-primary" />
                           </div>
@@ -944,7 +950,7 @@ export default function Home({ id }: Props) {
                         <SelectValue className="text-text-dark-400" placeholder="Select product" />
                       </SelectTrigger>
                       <SelectContent className="z-[999] text-text-dark-400 w-full dark:!text-white bg-white dark:!bg-gray-dark shadow-md border rounded-md">
-                        {filteredProducts.length === 0 ? (
+                        { isProductLoad ? (
                           <div className="flex justify-center items-center h-20">
                             <Loader2 className="h-5 w-5 animate-spin text-primary" />
                           </div>

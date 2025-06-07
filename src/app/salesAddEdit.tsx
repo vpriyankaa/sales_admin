@@ -72,6 +72,8 @@ export default function Home({ id }: Props) {
 
   const [open, setOpen] = useState(!isEditMode)
   const [openEdit, setEditOpen] = useState(false)
+  const [isCustomerLoad, setIsCustomerLoad] = useState(true)
+  const [isProductLoad, setIsProductLoad] = useState(true)
   const [customers, setCustomers] = useState<Customer[]>([])
   const [units, setUnits] = useState<Unit[]>([])
   const [particulars, setParticulars] = useState<Product[]>([])
@@ -228,12 +230,16 @@ export default function Home({ id }: Props) {
   useEffect(() => {
     const fetchData = async () => {
       try {
+
         const customersData = await getCustomers()
         const productsData = await getProducts()
         const unitsData = await getUnits()
 
         setUnits(unitsData)
         setCustomers(customersData)
+        setIsCustomerLoad(false);
+        setIsProductLoad(false);
+       
         setParticulars(productsData)
 
         // If in edit mode, fetch order details
@@ -294,6 +300,8 @@ export default function Home({ id }: Props) {
 
     setOrderValidation(newValidation)
   }, [selectedUser, cart])
+
+  
 
   const handleAddCustomer = async (data: CustomerFormData) => {
     setIsLoading(true)
@@ -557,7 +565,7 @@ export default function Home({ id }: Props) {
                         <SelectValue className="font-semibold" placeholder="Select customer" />
                       </SelectTrigger>
                       <SelectContent className="z-[999] w-full bg-white dark:bg-gray-dark dark:!text-white shadow-md border rounded-md">
-                        {customers.length === 0 ? (
+                        {isCustomerLoad ? (
                           <div className="flex justify-center items-center h-20">
                             <Loader2 className="h-5 w-5 animate-spin text-primary" />
                           </div>
@@ -770,7 +778,7 @@ export default function Home({ id }: Props) {
                         <SelectValue placeholder="Select product" />
                       </SelectTrigger>
                       <SelectContent className="z-[999] w-full bg-white dark:bg-gray-dark dark:!text-white shadow-md border rounded-md">
-                        {particulars.length === 0 ? (
+                        { isProductLoad ? (
                           <div className="flex justify-center items-center h-20">
                             <Loader2 className="h-5 w-5 animate-spin text-primary" />
                           </div>
