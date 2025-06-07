@@ -56,31 +56,31 @@ export default function SignIn() {
     </main>
   );
 
-  return (
-    <>
-      <div className="h-screen w-full flex items-center justify-center bg-white p-4">
-        <div className="w-full max-w-6xl h-auto max-h-[90vh] rounded-lg">
-          <div className="flex flex-col md:flex-row h-full">
-            {/* Left section: Logo */}
-            <div className="flex-1 w-full custom-gradient-1 flex items-center justify-center p-4">
-              <Image
-                src="/images/logo/saamylogo.jpg"
-                alt="Saamy Logo"
-                fill={true}
-                className="w-full h-full object-contain bg-red-100"
-                priority
-              />
-            </div>
+  // return (
+  //   <>
+  //     <div className="h-screen w-full flex items-center justify-center bg-white p-4">
+  //       <div className="w-full max-w-6xl h-auto max-h-[90vh] rounded-lg">
+  //         <div className="flex flex-col md:flex-row h-full">
+  //           {/* Left section: Logo */}
+  //           <div className="flex-1 w-full custom-gradient-1 flex items-center justify-center p-4">
+  //             <Image
+  //               src="/images/logo/saamylogo.jpg"
+  //               alt="Saamy Logo"
+  //               fill={true}
+  //               className="w-full h-full object-contain bg-red-100"
+  //               priority
+  //             />
+  //           </div>
 
-            {/* Right section: Sign-in form */}
-            <div className="flex-1 w-full md:w-1/2 flex items-center justify-center">
-              <div className="w-full max-w-md p-4 md:p-6">
-                <Signin />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+  //           {/* Right section: Sign-in form */}
+  //           <div className="flex-1 w-full md:w-1/2 flex items-center justify-center">
+  //             <div className="w-full max-w-md p-4 md:p-6">
+  //               <Signin />
+  //             </div>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   </>
+  // );
 }

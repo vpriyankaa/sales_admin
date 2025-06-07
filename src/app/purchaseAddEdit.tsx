@@ -590,51 +590,60 @@ export default function Home({ id }: Props) {
                         label="Select date & time"
                         value={date}
                         onChange={(v) => setDate(v)}
-                        views={["year", "month", "day", "hours", "minutes"]}
+                        views={["year", "month", "day", "hours", "minutes",]}
                         slotProps={{
-                          /* ---------- pop‑up panel ---------- */
                           popper: {
                             sx: {
                               "& .MuiPaper-root": {
-                                minWidth: 400, // widen calendar
-                                bgcolor: isDark ? "#1e1e1e" : "#fff",
+                                minWidth: 400,
+                                bgcolor: isDark ? "#1e1e1e" : "#fff !important",
                               },
 
+                              // 🌙 Dark mode text
                               "& .MuiTypography-root, \
-                                   & .MuiPickersDay-root, \
-                                   & .MuiDayCalendar-weekDayLabel, \
-                                   & .MuiPickersCalendarHeader-label": {
-                                color: isDark ? "#fff" : "#000 !important",
+                                                 & .MuiPickersDay-root, \
+                                                 & .MuiDayCalendar-weekDayLabel, \
+                                                 & .MuiPickersCalendarHeader-label": {
+                                color: isDark ? "#fff !important" : "#000 !important",
+                              },
+
+                              // ✅ FORCE AM/PM column to show both values, remove scroll
+                              "& .MuiMultiSectionDigitalClockSection-root:last-of-type": {
+                                maxHeight: "none",
+                                height: "auto !important",
+                                overflow: "visible !important",
+                                justifyContent: "flex-start",
+                                "& .MuiMultiSectionDigitalClockSection-item": {
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  height: "40px",
+                                  fontWeight: "bold",
+                                },
                               },
                             },
                           },
 
-                          /* ---------- text field ---------- */
                           textField: {
                             fullWidth: true,
                             variant: "outlined",
                             size: "small",
                             sx: {
-                              /* Input text */
-                              "& .MuiInputBase-input, & .MuiOutlinedInput-input": {
-                                color: isDark ? "#fff" : "#000", // Correct now
+                              "& .MuiOutlinedInput-root .MuiSvgIcon-root": {
+                                color: "#fff",
                               },
-
-                              /* Calendar icon */
-                              "& .MuiSvgIcon-root": {
-                                color: isDark ? "#fff" : "#000", // Also correct
-                              },
-
-                              /* Floating label */
                               "& .MuiInputLabel-root": {
-                                color: isDark ? "#bbb" : "#555",
+                                color: "#bbb",
                               },
                               "& .Mui-focused.MuiInputLabel-root": {
-                                color: isDark ? "#fff" : "#000",
+                                color: "#fff !important",
+                              },
+                              "& .MuiOutlinedInput-input": {
+                                color: "#fff !important",
                               },
                             },
                           } as TextFieldProps,
                         }}
+
                       />
                     </LocalizationProvider>
                   </ThemeProvider>
