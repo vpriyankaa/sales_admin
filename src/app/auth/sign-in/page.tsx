@@ -41,7 +41,7 @@ export default function SignIn() {
               <Image
               src="/images/brand/saamy-agency-tamil.png"
               alt="Saamy Logo"
-              width={300}
+              width={240}
               height={100}
               className="block sm:hidden object-cover"
               priority
