@@ -210,14 +210,14 @@ export function Customers() {
 
   return (
     <>
-      {paginatedData.length === 0 && data.length === 0 ? (
+      {/* {paginatedData.length === 0 && data.length === 0 ? (
         <div className="flex items-center justify-center h-full">
           <div className="text-gray-500 dark:text-gray-400 text-lg">No customers found</div>
           <Button type="button" className="ml-4 text-white" onClick={() => setIsAddingCustomer(true)}>
             Add Customer
           </Button>
         </div>
-      ) : (
+      ) : ( */}
         <>
           <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
             <div className="px-6 py-4 sm:px-6 sm:py-5 xl:px-8.5">
@@ -516,7 +516,7 @@ export function Customers() {
           </Dialog>
 
         </>
-      )}
+      {/* )} */}
     </>
   )
 }
