@@ -82,118 +82,118 @@ export default function Home({ id }: Props) {
   const { toast } = useToast()
 
   const darkTheme = createTheme({
-  palette: {
-    mode: "dark",
-    background: {
-      default: "#121212",
-      paper: "#1e1e1e",
+    palette: {
+      mode: "dark",
+      background: {
+        default: "#121212",
+        paper: "#1e1e1e",
+      },
+      text: {
+        primary: "#ffffff",
+        secondary: "#bbbbbb",
+      },
     },
-    text: {
-      primary: "#ffffff",
-      secondary: "#bbbbbb",
-    },
-  },
-  components: {
-    MuiOutlinedInput: {
-      styleOverrides: {
-        root: {
-          color: "#fff",
-          "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#666",
+    components: {
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: {
+            color: "#fff !important",
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#666",
+            },
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#aaa",
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#fff",
+            },
           },
-          "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#aaa",
-          },
-          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#fff",
-          },
-        },
-        input: {
-          color: "#fff",
-        },
-        adornedEnd: {
-          "& svg": {
+          input: {
             color: "#fff",
           },
+          adornedEnd: {
+            "& svg": {
+              color: "#fff !important",
+            },
+          },
         },
       },
-    },
-    MuiInputLabel: {
-      styleOverrides: {
-        root: {
-          color: "#bbb",
-          "&.Mui-focused": {
-            color: "#fff",
+      MuiInputLabel: {
+        styleOverrides: {
+          root: {
+            color: "#bbb",
+            "&.Mui-focused": {
+              color: "#fff !important",
+            },
+          },
+        },
+      },
+      MuiSvgIcon: {
+        styleOverrides: {
+          root: {
+            color: "#fff !important",
           },
         },
       },
     },
-    MuiSvgIcon: {
-      styleOverrides: {
-        root: {
-          color: "#fff",
-        },
-      },
-    },
-  },
-})
+  })
 
-const lightTheme = createTheme({
-  palette: {
-    mode: "light",
-    background: {
-      default: "#121212",
-      paper: "#1e1e1e",
+  const lightTheme = createTheme({
+    palette: {
+      mode: "light",
+      background: {
+        default: "#121212",
+        paper: "#1e1e1e",
+      },
+      text: {
+        primary: "#00000",
+        secondary: "#bbbbbb",
+      },
     },
-    text: {
-      primary: "#00000",
-      secondary: "#bbbbbb",
-    },
-  },
-  components: {
-    MuiOutlinedInput: {
-      styleOverrides: {
-        root: {
-          color: "#fff",
-          "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#666",
+    components: {
+      MuiOutlinedInput: {
+        styleOverrides: {
+          root: {
+            color: "#fff",
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#666",
+            },
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#aaa",
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#fff",
+            },
           },
-          "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#aaa",
-          },
-          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#fff",
-          },
-        },
-        input: {
-          color: "#00000",
-        },
-        adornedEnd: {
-          "& svg": {
+          input: {
             color: "#00000",
           },
+          adornedEnd: {
+            "& svg": {
+              color: "#00000",
+            },
+          },
         },
       },
-    },
-    MuiInputLabel: {
-      styleOverrides: {
-        root: {
-          color: "#bbb",
-          "&.Mui-focused": {
+      MuiInputLabel: {
+        styleOverrides: {
+          root: {
+            color: "#bbb",
+            "&.Mui-focused": {
+              color: "#fff",
+            },
+          },
+        },
+      },
+      MuiSvgIcon: {
+        styleOverrides: {
+          root: {
             color: "#fff",
           },
         },
       },
     },
-    MuiSvgIcon: {
-      styleOverrides: {
-        root: {
-          color: "#fff",
-        },
-      },
-    },
-  },
-})
+  })
 
   // Customer form
   const customerForm = useForm<CustomerFormData>({
@@ -482,15 +482,15 @@ const lightTheme = createTheme({
                             sx: {
                               "& .MuiPaper-root": {
                                 minWidth: 400,
-                                bgcolor: isDark ? "#1e1e1e" : "#fff !important",
+                                bgcolor: isDark ? "#1e1e1e" : "#fff",
                               },
 
                               // 🌙 Dark mode text
                               "& .MuiTypography-root, \
-                                & .MuiPickersDay-root, \
-                                & .MuiDayCalendar-weekDayLabel, \
-                                & .MuiPickersCalendarHeader-label": {
-                                color: isDark ? "#fff !important" : "#000 !important",
+                              & .MuiPickersDay-root, \
+                              & .MuiDayCalendar-weekDayLabel, \
+                              & .MuiPickersCalendarHeader-label": {
+                                color: isDark ? "#fff !important" : "#000",
                               },
 
                               // ✅ FORCE AM/PM column to show both values, remove scroll
@@ -508,23 +508,25 @@ const lightTheme = createTheme({
                               },
                             },
                           },
-
                           textField: {
                             fullWidth: true,
                             variant: "outlined",
                             size: "small",
                             sx: {
-                              "& .MuiOutlinedInput-root .MuiSvgIcon-root": {
-                                color: "#fff",
+                              "& .MuiInputBase-input, & .MuiOutlinedInput-input": {
+                                color: isDark ? "#fff" : "#000",
+                              },
+                              "& .MuiSvgIcon-root": {
+                                color: isDark ? "#fff" : "#000",
+                              },
+                              "& .MuiInputAdornment-root svg": {
+                                color: isDark ? "#fff !important" : "#000",
                               },
                               "& .MuiInputLabel-root": {
-                                color: "#bbb",
+                                color: isDark ? "#bbb" : "#555",
                               },
                               "& .Mui-focused.MuiInputLabel-root": {
-                                color: "#fff !important",
-                              },
-                              "& .MuiOutlinedInput-input": {
-                                color: "#fff !important",
+                                color: isDark ? "#fff" : "#000",
                               },
                             },
                           } as TextFieldProps,

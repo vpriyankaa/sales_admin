@@ -257,7 +257,7 @@ const [loading, setLoading] = useState(true);
             <TableBody>
               {currentData.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center text-lg py-8 text-gray-700 dark:!text-white">
+                  <TableCell colSpan={8} className="text-center text-md font-semibold py-8 text-gray-700 dark:!text-white">
                     {hasActiveFilters ? "No orders found" : "No orders found"}
                   </TableCell>
                 </TableRow>

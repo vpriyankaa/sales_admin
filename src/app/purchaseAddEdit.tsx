@@ -584,6 +584,7 @@ export default function Home({ id }: Props) {
                       />
                     </LocalizationProvider>
                   </ThemeProvider> */}
+
                   <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                       <DateTimePicker
@@ -596,15 +597,15 @@ export default function Home({ id }: Props) {
                             sx: {
                               "& .MuiPaper-root": {
                                 minWidth: 400,
-                                bgcolor: isDark ? "#1e1e1e" : "#fff !important",
+                                bgcolor: isDark ? "#1e1e1e" : "#fff",
                               },
 
                               // 🌙 Dark mode text
                               "& .MuiTypography-root, \
-                                                 & .MuiPickersDay-root, \
-                                                 & .MuiDayCalendar-weekDayLabel, \
-                                                 & .MuiPickersCalendarHeader-label": {
-                                color: isDark ? "#fff !important" : "#000 !important",
+                                               & .MuiPickersDay-root, \
+                                               & .MuiDayCalendar-weekDayLabel, \
+                                               & .MuiPickersCalendarHeader-label": {
+                                color: isDark ? "#fff !important" : "#000",
                               },
 
                               // ✅ FORCE AM/PM column to show both values, remove scroll
@@ -622,23 +623,25 @@ export default function Home({ id }: Props) {
                               },
                             },
                           },
-
                           textField: {
                             fullWidth: true,
                             variant: "outlined",
                             size: "small",
                             sx: {
-                              "& .MuiOutlinedInput-root .MuiSvgIcon-root": {
-                                color: "#fff",
+                              "& .MuiInputBase-input, & .MuiOutlinedInput-input": {
+                                color: isDark ? "#fff" : "#000",
+                              },
+                              "& .MuiSvgIcon-root": {
+                                color: isDark ? "#fff" : "#000",
+                              },
+                              "& .MuiInputAdornment-root svg": {
+                                color: isDark ? "#fff !important" : "#000",
                               },
                               "& .MuiInputLabel-root": {
-                                color: "#bbb",
+                                color: isDark ? "#bbb" : "#555",
                               },
                               "& .Mui-focused.MuiInputLabel-root": {
-                                color: "#fff !important",
-                              },
-                              "& .MuiOutlinedInput-input": {
-                                color: "#fff !important",
+                                color: isDark ? "#fff" : "#000",
                               },
                             },
                           } as TextFieldProps,
