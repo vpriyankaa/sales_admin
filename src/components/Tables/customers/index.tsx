@@ -369,7 +369,7 @@ export function Customers() {
                         <FormControl>
                           <Input
                             {...field}
-                            maxLength={20}
+                            maxLength={30}
                             placeholder="Enter customer name"
                             onChange={(e) => {
                               const value = e.target.value;

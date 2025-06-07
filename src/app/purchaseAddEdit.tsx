@@ -731,7 +731,7 @@ export default function Home({ id }: Props) {
                                     </FormLabel>
                                     <div className="col-span-3">
                                       <FormControl>
-                                        <Input {...field} maxLength={20}
+                                        <Input {...field} maxLength={30}
                                           placeholder="Enter vendor name"
                                           onChange={(e) => {
                                             const rawValue = e.target.value;
