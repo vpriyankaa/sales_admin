@@ -177,8 +177,8 @@ const vendorFormSchema = z.object({
   products: z
     .array(
       z.object({
-        product_id: z.number(),
-        product_name: z.string(),
+        id: z.number(),
+        name: z.string(),
       }),
     )
     .min(1, "Please select at least one product"),
@@ -347,15 +347,15 @@ export default function Home({ id }: Props) {
         const newProducts = [
           ...currentProducts,
           {
-            product_id: productId,
-            product_name: product.name,
+            id: productId,
+            name: product.name,
           },
         ]
         vendorForm.setValue("products", newProducts)
         vendorForm.trigger("products")
       }
     } else {
-      const newProducts = currentProducts.filter((p) => p.product_id !== productId)
+      const newProducts = currentProducts.filter((p) => p.id !== productId)
       vendorForm.setValue("products", newProducts)
       vendorForm.trigger("products")
     }
@@ -386,6 +386,9 @@ export default function Home({ id }: Props) {
         products: data.products,
       }
 
+      // console.log("vendorData",vendorData);
+
+
       const newVendorId = await addVendor(vendorData)
 
       const addedVendor: Vendor = {
@@ -396,8 +399,8 @@ export default function Home({ id }: Props) {
         aadhaar: data.aadhaar ? Number(data.aadhaar) : null,
         address: data.address || "",
         products: data.products.map((p) => ({
-          id: p.product_id,
-          name: p.product_name,
+          id: p.id,
+          name: p.name,
           createdAt: new Date(),
           quantity: 0, // Assuming quantity is not needed here
           unit: "", // Assuming unit is not needed here
@@ -838,7 +841,7 @@ export default function Home({ id }: Props) {
                                               <Checkbox
                                                 id={`product-${product.id}`}
                                                 checked={field.value.some(
-                                                  (p) => p.product_id === product.id,
+                                                  (p) => p.id === product.id,
                                                 )}
                                                 onCheckedChange={(checked) =>
                                                   handleProductSelection(product.id, checked as boolean)
