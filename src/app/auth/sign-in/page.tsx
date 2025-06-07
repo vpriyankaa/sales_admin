@@ -30,7 +30,23 @@ export default function SignIn() {
             />
           </div>
 
-          <div className="w-full lg:w-1/2 p-6 flex items-center justify-center">
+
+         
+
+       
+          
+
+          <div className="w-full flex flex-col items-center justify-center p-6 lg:w-1/2 lg:flex-row gap-4">
+           
+              <Image
+              src="/images/brand/saamy-agency-tamil.png"
+              alt="Saamy Logo"
+              width={300}
+              height={100}
+              className="block sm:hidden object-cover"
+              priority
+            />
+            
             <div className="w-full max-w-md p-4 md:p-6">
               <Signin />
             </div>
