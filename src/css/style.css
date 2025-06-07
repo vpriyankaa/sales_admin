@@ -93,6 +93,18 @@
     background-color: #88a4f0 !important;
   }
 
+  .day-hover {
+  background-color: #3b82f6;
+  color: white;
+}
+
+@media (max-width: 640px) {
+  .day-hover {
+    background-color: #3b82f6 !important;
+    color: white !important;
+  }
+}
+
   .border-t-primary {
   border-top: 4px solid #001D6B !important;
 }
@@ -351,6 +363,33 @@ span.flatpickr-weekday,
 }
 
 
+.date-range-calendar .rdp-months {
+  justify-content: center;
+}
+
+@media (max-width: 767px) {
+  .date-range-calendar .rdp-months {
+    flex-direction: column;
+  }
+
+  .date-range-calendar .rdp-cell {
+    position: relative;
+  }
+
+  /* Force hover styles to be visible on mobile */
+  .calendar-mobile-view .date-range-calendar .rdp-day_range_hover,
+  .calendar-mobile-view .date-range-calendar .rdp-day_range_middle {
+    background-color: var(--calendar-bg, #0ea5e9) !important;
+    color: white !important;
+  }
+}
+
+/* Ensure the hover effect is strong enough to override any other styles */
+.rdp-day_range_hover,
+.rdp-day_range_middle {
+  background-color: var(--calendar-bg, #0ea5e9) !important;
+  color: white !important;
+}
 
 
 

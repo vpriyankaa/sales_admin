@@ -24,7 +24,6 @@ export async function POST(request: NextRequest) {
 
     const fileBuffer = Buffer.from(await file.arrayBuffer());
 
-    // Convert Buffer to Readable Stream
     const bufferStream = new Readable();
     bufferStream.push(fileBuffer);
     bufferStream.push(null);
@@ -50,11 +49,18 @@ export async function POST(request: NextRequest) {
     await fileRef.makePublic();
     const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
 
+
+
+    // console.log("publicUrl",publicUrl);
+
     return NextResponse.json({
       message: "File uploaded to Firebase",
       filename,
       url: publicUrl,
     });
+
+    
+
   } catch (error) {
     console.error("Error uploading file to Firebase:", error);
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });

@@ -9,7 +9,7 @@ if (!getApps().length) {
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
       privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
     }),
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET, // e.g., "your-bucket.appspot.com"
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET, 
   });
 }
 

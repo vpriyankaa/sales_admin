@@ -81,23 +81,14 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     return formatted.endsWith(".00") ? Number.parseInt(formatted).toString() : formatted
   }, [])
 
+
   const getImageUrl = (filename: string): string => {
 
     const bucket = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "";
-   
-    const token = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_TOKEN || "";
 
-    const encodedPath = encodeURIComponent(`documents/${filename}`);
-
-    let url = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodedPath}?alt=media`;
-
-    if (token) {
-      url += `&token=${token}`;
-    }
-
-    console.log("image" ,url)
-    return url;
+    return `${bucket}/${filename}`;
   };
+
 
   const handleImageClick = (filename: string) => {
     setSelectedImage(getImageUrl(filename))
@@ -114,13 +105,16 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       body: formData,
     })
 
-    console.log("image uplloading response", response);
+    // console.log("image uplloading response", response);
 
     if (!response.ok) {
       throw new Error("File upload failed")
     }
 
-    const result = await response.json()
+    const result = await response.json();
+
+    // console.log("result", result)
+
     return result.filename
   }
 
@@ -161,46 +155,45 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   }
 
 
-
-
-  // Handle file selection
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-    // Validate file type (optional - you can restrict to certain types)
-    const allowedTypes = [
+    const allowedImageTypes = [
       "image/jpeg",
       "image/png",
       "image/gif",
+      "image/webp",
+      "image/bmp",
+      "image/svg+xml"
+    ];
 
-    ]
-    if (!allowedTypes.includes(file.type)) {
-      setFileUploadError("Please select a valid file type (JPEG, PNG, GIF)")
-      return
+    if (!allowedImageTypes.includes(file.type)) {
+      setFileUploadError("Only image files are allowed (JPEG, PNG, GIF, WebP, BMP, SVG)");
+      return;
     }
 
-    // Validate file size (5MB limit)
     if (file.size > 5 * 1024 * 1024) {
-      setFileUploadError("File size must be less than 5MB")
-      return
+      setFileUploadError("File size must be less than 5MB");
+      return;
     }
 
-    setSelectedFile(file)
-    setFileUploadError("")
-    setIsUploading(true)
+    setSelectedFile(file);
+    setFileUploadError("");
+    setIsUploading(true);
 
     try {
-      const filename = await handleFileUpload(file)
-      setUploadedFileName(filename)
+      const filename = await handleFileUpload(file);
+      setUploadedFileName(filename);
     } catch (error) {
-      console.error("File upload error:", error)
-      setFileUploadError("Failed to upload file. Please try again.")
-      setSelectedFile(null)
+      console.error("File upload error:", error);
+      setFileUploadError("Failed to upload file. Please try again.");
+      setSelectedFile(null);
     } finally {
-      setIsUploading(false)
+      setIsUploading(false);
     }
-  }
+  };
+
 
   // Remove uploaded file
   const handleRemoveFile = () => {
@@ -236,7 +229,6 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     fetchOrderData()
   }, [fetchOrderData])
 
-  // Products Table Component
   const ProductsTable = ({ items }: { items?: Product[] }) => (
     <div>
       <h3 className="text-lg font-semibold mb-4 text-primary">Products</h3>
@@ -287,7 +279,6 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     </div>
   )
 
-  // Event handlers
   const handleStatusChange = async () => {
     if (!data) return
 
@@ -314,13 +305,11 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   const handlePaymentSubmit = async () => {
     if (!data) return
 
-    // Reset all errors
     setPaymentError("")
     setCommentsError("")
 
     let hasErrors = false
 
-    // Validate payment amount (required)
     if (!paymentAmount || paymentAmount <= 0) {
       setPaymentError("Payment amount is required")
       hasErrors = true
@@ -346,8 +335,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     setPaymentLoading(true)
 
     try {
-      // Pass the uploaded filename to changeOrderPayment
-
+    
       // console.log("comments----", comments)
       // console.log("documents-----------", uploadedFileName)
 
@@ -822,7 +810,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                   id="documents"
                   type="file"
                   onChange={handleFileChange}
-                  accept=".jpg,.jpeg,.png,.gif,.pdf,.txt,.doc,.docx"
+                  accept="image/*"
                   className={fileUploadError ? "border-red-500" : ""}
                   disabled={isUploading}
                 />
@@ -851,7 +839,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                 )}
                 {fileUploadError && <p className="text-sm text-red-500">{fileUploadError}</p>}
                 <p className="text-xs text-gray-500">
-                  Supported formats: JPEG, PNG, GIF, PDF, TXT, DOC, DOCX (Max 5MB)
+                  Supported formats: .jpg, .jpeg, .png, .gif, .bmp, .svg, .webp (Max 5MB)
                 </p>
               </div>
             </div>
