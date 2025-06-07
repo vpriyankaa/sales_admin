@@ -69,7 +69,7 @@ export function TopProducts() {
   const [openEdit, setOpenEdit] = useState(false)
   const [openEditSuccess, setOpenEditSuccess] = useState(false)
 
-  const userStr = sessionStorage.getItem("user");
+  const userStr = localStorage.getItem("user");
 
   const user = userStr ? JSON.parse(userStr) : null;
 
@@ -175,6 +175,9 @@ export function TopProducts() {
       }
 
       // You'll need to create an updateProduct action
+
+      console.log("productData",productData);
+
       const edit = await editProduct(productData)
 
       if (edit) {

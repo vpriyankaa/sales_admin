@@ -58,7 +58,7 @@ export function Customers() {
   const router = useRouter()
 
 
-  const userStr = sessionStorage.getItem("user");
+  const userStr = localStorage.getItem("user");
 
   const user = userStr ? JSON.parse(userStr) : null;
 
