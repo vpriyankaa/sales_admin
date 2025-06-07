@@ -14,7 +14,8 @@
     "db:studio": "drizzle-kit studio",
     "db:migrate": "tsx scripts/db-migrate.ts",
     "db:pull": "drizzle-kit pull",
-    "db:check": "drizzle-kit check"
+    "db:check": "drizzle-kit check",
+    "db:seed": "tsx scripts/db-seed.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

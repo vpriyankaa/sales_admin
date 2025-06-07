@@ -2,13 +2,10 @@ import { colorize } from "consola/utils";
 import "load-env";
 
 const promise = import("lib/db/pg/migrate.pg");
-const seed = import("scripts/seed.pg");
 
 await promise
   .then(async () => {
     console.info("🚀 DB Migration completed");
-    await seed.then((mod) => mod.seedDatabase()); // 👈 run seeding
-    console.info("🌱 Seed data inserted");
   })
   .catch((err) => {
     console.error(err);

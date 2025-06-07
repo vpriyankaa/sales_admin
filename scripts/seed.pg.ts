@@ -14,6 +14,7 @@ export async function seedDatabase() {
             phone: 9677545696,
             password: passwordHash,
             email: "admin@sammyagency.com",
+            createdAt: new Date()
         })
         .onConflictDoNothing(); // avoids duplicate insert
 
