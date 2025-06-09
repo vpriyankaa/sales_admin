@@ -83,7 +83,8 @@ export async function getProducts(): Promise<Product[]> {
 
     return result.map((p) => ({
       ...p,
-      total_price: p.quantity * p.price, // ✅ calculate it
+      total_price: p.quantity * p.price,
+      actual_price: 0,
     }));
   } catch (err) {
     console.error("Error fetching products:", err);
@@ -579,7 +580,7 @@ export async function editVendor(vendorData: any): Promise<boolean> {
 
     productChangeText += `${[addedText, removedText].filter(Boolean).join("; ")}   Products`;
   } else {
-    productChangeText += " (order or non-ID fields may have changed)";
+    productChangeText += "";
   }
 
   changes.push(productChangeText);
@@ -609,6 +610,11 @@ export async function getReports(): Promise<Order[]> {
     return data.map((order) => ({
       ...order,
       items: Array.isArray(order.items) ? (order.items as Product[]) : [],
+      actual_price: Array.isArray(order.items)
+    ? (order.items as Product[]).reduce((sum, item) => sum + item.actual_price, 0)
+    : 0,
+
+      
     }));
   } catch (error) {
     console.error("Failed to fetch reports", error);
@@ -627,6 +633,10 @@ export async function getPurchaseList(): Promise<Order[]> {
     return data.map((order) => ({
       ...order,
       items: Array.isArray(order.items) ? (order.items as Product[]) : [],
+      actual_price: Array.isArray(order.items)
+    ? (order.items as Product[]).reduce((sum, item) => sum + item.actual_price, 0)
+    : 0,
+
     }));
   } catch (error) {
     console.error("Failed to fetch purchase orders", error);
@@ -737,6 +747,10 @@ export async function getOrderById(orderId: number): Promise<Order | null> {
     return {
       ...order,
       items: Array.isArray(order.items) ? (order.items as Product[]) : [],
+      actual_price: Array.isArray(order.items)
+    ? (order.items as Product[]).reduce((sum, item) => sum + item.actual_price, 0)
+    : 0,
+
     };
   } catch (error) {
     console.error("Error fetching order by ID:", error);
