@@ -353,7 +353,7 @@ const [loading, setLoading] = useState(true);
                       )}
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 dark:hover:bg-gray-800 transition-opacity duration-200">
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -362,7 +362,7 @@ const [loading, setLoading] = useState(true);
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => router.push(`/sales/edit/${order.id}`)}
-                                  className="h-8 w-8 hover:bg-secondary"
+                                  className="h-8 w-8 hover:bg-secondary dark:hover:bg-gray-800"
                                 >
                                   <Edit className="h-4 w-4" />
                                 </Button>
@@ -381,7 +381,7 @@ const [loading, setLoading] = useState(true);
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => router.push(`/detail/${order.id}`)}
-                                className="h-8 w-8 hover:bg-secondary"
+                                className="h-8 w-8 hover:bg-secondary dark:!hover:bg-gray-800"
                               >
                                 <Eye className="h-4 w-4" />
                               </Button>
