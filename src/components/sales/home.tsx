@@ -126,6 +126,8 @@ export default function Home({ id }: Props) {
           try {
             const orderData = await getOrderById(Number.parseInt(id))
 
+            console.log("orderData", orderData);
+
             if (orderData) {
               setSelectedCustomer(orderData.customerId.toString())
               setDate(new Date(orderData.date))
@@ -277,6 +279,7 @@ export default function Home({ id }: Props) {
           aadhaar: "",
           createdAt: new Date(),
           total_price: item.total_price || 0,
+          actual_price: item.actual_price || 0
         })),
         total_price: orderSummaryData.totalAmount,
         discount_type: orderSummaryData.discountType,
@@ -299,16 +302,20 @@ export default function Home({ id }: Props) {
         })
         setEditOpen(true)
       } else {
+        console.log("orderInput", orderInput);
         const newOrderId = await addOrder(orderInput)
+
+
+        if (!isEditMode && newOrderId) {
+          setCart([])
+          setSelectedParticular("")
+          setSelectedCustomer("")
+          setDate(new Date())
+          setIsOpen(true)
+        }
+
       }
 
-      if (!isEditMode) {
-        setCart([])
-        setSelectedParticular("")
-        setSelectedCustomer("")
-        setDate(new Date())
-        setIsOpen(true)
-      }
     } catch (error) {
       console.error("Order error:", error)
       toast({
@@ -345,7 +352,7 @@ export default function Home({ id }: Props) {
               {isEditMode ? "Edit Order" : "Create Order"}
             </h2>
             <div className="space-y-4">
-            
+
               <div className="grid grid-cols-4 gap-4 items-center">
                 <h3 className="text-right text-lg font-semibold  dark:!text-white">
                   Date:
@@ -360,7 +367,6 @@ export default function Home({ id }: Props) {
                           !date && "text-muted-foreground"
                         )}
                       >
-                        {/* Modified content within the button for better responsiveness */}
                         <span className="flex-grow min-w-0 truncate"> {/* Added flex-grow, min-w-0, and truncate */}
                           {date ? format(date, "dd-MM-yyyy hh:mm a") : "Select date & time"}
                         </span>
@@ -386,8 +392,8 @@ export default function Home({ id }: Props) {
                         }}
                         initialFocus
                         classNames={{
-                              day_selected: "bg-primary text-white hover:bg-blue-700 hover:text-white focus:bg-blue-700 focus:text-white",
-                         }}
+                          day_selected: "bg-primary text-white hover:bg-blue-700 hover:text-white focus:bg-blue-700 focus:text-white",
+                        }}
                       />
 
                       <div className="p-3 border-t border-border">
@@ -654,6 +660,7 @@ export default function Home({ id }: Props) {
                                 address: "",
                                 createdAt: new Date(),
                                 total_price: selected.price,
+                                actual_price: selected.price,
                               },
                             ])
                           }
@@ -667,9 +674,9 @@ export default function Home({ id }: Props) {
                       >
                         <SelectValue className="font-md" placeholder="Select product" />
                       </SelectTrigger>
-                      <SelectContent 
-                      side="bottom"
-                      className="z-[999] w-full bg-white dark:bg-gray-dark dark:!text-white shadow-md border rounded-md">
+                      <SelectContent
+                        side="bottom"
+                        className="z-[999] w-full bg-white dark:bg-gray-dark dark:!text-white shadow-md border rounded-md">
                         {isProductLoad ? (
                           <div className="flex justify-center items-center h-20">
                             <Loader2 className="h-5 w-5 animate-spin text-primary" />
@@ -702,22 +709,20 @@ export default function Home({ id }: Props) {
                 <Table>
                   <TableHeader className="sticky top-0 bg-white dark:bg-gray-dark dark:!text-white  z-10">
                     <TableRow className="border-none uppercase [&>th]:text-center">
-                      <TableHead className="!text-left min-w-[100px]">Product</TableHead>
-                      <TableHead className="min-w-[100px]">Quantity</TableHead>
-                      <TableHead className="min-w-[100px]">Unit</TableHead>
-                      <TableHead className="min-w-[100px]">Price</TableHead>
-                      <TableHead className="min-w-[100px]">Total</TableHead>
+                      <TableHead className="!text-left">Product</TableHead>
+                      <TableHead>Quantity</TableHead>
+                      <TableHead>Unit</TableHead>
+                      <TableHead >Original Price</TableHead>
+                      <TableHead >Actual Price</TableHead>
+                      <TableHead >Total</TableHead>
                       <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
 
-                  <TableBody>
+                  {/* <TableBody>
                     {cart.map((item) => (
-                      <TableRow
-                        key={item.id}
-                        className="text-center dark:!text-white dark:bg-gray-dark font-medium"
-                      >
-                        <TableCell className="!text-left  dark:!text-white">{item.name}</TableCell>
+                      <TableRow key={item.id} className="group text-center text-black dark:!text-white dark:bg-gray-dark  font-medium">
+                        <TableCell className="!text-left text-black dark:!text-white">{item.name}</TableCell>
 
                         <TableCell>
                           <input
@@ -727,19 +732,42 @@ export default function Home({ id }: Props) {
                             onChange={(e) => {
                               const value = Number.parseInt(e.target.value) || 1
                               setCart((prev) =>
-                                prev.map((i) => (i.id === item.id ? { ...i, quantity: Math.max(1, value) } : i)),
+                                prev.map((i) =>
+                                  i.id === item.id ? { ...i, quantity: Math.max(1, value) } : i,
+                                ),
                               )
                             }}
-                            className="h-8 w-16  dark:!text-white text-center border rounded"
+                            className="h-8 w-16 text-black dark:!text-white text-center border rounded"
                           />
                         </TableCell>
 
-                        <TableCell className=" dark:!text-white">
+                        <TableCell className="text-black dark:!text-white">
                           {item.unit.charAt(0).toUpperCase() + item.unit.slice(1)}
                         </TableCell>
 
-                        <TableCell className=" dark:!text-white">₹{item.price}</TableCell>
-                        <TableCell className=" dark:!text-white">
+
+
+                        <TableCell className="text-black dark:!text-white">₹{item.price}</TableCell>
+
+
+                        <TableCell>
+                          <input
+                            type="number"
+                            min={1}
+                            value={item.price}
+                            onChange={(e) => {
+                              const value = Number.parseInt(e.target.value) || 1
+                              setCart((prev) =>
+                                prev.map((i) =>
+                                  i.id === item.id ? { ...i, price: Math.max(1, value) } : i,
+                                ),
+                              )
+                            }}
+                            className="h-8 w-16 text-black dark:!text-white text-center border rounded"
+                          />
+                        </TableCell>
+                        
+                        <TableCell className="text-black dark:!text-white">
                           ₹
                           {(item.price * item.quantity) % 1 === 0
                             ? item.price * item.quantity
@@ -773,7 +801,97 @@ export default function Home({ id }: Props) {
                         </TableCell>
                       </TableRow>
                     ))}
+                  </TableBody> */}
+
+                  <TableBody>
+                    {cart.map((item) => (
+                      <TableRow key={item.id} className="group text-center text-black dark:!text-white dark:bg-gray-dark font-medium">
+                        <TableCell className="!text-left text-black dark:!text-white">{item.name}</TableCell>
+                        <TableCell>
+                          <input
+                            type="number"
+                            min={1}
+                            value={item.quantity} // Display the quantity from the item
+                            onChange={(e) => {
+                              const newQuantity = Math.max(1, Number.parseInt(e.target.value) || 1);
+                              setCart((prev) =>
+                                prev.map((i) =>
+                                  i.id === item.id
+                                    ? {
+                                      ...i,
+                                      quantity: newQuantity,
+                                      total_price: i.actual_price * newQuantity, // Recalculate total based on item's actual_price and new quantity
+                                    }
+                                    : i
+                                )
+                              );
+                            }}
+                            className="h-8 w-16 text-black dark:!text-white text-center border rounded"
+                          />
+                        </TableCell>
+
+                        <TableCell className="text-black dark:!text-white">
+                          {item.unit.charAt(0).toUpperCase() + item.unit.slice(1)}
+                        </TableCell>
+
+                        <TableCell className="text-black dark:!text-white">{item.price}</TableCell>
+                        <TableCell>
+                          <input
+                            type="number"
+                            value={item.actual_price} // Display the item's actual_price
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+
+                              const inputVal = Number(e.target.value);
+                              const clampedMin = Math.max(1, inputVal);
+                              const newActualPrice = Math.min(clampedMin, item.price);
+
+                              setCart((prev) =>
+                                prev.map((i) =>
+                                  i.id === item.id
+                                    ? {
+                                      ...i,
+                                      actual_price: newActualPrice, // Update item's actual_price
+                                      total_price: newActualPrice * i.quantity, // Recalculate total based on new actual_price and item's quantity
+                                    }
+                                    : i
+                                )
+                              );
+                            }}
+                            className="h-8 w-20 text-black dark:!text-white text-center border rounded"
+                          />
+                        </TableCell>
+                        <TableCell className="text-black dark:!text-white">
+                          {item.total_price}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setCart((prev) => prev.filter((i) => i.id !== item.id))}
+                            className="h-8 w-8 p-0 mx-auto opacity-0 group-hover:opacity-100 text-red-600 transition-opacity duration-200"
+                          >
+                            <span className="sr-only">Remove</span>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="lucide lucide-x"
+                            >
+                              <path d="M18 6 6 18" />
+                              <path d="m6 6 12 12" />
+                            </svg>
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
+
                 </Table>
               </div>
             )}

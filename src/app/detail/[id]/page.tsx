@@ -259,10 +259,10 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                     {item.unit || "-"}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-700 dark:text-gray-300">
-                    ₹{formatAmount(item.price) || item.total_price / item.quantity}
+                    ₹{formatAmount(item.actual_price) || item.actual_price / item.quantity}
                   </td>
                   <td className="px-3 py-2 whitespace-nowrap text-sm text-right font-medium text-gray-900 dark:text-white">
-                    ₹{formatAmount(item.price * item.quantity)}
+                    ₹{formatAmount(item.actual_price * item.quantity)}
                   </td>
                 </tr>
               ))

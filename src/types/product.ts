@@ -5,5 +5,6 @@ export type Product = {
   quantity: number;
   unit: string;
   total_price: number;
+  actual_price: number;
   price: number;
 };

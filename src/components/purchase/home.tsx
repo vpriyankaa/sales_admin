@@ -289,7 +289,8 @@ export default function Home({ id }: Props) {
           quantity: 0, // Assuming quantity is not needed here
           unit: "", // Assuming unit is not needed here
           total_price: 0, // Assuming total_price is not needed here
-          price: 0, // Assuming price is not needed here
+          price: 0, 
+          actual_price: 0
         })),
       }
 
@@ -351,7 +352,7 @@ export default function Home({ id }: Props) {
       const payment_status = remaining === 0 ? "paid" : paidAmount > 0 ? "partiallypaid" : "credit"
 
       const orderInput: OrderInput = {
-        customer_id: -1,
+        customer_id: 0,
         customer_name: "",
         vendor_id: vendor.id.toString(),
         vendor_name: vendor.name,
@@ -365,6 +366,7 @@ export default function Home({ id }: Props) {
           aadhaar: "",
           createdAt: new Date(),
           total_price: item.total_price || 0,
+          actual_price: item.actual_price || 0
         })),
         total_price: orderSummaryData.totalAmount,
         discount_type: orderSummaryData.discountType,
@@ -387,17 +389,22 @@ export default function Home({ id }: Props) {
         })
         setEditOpen(true)
       } else {
-        const newOrderId = await addOrder(orderInput)
-      }
 
-      // Clear state after successful order (only for create mode)
-      if (!isEditMode) {
+        // console.log("orderInput",orderInput);
+
+        const newOrderId = await addOrder(orderInput)
+
+        if (!isEditMode && newOrderId) {
         setCart([])
         setSelectedParticular("")
         setSelectedVendor("")
         setDate(new Date())
         setIsOpen(true)
+        }
       }
+
+      // Clear state after successful order (only for create mode)
+     
     } catch (error) {
       console.error("Order error:", error)
       toast({
@@ -801,6 +808,7 @@ export default function Home({ id }: Props) {
                                 address: address || "",
                                 createdAt: new Date(),
                                 total_price: selected.price,
+                                actual_price: selected.price, 
                               },
                             ])
                           }
@@ -854,18 +862,19 @@ export default function Home({ id }: Props) {
                 <Table>
                   <TableHeader className="sticky top-0 bg-white dark:bg-gray-dark z-10">
                     <TableRow className="border-none uppercase text-secondary [&>th]:text-center">
-                      <TableHead className="!text-left min-w-[100px]">Product</TableHead>
-                      <TableHead className="min-w-[100px]">Quantity</TableHead>
-                      <TableHead className="min-w-[100px]">Unit</TableHead>
-                      <TableHead className="min-w-[100px]">Price</TableHead>
-                      <TableHead className="min-w-[100px]">Total</TableHead>
+                      <TableHead className="!text-left">Product</TableHead>
+                      <TableHead>Quantity</TableHead>
+                      <TableHead >Unit</TableHead>
+                      <TableHead>Original Price</TableHead>
+                      <TableHead >Actual Price</TableHead>
+                      <TableHead>Total</TableHead>
                       <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
 
-                  <TableBody>
+                  {/* <TableBody>
                     {cart.map((item) => (
-                      <TableRow key={item.id} className="group text-center dark:!text-white font-medium">
+                      <TableRow key={item.id} className="group text-center  dark:!text-white font-medium">
                         <TableCell className="!text-left dark:!text-white">{item.name}</TableCell>
 
                         <TableCell>
@@ -922,7 +931,97 @@ export default function Home({ id }: Props) {
                         </TableCell>
                       </TableRow>
                     ))}
-                  </TableBody>
+                  </TableBody> */}
+
+                   <TableBody>
+                                      {cart.map((item) => (
+                                        <TableRow key={item.id} className="group text-center text-black dark:!text-white dark:bg-gray-dark font-medium">
+                                          <TableCell className="!text-left text-black dark:!text-white">{item.name}</TableCell>
+                                          <TableCell>
+                                            <input
+                                              type="number"
+                                              min={1}
+                                              value={item.quantity} // Display the quantity from the item
+                                              onChange={(e) => {
+                                                const newQuantity = Math.max(1, Number.parseInt(e.target.value) || 1);
+                                                setCart((prev) =>
+                                                  prev.map((i) =>
+                                                    i.id === item.id
+                                                      ? {
+                                                        ...i,
+                                                        quantity: newQuantity,
+                                                        total_price: i.actual_price * newQuantity, // Recalculate total based on item's actual_price and new quantity
+                                                      }
+                                                      : i
+                                                  )
+                                                );
+                                              }}
+                                              className="h-8 w-16 text-black dark:!text-white text-center border rounded"
+                                            />
+                                          </TableCell>
+                  
+                                          <TableCell className="text-black dark:!text-white">
+                                            {item.unit.charAt(0).toUpperCase() + item.unit.slice(1)}
+                                          </TableCell>
+                  
+                                          <TableCell className="text-black dark:!text-white">{item.price}</TableCell> 
+                                          <TableCell>
+                                            <input
+                                              type="number"
+                                              value={item.actual_price} // Display the item's actual_price
+                                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  
+                                                const inputVal = Number(e.target.value);
+                                                const clampedMin = Math.max(1, inputVal);
+                                                const newActualPrice = Math.min(clampedMin, item.price);
+                                                
+                                                setCart((prev) =>
+                                                  prev.map((i) =>
+                                                    i.id === item.id
+                                                      ? {
+                                                        ...i,
+                                                        actual_price: newActualPrice, // Update item's actual_price
+                                                        total_price: newActualPrice * i.quantity, // Recalculate total based on new actual_price and item's quantity
+                                                      }
+                                                      : i
+                                                  )
+                                                );
+                                              }}
+                                              className="h-8 w-20 text-black dark:!text-white text-center border rounded"
+                                            />
+                                          </TableCell>
+                                          <TableCell className="text-black dark:!text-white">
+                                            {item.total_price} 
+                                          </TableCell>
+                                           <TableCell>
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              onClick={() => setCart((prev) => prev.filter((i) => i.id !== item.id))}
+                                              className="h-8 w-8 p-0 mx-auto opacity-0 group-hover:opacity-100 text-red-600 transition-opacity duration-200"
+                                            >
+                                              <span className="sr-only">Remove</span>
+                                              <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="16"
+                                                height="16"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                strokeWidth="2"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                className="lucide lucide-x"
+                                              >
+                                                <path d="M18 6 6 18" />
+                                                <path d="m6 6 12 12" />
+                                              </svg>
+                                            </Button>
+                                          </TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                  
                 </Table>
               </div>
             )}
