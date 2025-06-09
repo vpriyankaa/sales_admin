@@ -1,4 +1,4 @@
-import Home from "@/app/salesAddEdit";
+import Home from "@/components/sales/home";
 import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
 import ProtectedLayout from "@/components/Auth/ProtectedLayout";

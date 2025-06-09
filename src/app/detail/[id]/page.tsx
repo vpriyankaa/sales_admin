@@ -231,18 +231,18 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
   const ProductsTable = ({ items }: { items?: Product[] }) => (
     <div>
-      <h3 className="text-lg font-semibold mb-4 text-primary">Products</h3>
+      <h3 className="text-lg font-semibold mb-4 text-primary dark:!text-white">Products</h3>
       <div className="overflow-x-auto border rounded-md">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead className="bg-gray-50 dark:bg-gray-800 dark:!text-white">
+          <thead className="bg-gray-50 dark:bg-gray-dark dark:!text-white">
             <tr>
-              <th className="px-3 py-2 text-left text-xs font-bold text-black dark:!text-white uppercase tracking-wider">Product</th>
-              <th className="px-3 py-2 text-center text-xs font-bold text-black dark:!text-white uppercase tracking-wider">Quantity</th>
-              <th className="px-3 py-2 text-center text-xs font-bold text-black dark:!text-white uppercase tracking-wider">Unit</th>
-              <th className="px-2 py-5 text-right text-xs font-bold text-black dark:!text-white  uppercase tracking-wider">
+              <th className="px-3 py-2 text-left text-xs font-bold  dark:!text-white uppercase tracking-wider">Product</th>
+              <th className="px-3 py-2 text-center text-xs font-bold  dark:!text-white uppercase tracking-wider">Quantity</th>
+              <th className="px-3 py-2 text-center text-xs font-bold  dark:!text-white uppercase tracking-wider">Unit</th>
+              <th className="px-2 py-5 text-right text-xs font-bold  dark:!text-white  uppercase tracking-wider">
                 Price / unit
               </th>
-              <th className="px-3 py-2 text-right text-xs font-bold dark:!text-white text-black uppercase tracking-wider">Total</th>
+              <th className="px-3 py-2 text-right text-xs font-bold dark:!text-white  uppercase tracking-wider">Total</th>
             </tr>
           </thead>
           <tbody className="bg-white font-bold dark:bg-gray-900 divide-y divide-gray-200 dark:!text-white dark:divide-gray-700">
@@ -268,7 +268,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
               ))
             ) : (
               <tr>
-                <td colSpan={5} className="px-4 py-4 text-center text-sm dark:!text-white text-black">
+                <td colSpan={5} className="px-4 py-4 text-center text-sm dark:!text-white ">
                   No products found in this order.
                 </td>
               </tr>
@@ -415,13 +415,13 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   const PaymentStatusBadge = ({ status }: { status: string }) => {
     switch (status?.toLowerCase()) {
       case "paid":
-        return <span className="text-black dark:!text-white font-bold">Paid</span>
+        return <span className=" dark:!text-white font-bold">Paid</span>
       case "partiallypaid":
-        return <span className="text-black dark:!text-white font-bold">Partially Paid</span>
+        return <span className=" dark:!text-white font-bold">Partially Paid</span>
       case "credit":
-        return <span className="text-black dark:!text-white font-bold">Credit</span>
+        return <span className=" dark:!text-white font-bold">Credit</span>
       default:
-        return <span className="text-black dark:!text-white">Credit</span>
+        return <span className=" dark:!text-white">Credit</span>
     }
   }
 
@@ -433,14 +433,14 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     <>
       <div className="max-w-6xl mx-auto p-4 print:p-0 print:shadow-none">
         <Card className="shadow-lg border-t-primary border-b-primary print:shadow-none print:border">
-          <CardHeader className="bg-gray-50 dark:bg-gray-800 border-b dark:!text-white">
+          <CardHeader className="bg-gray-50 dark:bg-gray-dark border-b dark:!text-white">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
               <div>
-                <p className="text-sm font-bold text-black dark:!text-white">Order ID</p>
+                <p className="text-sm font-bold  dark:!text-white">Order ID</p>
                 <CardTitle className="text-xl font-bold">#{data.id || id}</CardTitle>
               </div>
               <div className="flex flex-col items-end">
-                <p className="text-sm font-bold text-black dark:!text-white">Order Date</p>
+                <p className="text-sm font-bold  dark:!text-white">Order Date</p>
                 <p className="font-medium">{formatDate(data.date || new Date())}</p>
               </div>
               {type === "sale" && (data.status === 'created' || data.status === 'completed') && (
@@ -451,7 +451,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                       setSelectedOrderStatus(statusOptions[0]);
                       setIsModalOpen(true);
                     }}
-                    className="text-primary hover:text-primary font-medium"
+                    className="text-primary hover:text-primary dark:!text-white font-medium"
                   >
                     Change status
                   </button>
@@ -466,29 +466,29 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                 <div>
                   {
                     type === "sale" ? (
-                      <h3 className="text-lg font-semibold mb-4 text-primary dark:text-primary">Customer Information</h3>
+                      <h3 className="text-lg font-semibold mb-4 text-primary dark:!text-white">Customer Information</h3>
                     ) : (
-                      <h3 className="text-lg font-semibold mb-4 text-primary dark:text-primary">Vendor Information</h3>
+                      <h3 className="text-lg font-semibold mb-4 text-primary dark:!text-white">Vendor Information</h3>
                     )
                   }
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {
                       type === "sale" ? (
-                        <div className="bg-white dark:bg-gray-800 font-bold p-3 rounded-md border">
-                          <p className="text-sm text-black dark:!text-white">Customer Name</p>
+                        <div className="bg-white dark:bg-gray-dark font-bold p-3 rounded-md border">
+                          <p className="text-sm  dark:!text-white">Customer Name</p>
                           <p className="font-medium text-lg dark:!text-white">{data.customerName || "-"}</p>
                         </div>
                       ) : (
-                        <div className="bg-white dark:bg-gray-800 font-bold p-3 rounded-md border">
-                          <p className="text-sm text-black dark:!text-white">Vendor Name</p>
+                        <div className="bg-white dark:bg-gray-dark font-bold p-3 rounded-md border">
+                          <p className="text-sm  dark:!text-white">Vendor Name</p>
                           <p className="font-medium text-lg dark:!text-white">{data.vendorName || "-"}</p>
                         </div>
 
                       )}
                     {data.remarks && (
-                      <div className="bg-white dark:bg-gray-800 font-bold p-3 rounded-md border">
-                        <p className="text-sm text-black dark:!text-white">Remarks</p>
+                      <div className="bg-white dark:bg-gray-dark font-bold p-3 rounded-md border">
+                        <p className="text-sm  dark:!text-white">Remarks</p>
                         <p className="font-medium dark:!text-white">{data.remarks}</p>
                       </div>
                     )}
@@ -501,8 +501,8 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                 {/* Order Logs - Only show if there are logs */}
                 {paymentLogData && paymentLogData.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-semibold mb-4 text-primary dark:text-primary">Payment Logs</h3>
-                    <div className="bg-white dark:bg-gray-800 border rounded-md p-3 space-y-2">
+                    <h3 className="text-lg font-semibold mb-4 text-primary dark:!text-white">Payment Logs</h3>
+                    <div className="bg-white dark:bg-gray-dark border rounded-md p-3 space-y-2">
                       {paymentLogData.map((log) => {
                         const isOpen = openId === log.id
 
@@ -513,7 +513,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                               type="button"
                               onClick={() => toggle(log.id)}
                               className="flex w-full items-center justify-between p-3
-                                bg-gray-50 dark:bg-gray-700 hover:bg-gray-100
+                                bg-gray-50 dark:bg-gray-dark hover:bg-gray-100
                                 dark:hover:bg-gray-600 rounded-md transition"
                             >
                               <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
@@ -533,7 +533,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
                             {/* body */}
                             {isOpen && (
-                              <div className="pl-3 dark:bg-gray-800 text-sm space-y-3">
+                              <div className="pl-3 dark:bg-gray-dark text-sm space-y-3">
                                 <p className="text-gray-800 dark:text-gray-300">
                                   <span className="font-semibold">Comments:</span> {log.comments || "No comments."}
                                 </p>
@@ -581,8 +581,8 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
                 {orderLogData && orderLogData.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-bold mb-4 text-primary dark:text-primary">Order Logs</h3>
-                    <div className="bg-white dark:bg-gray-800 border rounded-md p-3 space-y-2">
+                    <h3 className="text-lg font-bold mb-4 text-primary dark:!text-white">Order Logs</h3>
+                    <div className="bg-white dark:bg-gray-dark border rounded-md p-3 space-y-2">
                       {orderLogData.map((log) => {
                         const isOpen = openId === log.id
 
@@ -593,7 +593,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                               type="button"
                               onClick={() => toggle(log.id)}
                               className="flex w-full items-center justify-between p-3
-                                bg-gray-50 dark:bg-gray-700 hover:bg-gray-100
+                                bg-gray-50 dark:bg-gray-dark hover:bg-gray-100
                                 dark:hover:bg-gray-600 rounded-md transition"
                             >
                               <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
@@ -613,7 +613,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
                             {/* body */}
                             {isOpen && (
-                              <div className="pl-3 dark:bg-gray-800 text-sm space-y-3">
+                              <div className="pl-3 dark:bg-gray-dark text-sm space-y-3">
                                 <p className="text-gray-800 dark:text-gray-300">
                                   <span className="font-semibold">Comments:</span> {log.comments || "No comments."}
                                 </p>
@@ -647,19 +647,19 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                 <div className="sticky top-4 rounded-[10px] bg-white dark:bg-gray-dark">
                   <Card>
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-lg font-semibold text-primary dark:text-primary">
+                      <CardTitle className="text-lg font-semibold text-primary dark:!text-white">
                         Payment Summary
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="pt-0">
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
-                          <span className="text-black dark:!text-white font-semibold text-sm">Subtotal</span>
-                          <span className="font-medium dark:!text-white text-black">₹{formatAmount(totalBeforeDiscount)}</span>
+                          <span className=" dark:!text-white font-semibold text-sm">Subtotal</span>
+                          <span className="font-medium dark:!text-white ">₹{formatAmount(totalBeforeDiscount)}</span>
                         </div>
 
                         <div className="flex justify-between items-center">
-                          <span className="text-black dark:!text-white font-semibold text-sm">Payment Status</span>
+                          <span className=" dark:!text-white font-semibold text-sm">Payment Status</span>
                           <PaymentStatusBadge status={`${data.paymentStatus}`} />
                         </div>
 
@@ -667,7 +667,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                           data?.discountType && data?.discountValue && data.discountValue !== 0 ? (
 
                             <div className="flex justify-between items-center">
-                              <span className="text-black dark:!text-white font-semibold text-sm">
+                              <span className=" dark:!text-white font-semibold text-sm">
                                 Discount ({" "}
                                 {data?.discountType && data?.discountValue && data.discountValue !== 0
                                   ? getDiscountTypeDisplay(data.discountType)
@@ -685,29 +685,29 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                             ""
                           )}
 
-                        <div className="flex text-black dark:!text-white justify-between items-center border-t pt-2">
-                          <span className="text-black dark:!text-white font-semibold text-sm">Total After Discount</span>
-                          <span className="text-black dark:!text-white font-medium">
+                        <div className="flex  dark:!text-white justify-between items-center border-t pt-2">
+                          <span className=" dark:!text-white font-semibold text-sm">Total After Discount</span>
+                          <span className=" dark:!text-white font-medium">
                             ₹{formatAmount((data.totalPrice || 0) - (data.discountValue || 0))}
                           </span>
                         </div>
 
                         {(data.remainingAmount ?? 0) > 0 && (
 
-                          <div className="flex text-black justify-between items-center dark:!text-white text-sm font-bold pt-3 border-t-2 border-blue-200">
+                          <div className="flex  justify-between items-center dark:!text-white text-sm font-bold pt-3 border-t-2 border-blue-200">
                             <span>Total Payable</span>
-                            <span className="text-primary">₹{formatAmount(data.totalPayable)}</span>
+                            <span className="text-primary dark:!text-white">₹{formatAmount(data.totalPayable)}</span>
                           </div>
                         )}
 
                         <div className="flex justify-between items-center">
-                          <span className="text-black dark:!text-white font-semibold text-sm">Amount Paid</span>
-                          <span className="font-medium text-black dark:!text-white">₹{formatAmount(data.paidAmount || 0)}</span>
+                          <span className=" dark:!text-white font-semibold text-sm">Amount Paid</span>
+                          <span className="font-medium  dark:!text-white">₹{formatAmount(data.paidAmount || 0)}</span>
                         </div>
 
                         {(data.remainingAmount ?? 0) > 0 && (
                           <div className="flex justify-between items-center">
-                            <span className="font-semibold text-black dark:!text-white text-sm">Remaining Amount</span>
+                            <span className="font-semibold  dark:!text-white text-sm">Remaining Amount</span>
                             <span className="font-medium text-red-600">₹{formatAmount(data.remainingAmount)}</span>
                           </div>
                         )}
@@ -746,7 +746,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
       {/* Payment Dialog */}
       <Dialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen}>
-        <DialogContent className="bg-white text-dark-2 max-w-md">
+        <DialogContent className="bg-white dark:!bg-gray-dark max-w-md">
           <DialogHeader>
             <DialogTitle>Pay Remaining Amount</DialogTitle>
           </DialogHeader>
@@ -754,12 +754,12 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
           <div className="space-y-4">
             <div className="flex justify-between grid-cols-1 gap-4 text-sm">
 
-              <span className="font-bold text-dark-2">Remaining Amount:</span>
-              <p className="font-bold text-dark-2">₹{formatAmount(data.remainingAmount)}</p>
+              <span className="font-bold ">Remaining Amount:</span>
+              <p className="font-bold ">₹{formatAmount(data.remainingAmount)}</p>
 
             </div>
 
-            <div className="space-y-2 text-dark-2">
+            <div className="space-y-2 ">
               <Label htmlFor="paymentAmount">Enter Amount (₹) *</Label>
               <Input
                 id="paymentAmount"
@@ -783,7 +783,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
               {paymentError && <p className="text-sm text-red-500">{paymentError}</p>}
             </div>
 
-            <div className="space-y-2 text-dark-2">
+            <div className="space-y-2 ">
               <Label htmlFor="comments">Comments *</Label>
               <Textarea
                 id="comments"
@@ -803,7 +803,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
               {commentsError && <p className="text-sm text-red-500">{commentsError}</p>}
             </div>
 
-            <div className="space-y-2 text-dark-2">
+            <div className="space-y-2 ">
               <Label htmlFor="documents">Upload Document (Optional)</Label>
               <div className="space-y-2">
                 <Input
@@ -860,12 +860,12 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       <Dialog open={successDialogOpen} onOpenChange={setSuccessDialogOpen}>
         <DialogContent className="bg-white">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-dark-2">
-              <CheckCircle className="h-5 w-5 text-black" />
+            <DialogTitle className="flex items-center gap-2 ">
+              <CheckCircle className="h-5 w-5 " />
               {successTitle}
             </DialogTitle>
           </DialogHeader>
-          <div className="py-4 text-dark-2">
+          <div className="py-4 ">
             <p>{successMessage}</p>
           </div>
           <DialogFooter>
@@ -879,7 +879,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       <Dialog open={imageDialogOpen} onOpenChange={setImageDialogOpen}>
         <DialogContent className="bg-white max-w-4xl max-h-[90vh] p-0 overflow-hidden">
           <DialogHeader className="p-4 pb-2">
-            <DialogTitle className="text-dark-2"></DialogTitle>
+            <DialogTitle className=""></DialogTitle>
           </DialogHeader>
           <div className="relative flex items-center justify-center p-4 min-h-[400px] max-h-[70vh] overflow-auto">
             {selectedImage && (
@@ -916,7 +916,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="sm:max-w-md bg-white">
           <DialogHeader>
-            <DialogTitle className="font-bold text-black">Change Order Status</DialogTitle>
+            <DialogTitle className="font-bold ">Change Order Status</DialogTitle>
           </DialogHeader>
 
           <div className="py-4 space-y-6">

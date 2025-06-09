@@ -1,4 +1,4 @@
-import Home from "@/app/purchaseAddEdit";
+import Home from "@/components/purchase/home";
 
 
 // For purchase edit with dynamic params - use Next.js 15 compatible types

@@ -11,19 +11,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker"
-import { LocalizationProvider } from "@mui/x-date-pickers"
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { format } from "date-fns"
+import { CalendarIcon, Clock } from "lucide-react"
 import { OrderSummary } from "@/components/order-summary"
-import type { TextFieldProps } from "@mui/material/TextField"
 import { addCustomer, getCustomers, getProducts, addOrder, getUnits, updateOrder, getOrderById } from "@/app/actions"
 import { Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { createTheme, ThemeProvider } from "@mui/material/styles"
-import { useTheme } from "@mui/material/styles"
 import type { Product } from "app-types/product"
 import type { Customer } from "app-types/customer"
 import type { Unit } from "app-types/unit"
@@ -64,12 +62,8 @@ export default function Home({ id }: Props) {
   const orderId = searchParams.get("id")
   const isEditMode = !!id
 
-  const theme = useTheme()
-
   // State
-  // const [date, setDate] = useState<Date | null>(null);
   const [date, setDate] = React.useState<Date | null>(new Date())
-
   const [open, setOpen] = useState(!isEditMode)
   const [openEdit, setEditOpen] = useState(false)
   const [isCustomerLoad, setIsCustomerLoad] = useState(true)
@@ -83,120 +77,6 @@ export default function Home({ id }: Props) {
   const [isLoadingOrder, setIsLoadingOrder] = useState(isEditMode)
   const { toast } = useToast()
 
-  const darkTheme = createTheme({
-    palette: {
-      mode: "dark",
-      background: {
-        default: "#121212",
-        paper: "#1e1e1e",
-      },
-      text: {
-        primary: "#ffffff",
-        secondary: "#bbbbbb",
-      },
-    },
-    components: {
-      MuiOutlinedInput: {
-        styleOverrides: {
-          root: {
-            color: "#fff !important",
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#666",
-            },
-            "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#aaa",
-            },
-            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#fff",
-            },
-          },
-          input: {
-            color: "#fff",
-          },
-          adornedEnd: {
-            "& svg": {
-              color: "#fff !important",
-            },
-          },
-        },
-      },
-      MuiInputLabel: {
-        styleOverrides: {
-          root: {
-            color: "#bbb",
-            "&.Mui-focused": {
-              color: "#fff !important",
-            },
-          },
-        },
-      },
-      MuiSvgIcon: {
-        styleOverrides: {
-          root: {
-            color: "#fff !important",
-          },
-        },
-      },
-    },
-  })
-
-  const lightTheme = createTheme({
-    palette: {
-      mode: "light",
-      background: {
-        default: "#121212",
-        paper: "#1e1e1e",
-      },
-      text: {
-        primary: "#00000",
-        secondary: "#bbbbbb",
-      },
-    },
-    components: {
-      MuiOutlinedInput: {
-        styleOverrides: {
-          root: {
-            color: "#fff",
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#666",
-            },
-            "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#aaa",
-            },
-            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#fff",
-            },
-          },
-          input: {
-            color: "#00000",
-          },
-          adornedEnd: {
-            "& svg": {
-              color: "#00000",
-            },
-          },
-        },
-      },
-      MuiInputLabel: {
-        styleOverrides: {
-          root: {
-            color: "#bbb",
-            "&.Mui-focused": {
-              color: "#fff",
-            },
-          },
-        },
-      },
-      MuiSvgIcon: {
-        styleOverrides: {
-          root: {
-            color: "#fff",
-          },
-        },
-      },
-    },
-  })
-
   // Customer form
   const customerForm = useForm<CustomerFormData>({
     resolver: zodResolver(customerFormSchema),
@@ -207,7 +87,6 @@ export default function Home({ id }: Props) {
       address: "",
     },
     mode: "onSubmit",
-
   })
 
   const [isOpen, setIsOpen] = useState(false)
@@ -230,16 +109,15 @@ export default function Home({ id }: Props) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-
         const customersData = await getCustomers()
         const productsData = await getProducts()
         const unitsData = await getUnits()
 
         setUnits(unitsData)
         setCustomers(customersData)
-        setIsCustomerLoad(false);
-        setIsProductLoad(false);
-       
+        setIsCustomerLoad(false)
+        setIsProductLoad(false)
+
         setParticulars(productsData)
 
         // If in edit mode, fetch order details
@@ -255,7 +133,7 @@ export default function Home({ id }: Props) {
 
               setEditOrderSummary({
                 discountAmount: orderData.discountValue || 0,
-                discountType: isDiscountType(orderData.discountType) ? orderData.discountType : 'flat',
+                discountType: isDiscountType(orderData.discountType) ? orderData.discountType : "flat",
                 remarks: orderData.remarks || "",
                 totalAmount: orderData.totalPrice || 0,
                 totalPayable: orderData.totalPayable || 0,
@@ -301,8 +179,6 @@ export default function Home({ id }: Props) {
     setOrderValidation(newValidation)
   }, [selectedUser, cart])
 
-  
-
   const handleAddCustomer = async (data: CustomerFormData) => {
     setIsLoading(true)
 
@@ -322,7 +198,7 @@ export default function Home({ id }: Props) {
         name: data.name,
         phone: Number(data.phone),
         aadhaar: data.aadhaar || null,
-        address: data.address || ""
+        address: data.address || "",
       }
 
       setCustomers([...customers, addedCustomer])
@@ -330,7 +206,6 @@ export default function Home({ id }: Props) {
 
       customerForm.reset()
       setIsAddingCustomer(false)
-
     } catch (err) {
       console.error(err)
       customerForm.setError("phone", {
@@ -350,7 +225,7 @@ export default function Home({ id }: Props) {
     }
 
     if (cart.length === 0) {
-      errors.cart = "Please Select anny Product"
+      errors.cart = "Please Select any Product"
     }
 
     return errors
@@ -455,114 +330,135 @@ export default function Home({ id }: Props) {
   }
 
   const handleDialogClose = () => {
-
     setIsAddingCustomer(false)
     customerForm.reset()
   }
 
   const isDark = document.documentElement.classList.contains("dark")
 
-  // const isDark = theme.palette.mode == "dark"
-
-  // console.log("isDark", isDark)
-
   return (
     <>
       <div className="rounded-[10px] shadow-1 dark:bg-gray-dark dark:shadow-card">
         <div className="flex flex-col md:flex-row justify-evenly gap-4">
           <div className="w-full md:w-2/3 rounded-[10px] bg-white dark:bg-gray-dark  dark:!text-white shadow-lg p-4">
-            <h2 className="text-2xl font-bold text-center text-black dark:!text-white mb-4">
+            <h2 className="text-2xl font-bold text-center  dark:!text-white mb-4">
               {isEditMode ? "Edit Order" : "Create Order"}
             </h2>
             <div className="space-y-4">
+            
               <div className="grid grid-cols-4 gap-4 items-center">
-                <h3 className="text-right text-lg font-semibold text-dark-2 dark:!text-white">Date:</h3>
+                <h3 className="text-right text-lg font-semibold  dark:!text-white">
+                  Date:
+                </h3>
                 <div className="col-span-3 w-3/4 dark:!text-white">
-                  <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                      <DateTimePicker
-                        label="Select date & time"
-                        value={date}
-                        onChange={(v) => setDate(v)}
-                        views={["year", "month", "day", "hours", "minutes",]}
-                        slotProps={{
-                          popper: {
-                            sx: {
-                              "& .MuiPaper-root": {
-                                minWidth: 400,
-                                bgcolor: isDark ? "#1e1e1e" : "#fff",
-                              },
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full h-10 flex justify-between items-center text-left font-normal px-3", // Added px-3 for consistent padding, adjust as needed
+                          !date && "text-muted-foreground"
+                        )}
+                      >
+                        {/* Modified content within the button for better responsiveness */}
+                        <span className="flex-grow min-w-0 truncate"> {/* Added flex-grow, min-w-0, and truncate */}
+                          {date ? format(date, "dd-MM-yyyy hh:mm a") : "Select date & time"}
+                        </span>
+                        <CalendarIcon className="h-4 w-4 flex-shrink-0" /> {/* Added flex-shrink-0 */}
+                      </Button>
+                    </PopoverTrigger>
 
-                              // 🌙 Dark mode text
-                              "& .MuiTypography-root, \
-                              & .MuiPickersDay-root, \
-                              & .MuiDayCalendar-weekDayLabel, \
-                              & .MuiPickersCalendarHeader-label": {
-                                color: isDark ? "#fff" : "#000 !important",
-                              },
-
-                              // ✅ FORCE AM/PM column to show both values, remove scroll
-                              "& .MuiMultiSectionDigitalClockSection-root:last-of-type": {
-                                maxHeight: "none",
-                                height: "auto !important",
-                                overflow: "visible !important",
-                                justifyContent: "flex-start",
-                                "& .MuiMultiSectionDigitalClockSection-item": {
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  height: "40px",
-                                  fontWeight: "bold",
-                                },
-                              },
-                            },
-                          },
-
-                          textField: {
-                            fullWidth: true,
-                            variant: "outlined",
-                            size: "small",
-                            sx: {
-                              "& .MuiInputBase-input, & .MuiOutlinedInput-input": {
-                                color: isDark ? "#fff" : "#000",
-                              },
-                              "& .MuiSvgIcon-root": {
-                                color: isDark ? "#fff" : "#000",
-                              },
-                              "& .MuiInputAdornment-root svg": {
-                                color: isDark ? "#fff !important" : "#000",
-                              },
-                              "& .MuiInputLabel-root": {
-                                color: isDark ? "#bbb" : "#555",
-                              },
-                              "& .Mui-focused.MuiInputLabel-root": {
-                                color: isDark ? "#fff" : "#000",
-                              },
-                            },
-                          } as TextFieldProps,
+                    <PopoverContent
+                      className="w-full sm:w-auto p-0 !z-[100] relative bg-white"
+                      align="start"
+                    >
+                      <Calendar
+                        mode="single"
+                        selected={date || undefined}
+                        onSelect={(day) => {
+                          if (day) {
+                            const currentTime = date || new Date();
+                            day.setHours(currentTime.getHours());
+                            day.setMinutes(currentTime.getMinutes());
+                            day.setSeconds(currentTime.getSeconds());
+                            setDate(day);
+                          }
                         }}
-
+                        initialFocus
+                        classNames={{
+                              day_selected: "bg-primary text-white hover:bg-blue-700 hover:text-white focus:bg-blue-700 focus:text-white",
+                         }}
                       />
-                    </LocalizationProvider>
-                  </ThemeProvider>
+
+                      <div className="p-3 border-t border-border">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          {/* These inputs generally have fixed widths for time, which is usually acceptable */}
+                          <div className="flex items-center space-x-2 w-full sm:w-auto">
+                            <Input
+                              type="number"
+                              min={1}
+                              max={12}
+                              className="w-16 h-8 text-center" // Added text-center for better alignment
+                              value={date ? (date.getHours() % 12 || 12) : 12}
+                              onChange={(e) => {
+                                const newDate = new Date(date || new Date());
+                                const currentHours = newDate.getHours();
+                                const isPM = currentHours >= 12;
+                                const newHour = Number(e.target.value) % 12 || 12;
+                                newDate.setHours(isPM ? newHour + 12 : newHour);
+                                setDate(newDate);
+                              }}
+                            />
+                            <span>:</span>
+                            <Input
+                              type="number"
+                              min={0}
+                              max={59}
+                              className="w-16 h-8 text-center" // Added text-center
+                              value={date ? date.getMinutes() : 0}
+                              onChange={(e) => {
+                                const newDate = new Date(date || new Date());
+                                newDate.setMinutes(Number.parseInt(e.target.value) || 0);
+                                setDate(newDate);
+                              }}
+                            />
+                            <select
+                              value={date ? (date.getHours() >= 12 ? "PM" : "AM") : "AM"}
+                              onChange={(e) => {
+                                const newDate = new Date(date || new Date());
+                                const hours = newDate.getHours();
+                                const isPM = hours >= 12;
+                                if (e.target.value === "AM" && isPM) {
+                                  newDate.setHours(hours - 12);
+                                } else if (e.target.value === "PM" && !isPM) {
+                                  newDate.setHours(hours + 12);
+                                }
+                                setDate(newDate);
+                              }}
+                              className="h-8 px-2 border rounded-md text-sm flex-shrink-0" // Added flex-shrink-0
+                            >
+                              <option value="AM">AM</option>
+                              <option value="PM">PM</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
 
               <div className="grid grid-cols-4 gap-4 items-center">
-                <h3 className="text-right text-lg font-semibold text-dark-2 dark:!text-white">Customer:</h3>
+                <h3 className="text-right text-lg font-semibold  dark:!text-white">Customer:</h3>
                 <div className="col-span-2 relative">
                   <div className="h-[60px]">
                     <Select value={selectedUser} onValueChange={setSelectedCustomer} disabled={isEditMode}>
                       <SelectTrigger
                         id="customer"
                         aria-label="Select customer"
-                        className={cn(
-                          "h-10",
-                          "text-md",
-                          "mt-5",
-                          orderValidation.customer ? "border-red-500" : "",
-                        )}
+                        className={cn("h-10", "text-md", "mt-5", orderValidation.customer ? "border-red-500" : "")}
                       >
-                        <SelectValue className="font-semibold" placeholder="Select customer" />
+                        <SelectValue className="font-md" placeholder="Select customer" />
                       </SelectTrigger>
                       <SelectContent className="z-[999] w-full bg-white dark:bg-gray-dark dark:!text-white shadow-md border rounded-md">
                         {isCustomerLoad ? (
@@ -576,9 +472,7 @@ export default function Home({ id }: Props) {
                             </SelectItem>
                           ))
                         ) : (
-                          <div className="text-center text-sm py-2 text-gray-500">
-                            No customers available
-                          </div>
+                          <div className="text-center text-sm py-2 text-gray-500">No customers available</div>
                         )}
                       </SelectContent>
                     </Select>
@@ -597,7 +491,9 @@ export default function Home({ id }: Props) {
                     </DialogTrigger>
                     <DialogContent className="bg-white dark:!text-white dark:bg-gray-dark max-w-2xl">
                       <DialogHeader>
-                        <DialogTitle className="text-center text-dark dark:!text-white dark:bg-gray-dark font-bold">Add New Customer</DialogTitle>
+                        <DialogTitle className="text-center  dark:!text-white dark:bg-gray-dark font-bold">
+                          Add New Customer
+                        </DialogTitle>
                       </DialogHeader>
 
                       <Form {...customerForm}>
@@ -609,7 +505,7 @@ export default function Home({ id }: Props) {
                               name="name"
                               render={({ field }) => (
                                 <FormItem className="grid grid-cols-4 items-center gap-4">
-                                  <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">
+                                  <FormLabel className="text-right  dark:!text-white dark:bg-gray-dark">
                                     Name <span className="text-red-500">*</span>
                                   </FormLabel>
                                   <div className="col-span-3">
@@ -619,10 +515,9 @@ export default function Home({ id }: Props) {
                                         maxLength={30}
                                         placeholder="Enter customer name"
                                         onChange={(e) => {
-                                          const value = e.target.value;
-                                          const capitalized =
-                                            value.charAt(0).toUpperCase() + value.slice(1);
-                                          field.onChange(capitalized);
+                                          const value = e.target.value
+                                          const capitalized = value.charAt(0).toUpperCase() + value.slice(1)
+                                          field.onChange(capitalized)
                                         }}
                                       />
                                     </FormControl>
@@ -638,7 +533,7 @@ export default function Home({ id }: Props) {
                               name="phone"
                               render={({ field }) => (
                                 <FormItem className="grid grid-cols-4 items-center gap-4">
-                                  <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">
+                                  <FormLabel className="text-right  dark:!text-white dark:bg-gray-dark">
                                     Phone <span className="text-red-500">*</span>
                                   </FormLabel>
                                   <div className="col-span-3">
@@ -653,7 +548,6 @@ export default function Home({ id }: Props) {
                                           const value = e.target.value.replace(/\D/g, "")
                                           field.onChange(value)
                                         }}
-
                                       />
                                     </FormControl>
                                     <FormMessage />
@@ -668,7 +562,9 @@ export default function Home({ id }: Props) {
                               name="aadhaar"
                               render={({ field }) => (
                                 <FormItem className="grid grid-cols-4 items-center gap-4">
-                                  <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">Aadhaar</FormLabel>
+                                  <FormLabel className="text-right  dark:!text-white dark:bg-gray-dark">
+                                    Aadhaar
+                                  </FormLabel>
                                   <div className="col-span-3">
                                     <FormControl>
                                       <Input
@@ -694,7 +590,9 @@ export default function Home({ id }: Props) {
                               name="address"
                               render={({ field }) => (
                                 <FormItem className="grid grid-cols-4 items-center gap-4">
-                                  <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">Address</FormLabel>
+                                  <FormLabel className="text-right  dark:!text-white dark:bg-gray-dark">
+                                    Address
+                                  </FormLabel>
                                   <div className="col-span-3">
                                     <FormControl>
                                       <Textarea {...field} rows={3} placeholder="Enter customer address" />
@@ -728,7 +626,7 @@ export default function Home({ id }: Props) {
               </div>
 
               <div className="grid grid-cols-4 gap-4 items-center">
-                <h3 className="text-right text-lg font-semibold text-dark-2 dark:bg-gray-dark dark:!text-white pb-4">
+                <h3 className="text-right text-lg font-semibold dark:bg-gray-dark dark:!text-white pb-4">
                   Product:
                 </h3>
                 <div className="col-span-3 w-3/4 mt-2">
@@ -736,8 +634,6 @@ export default function Home({ id }: Props) {
                     <Select
                       value={selectedParticular}
                       onValueChange={(value) => {
-                        // setSelectedParticular(value)
-
                         const selected = particulars.find((p) => p.id === (value ? Number(value) : null))
                         const unitNames = units.map((u) => u.name)
                         const productUnit = selected?.unit && unitNames.includes(selected.unit) ? selected.unit : "pc"
@@ -763,22 +659,18 @@ export default function Home({ id }: Props) {
                           }
                         }
                       }}
-                    // disabled={isEditMode}
                     >
                       <SelectTrigger
                         id="particulars"
                         aria-label="Select product"
-                        className={cn(
-                          "h-10",
-                          "text-md",
-                          // "hover:border-black",
-                          orderValidation.cart ? "border-red-500" : "",
-                        )}
+                        className={cn("h-10", "text-md", orderValidation.cart ? "border-red-500" : "")}
                       >
-                        <SelectValue placeholder="Select product" />
+                        <SelectValue className="font-md" placeholder="Select product" />
                       </SelectTrigger>
-                      <SelectContent className="z-[999] w-full bg-white dark:bg-gray-dark dark:!text-white shadow-md border rounded-md">
-                        { isProductLoad ? (
+                      <SelectContent 
+                      side="bottom"
+                      className="z-[999] w-full bg-white dark:bg-gray-dark dark:!text-white shadow-md border rounded-md">
+                        {isProductLoad ? (
                           <div className="flex justify-center items-center h-20">
                             <Loader2 className="h-5 w-5 animate-spin text-primary" />
                           </div>
@@ -796,7 +688,6 @@ export default function Home({ id }: Props) {
                       </SelectContent>
                     </Select>
                     {orderValidation.cart && <p className="text-md text-red-500 mt-1">{orderValidation.cart}</p>}
-
                   </div>
                 </div>
               </div>
@@ -822,8 +713,11 @@ export default function Home({ id }: Props) {
 
                   <TableBody>
                     {cart.map((item) => (
-                      <TableRow key={item.id} className="group text-center text-black dark:!text-white dark:bg-gray-dark  font-medium">
-                        <TableCell className="!text-left text-black dark:!text-white">{item.name}</TableCell>
+                      <TableRow
+                        key={item.id}
+                        className="text-center dark:!text-white dark:bg-gray-dark font-medium"
+                      >
+                        <TableCell className="!text-left  dark:!text-white">{item.name}</TableCell>
 
                         <TableCell>
                           <input
@@ -833,21 +727,19 @@ export default function Home({ id }: Props) {
                             onChange={(e) => {
                               const value = Number.parseInt(e.target.value) || 1
                               setCart((prev) =>
-                                prev.map((i) =>
-                                  i.id === item.id ? { ...i, quantity: Math.max(1, value) } : i,
-                                ),
+                                prev.map((i) => (i.id === item.id ? { ...i, quantity: Math.max(1, value) } : i)),
                               )
                             }}
-                            className="h-8 w-16 text-black dark:!text-white text-center border rounded"
+                            className="h-8 w-16  dark:!text-white text-center border rounded"
                           />
                         </TableCell>
 
-                        <TableCell className="text-black dark:!text-white">
+                        <TableCell className=" dark:!text-white">
                           {item.unit.charAt(0).toUpperCase() + item.unit.slice(1)}
                         </TableCell>
 
-                        <TableCell className="text-black dark:!text-white">₹{item.price}</TableCell>
-                        <TableCell className="text-black dark:!text-white">
+                        <TableCell className=" dark:!text-white">₹{item.price}</TableCell>
+                        <TableCell className=" dark:!text-white">
                           ₹
                           {(item.price * item.quantity) % 1 === 0
                             ? item.price * item.quantity

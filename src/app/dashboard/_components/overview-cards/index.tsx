@@ -111,8 +111,8 @@ export function OverviewCardsGroup() {
       {/* Date Range Picker */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-2">
         <div>
-          <h2 className="text-2xl font-bold text-black dark:!text-white tracking-tight">Financial Overview</h2>
-          <p className="text-muted-foreground text-black dark:!text-white">Track your sales and purchase performance</p>
+          <h2 className="text-2xl font-bold dark:!text-white tracking-tight">Financial Overview</h2>
+          <p className="text-muted-foreground dark:!text-white">Track your sales and purchase performance</p>
         </div>
         <div className="w-full dark:!text-white bg-white  dark:bg-gray-dark rounded-[10px] sm:w-auto">
           <label htmlFor="date-range" className="sr-only">
@@ -138,7 +138,7 @@ export function OverviewCardsGroup() {
         <Card className="overflow-hidden  dark:bg-gray-dark border-0 shadow-lg bg-secondary">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center justify-between">
-              <span className="text-lg font-semibold text-primary">Total Sales</span>
+              <span className="text-lg font-semibold text-primary dark:!text-white">Total Sales</span>
               <div className="p-2 bg-emerald-100 rounded-lg">
                 <ShoppingCart className="h-5 w-5 text-emerald-600" />
               </div>
@@ -148,7 +148,7 @@ export function OverviewCardsGroup() {
             <div className="flex items-center justify-center p-6">
               <div className="text-center">
                 <p className="text-sm font-bold text-dark-3 dark:!text-white mt-2">Total transactions</p>
-                <p className="text-4xl font-bold text-primary">{compactFormat(metrics.saleCount)}</p>
+                <p className="text-4xl font-bold text-primary dark:!text-white">{compactFormat(metrics.saleCount)}</p>
 
               </div>
             </div>
@@ -159,7 +159,7 @@ export function OverviewCardsGroup() {
         <Card className="overflow-hidden dark:bg-gray-dark border-0 shadow-lg bg-secondary">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center justify-between">
-              <span className="text-lg font-semibold text-primary">Total Purchases</span>
+              <span className="text-lg font-semibold text-primary dark:!text-white">Total Purchases</span>
               <div className="p-2 bg-purple-100 rounded-lg">
                 <ShoppingBag className="h-5 w-5 text-purple-600" />
               </div>
@@ -169,7 +169,7 @@ export function OverviewCardsGroup() {
             <div className="flex items-center justify-center p-6">
               <div className="text-center">
                 <p className="text-sm font-bold text-dark-3 dark:!text-white mt-2">Total transactions</p>
-                <p className="text-4xl font-bold text-primary">{compactFormat(metrics.purchaseCount)}</p>
+                <p className="text-4xl font-bold text-primary dark:!text-white">{compactFormat(metrics.purchaseCount)}</p>
 
               </div>
             </div>
@@ -194,7 +194,7 @@ export function OverviewCardsGroup() {
             {/* Total Amount */}
             <div className="text-center p-4">
               <p className="text-sm font-bold text-dark-3 dark:!text-white">Total sale amount</p>
-              <p className="text-3xl font-bold text-primary">₹{metrics.totalSales}</p>
+              <p className="text-3xl font-bold text-primary dark:!text-white" >₹{metrics.totalSales}</p>
             </div>
 
             {/* Progress Bar */}
@@ -244,7 +244,7 @@ export function OverviewCardsGroup() {
         <Card className="overflow-hidden border-0 dark:bg-gray-dark shadow-lg bg-secondary">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              <span className="text-lg font-semibold text-primary">Purchase Payments</span>
+              <span className="text-lg font-semibold text-primary dark:!text-white">Purchase Payments</span>
               <div className="p-2 bg-red-200 rounded-lg">
                 <Wallet className="h-5 w-5 text-red-500" />
               </div>
@@ -255,7 +255,7 @@ export function OverviewCardsGroup() {
             <div className="text-center p-4">
 
               <p className="text-sm font-bold text-dark-3 mt-1 dark:!text-white">Total purchase amount</p>
-              <p className="text-3xl font-bold text-primary">₹{metrics.totalPurchases}</p>
+              <p className="text-3xl font-bold text-primary dark:!text-white">₹{metrics.totalPurchases}</p>
             </div>
 
             {/* Progress Bar */}

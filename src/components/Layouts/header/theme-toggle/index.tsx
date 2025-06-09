@@ -15,14 +15,12 @@ const THEMES = [
 ];
 
 export function ThemeToggleSwitch() {
-
   const { setTheme, theme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
 
   if (!mounted) {
     return null;
@@ -31,7 +29,7 @@ export function ThemeToggleSwitch() {
   return (
     <button
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-      className="group rounded-full bg-gray-3 p-[5px] text-[#111928] outline-1 outline-primary focus-visible:outline dark:bg-[#020D1A] dark:text-current"
+      className="group rounded-full bg-gray-100 p-[5px] text-[#111928] outline-1 outline-primary focus-visible:outline dark:bg-[#020D1A] dark:text-current"
     >
       <span className="sr-only">
         Switch to {theme === "light" ? "dark" : "light"} mode

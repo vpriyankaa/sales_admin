@@ -238,7 +238,7 @@ export function Customers() {
 
             {paginatedData.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-7 text-md font-semibold text-dark-2 dark:text-white">
+                <TableCell colSpan={5} className="text-center py-7 text-md font-semibold  dark:text-white">
                   No Customers found
                 </TableCell>
               </TableRow>
@@ -260,7 +260,7 @@ export function Customers() {
                               variant="ghost"
                               size="icon"
                               onClick={() => handleEditCustomer(customer)}
-                              className="h-8 w-8 hover:bg-blue-200"
+                              className="h-8 w-8 hover:bg-blue-200 dark:hover:bg-gray-700"
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
@@ -279,7 +279,7 @@ export function Customers() {
                               variant="ghost"
                               size="icon"
                               onClick={() => router.push(`/customer-log/${customer.id}`)}
-                              className="h-8 w-8 hover:bg-blue-200"
+                              className="h-8 w-8 hover:bg-blue-200 dark:hover:bg-gray-700"
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -362,7 +362,7 @@ export function Customers() {
                   name="name"
                   render={({ field }) => (
                     <FormItem className="grid grid-cols-4 items-center gap-4">
-                      <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">
+                      <FormLabel className="text-right  dark:!text-white dark:bg-gray-dark">
                         Name <span className="text-red-500">*</span>
                       </FormLabel>
                       <div className="col-span-3">
@@ -391,7 +391,7 @@ export function Customers() {
                   name="phone"
                   render={({ field }) => (
                     <FormItem className="grid grid-cols-4 items-center gap-4">
-                      <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">
+                      <FormLabel className="text-right  dark:!text-white dark:bg-gray-dark">
                         Phone <span className="text-red-500">*</span>
                       </FormLabel>
                       <div className="col-span-3">
@@ -420,7 +420,7 @@ export function Customers() {
                   name="aadhaar"
                   render={({ field }) => (
                     <FormItem className="grid grid-cols-4 items-center gap-4">
-                      <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">Aadhaar</FormLabel>
+                      <FormLabel className="text-right  dark:!text-white dark:bg-gray-dark">Aadhaar</FormLabel>
                       <div className="col-span-3">
                         <FormControl>
                           <Input
@@ -446,7 +446,7 @@ export function Customers() {
                   name="address"
                   render={({ field }) => (
                     <FormItem className="grid grid-cols-4 items-center gap-4">
-                      <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">Address</FormLabel>
+                      <FormLabel className="text-right  dark:!text-white dark:bg-gray-dark">Address</FormLabel>
                       <div className="col-span-3">
                         <FormControl>
                           <Textarea {...field} rows={3} placeholder="Enter customer address" />
@@ -481,7 +481,7 @@ export function Customers() {
 
       {/* Success Dialog */}
       <Dialog open={openAdd} onOpenChange={setOpenAdd}>
-        <DialogContent className="bg-white text-black dark:!text-white dark:bg-gray-dark">
+        <DialogContent className="bg-white  dark:!text-white dark:bg-gray-dark">
           <DialogHeader>
             <DialogTitle>Success</DialogTitle>
           </DialogHeader>
@@ -495,7 +495,7 @@ export function Customers() {
       </Dialog>
 
       <Dialog open={openEdit} onOpenChange={setOpenEdit}>
-        <DialogContent className="bg-white text-black dark:!text-white dark:bg-gray-dark">
+        <DialogContent className="bg-white  dark:!text-white dark:bg-gray-dark">
           <DialogHeader>
             <DialogTitle>Success</DialogTitle>
           </DialogHeader>

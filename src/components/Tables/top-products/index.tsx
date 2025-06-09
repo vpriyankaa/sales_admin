@@ -229,7 +229,7 @@ export function TopProducts() {
 
         <Table>
           <TableHeader>
-            <TableRow className="text-center text-base font-medium text-dark dark:!text-white">
+            <TableRow className="text-center text-base uppercase font-medium text-dark dark:!text-white">
               <TableHead className="!text-left pl-6">Product Name</TableHead>
               <TableHead className="!text-left">Quantity</TableHead>
               <TableHead className="!text-left">Unit</TableHead>
@@ -242,7 +242,7 @@ export function TopProducts() {
 
             {paginatedData.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-7 text-md font-semibold text-dark-2 dark:text-white">
+                <TableCell colSpan={5} className="text-center py-7 text-md font-semibold  dark:text-white">
                   No Products found
                 </TableCell>
               </TableRow>
@@ -264,7 +264,7 @@ export function TopProducts() {
                               variant="ghost"
                               size="icon"
                               onClick={() => handleEditProduct(product)}
-                              className="h-8 w-8 hover:bg-blue-200"
+                              className="h-8 w-8 hover:bg-blue-200 dark:hover:bg-gray-700"
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
@@ -283,7 +283,7 @@ export function TopProducts() {
                               variant="ghost"
                               size="icon"
                               onClick={() => router.push(`/product-log/${product.id}`)}
-                              className="h-8 w-8 hover:bg-blue-200"
+                              className="h-8 w-8 hover:bg-blue-200 dark:hover:bg-gray-700"
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -315,7 +315,7 @@ export function TopProducts() {
                     name="product_name"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark ">
+                        <FormLabel className="text-right  dark:!text-white dark:bg-gray-dark ">
                           Name <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
@@ -344,7 +344,7 @@ export function TopProducts() {
                     name="unit"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">
+                        <FormLabel className="text-right  dark:!text-white dark:bg-gray-dark">
                           Unit <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
@@ -374,7 +374,7 @@ export function TopProducts() {
                     name="price"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">
+                        <FormLabel className="text-right  dark:!text-white dark:bg-gray-dark">
                           Price <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
@@ -411,7 +411,7 @@ export function TopProducts() {
                     name="quantity"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">
+                        <FormLabel className="text-right  dark:!text-white dark:bg-gray-dark">
                           Quantity <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
@@ -478,7 +478,7 @@ export function TopProducts() {
                     name="product_name"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">
+                        <FormLabel className="text-right ">
                           Name <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
@@ -509,7 +509,7 @@ export function TopProducts() {
                     name="unit"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">
+                        <FormLabel className="text-right ">
                           Unit <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
@@ -539,7 +539,7 @@ export function TopProducts() {
                     name="price"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">
+                        <FormLabel className="text-right ">
                           Price <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
@@ -576,7 +576,7 @@ export function TopProducts() {
                     name="quantity"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">
+                        <FormLabel className="text-right ">
                           Quantity <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
@@ -690,7 +690,7 @@ export function TopProducts() {
       </Dialog>
 
       <Dialog open={openEditSuccess} onOpenChange={setOpenEditSuccess}>
-        <DialogContent className="bg-white text-black dark:!text-white dark:bg-gray-dark">
+        <DialogContent className="bg-white  dark:!text-white dark:bg-gray-dark">
           <DialogHeader>
             <DialogTitle>Success</DialogTitle>
           </DialogHeader>

@@ -89,6 +89,9 @@
     background-color: #001D6B !important;
   }
 
+   .text-gray{
+  color:#e5e7eb !important;
+}
    .bg-calendar {
     background-color: #88a4f0 !important;
   }
@@ -392,4 +395,7 @@ span.flatpickr-weekday,
 }
 
 
+bg-gray-3{
+  background-color: #e5e7eb;
+}
 

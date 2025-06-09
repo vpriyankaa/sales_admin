@@ -1,4 +1,4 @@
-import Home from "@/app/purchaseAddEdit";
+import Home from "@/components/purchase/home";
 import { Suspense } from 'react';
 import { Loader2 } from "lucide-react"
 

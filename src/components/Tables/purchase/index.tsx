@@ -15,7 +15,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { getPurchaseList, changeOrderStatus, getVendors, getProducts } from "@/app/actions"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
 import { PurchaseSkeleton } from "./skeleton"
-import { TextField } from '@mui/material';
 import { getTodayDateRange, formatForDateTimeLocal } from '@/utils/timeframe-extractor'
 import { DateRangePicker } from "@/components/date-range-picker"
 import { ChevronRight, ChevronLeft } from "lucide-react";
@@ -391,7 +390,7 @@ export function Purchase({ className }: { className?: string }) {
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => router.push(`/purchase/edit/${order.id}`)}
-                                  className="h-8 w-8 hover:bg-blue-200"
+                                  className="h-8 w-8 hover:bg-blue-200 dark:hover:bg-gray-700"
                                 >
                                   <Edit className="h-4 w-4" />
                                 </Button>
@@ -410,7 +409,7 @@ export function Purchase({ className }: { className?: string }) {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => router.push(`/detail/${order.id}`)}
-                                className="h-8 w-8 hover:bg-blue-200"
+                                className="h-8 w-8 hover:bg-blue-200 dark:hover:bg-gray-700"
                               >
                                 <Eye className="h-4 w-4" />
                               </Button>

@@ -306,7 +306,7 @@ export function Vendors() {
 
         <Table>
           <TableHeader>
-            <TableRow className="text-center text-base font-medium text-dark dark:!text-white">
+            <TableRow className="text-center text-base uppercase font-medium text-dark dark:!text-white">
               <TableHead className="!text-left pl-6">Vendor Name</TableHead>
               <TableHead className="!text-left">Phone</TableHead>
               <TableHead className="!text-left">Aadhaar</TableHead>
@@ -320,7 +320,7 @@ export function Vendors() {
 
             {paginatedData.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-7 text-md font-semibold text-dark-2 dark:text-white">
+                <TableCell colSpan={5} className="text-center py-7 text-md font-semibold  dark:text-white">
                   No vendors found
                 </TableCell>
               </TableRow>
@@ -364,7 +364,7 @@ export function Vendors() {
                               variant="ghost"
                               size="icon"
                               onClick={() => handleEditVendor(vendor)}
-                              className="h-8 w-8 hover:bg-blue-200"
+                              className="h-8 w-8 hover:bg-blue-200 dark:hover:bg-gray-700"
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
@@ -383,7 +383,7 @@ export function Vendors() {
                               variant="ghost"
                               size="icon"
                               onClick={() => router.push(`/vendor-log/${vendor.id}`)}
-                              className="h-8 w-8 hover:bg-blue-200"
+                              className="h-8 w-8 hover:bg-blue-200 dark:hover:bg-gray-700"
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -418,7 +418,7 @@ export function Vendors() {
                     name="name"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">
+                        <FormLabel className="text-right  dark:!text-white dark:bg-gray-dark">
                           Name <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
@@ -445,7 +445,7 @@ export function Vendors() {
                     name="phone"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">
+                        <FormLabel className="text-right  dark:!text-white dark:bg-gray-dark">
                           Phone <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
@@ -479,7 +479,7 @@ export function Vendors() {
                     name="aadhaar"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">Aadhaar</FormLabel>
+                        <FormLabel className="text-right  dark:!text-white dark:bg-gray-dark">Aadhaar</FormLabel>
                         <div className="col-span-3">
                           <FormControl>
                             <Input
@@ -505,7 +505,7 @@ export function Vendors() {
                     name="address"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark">Address</FormLabel>
+                        <FormLabel className="text-right  dark:!text-white dark:bg-gray-dark">Address</FormLabel>
                         <div className="col-span-3">
                           <FormControl>
                             <Textarea {...field} rows={3} placeholder="Enter vendor address" />
@@ -521,7 +521,7 @@ export function Vendors() {
                     name="products"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-start gap-4">
-                        <FormLabel className="text-right text-black dark:!text-white dark:bg-gray-dark mt-2">
+                        <FormLabel className="text-right  dark:!text-white dark:bg-gray-dark mt-2">
                           Products <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3 space-y-3">
@@ -586,7 +586,7 @@ export function Vendors() {
                     name="name"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">
+                        <FormLabel className="text-right ">
                           Name <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
@@ -615,7 +615,7 @@ export function Vendors() {
                     name="phone"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">
+                        <FormLabel className="text-right ">
                           Phone <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3">
@@ -649,7 +649,7 @@ export function Vendors() {
                     name="aadhaar"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">Aadhaar</FormLabel>
+                        <FormLabel className="text-right ">Aadhaar</FormLabel>
                         <div className="col-span-3">
                           <FormControl>
                             <Input
@@ -675,7 +675,7 @@ export function Vendors() {
                     name="address"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-center gap-4">
-                        <FormLabel className="text-right text-black">Address</FormLabel>
+                        <FormLabel className="text-right ">Address</FormLabel>
                         <div className="col-span-3">
                           <FormControl>
                             <Textarea {...field} rows={3} placeholder="Enter vendor address" />
@@ -691,7 +691,7 @@ export function Vendors() {
                     name="products"
                     render={({ field }) => (
                       <FormItem className="grid grid-cols-4 items-start gap-4">
-                        <FormLabel className="text-right text-black mt-2">
+                        <FormLabel className="text-right  mt-2">
                           Products <span className="text-red-500">*</span>
                         </FormLabel>
                         <div className="col-span-3 space-y-3">

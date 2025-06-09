@@ -71,7 +71,7 @@ export function TableHead({
     <th
     style={{ color: "#7b9fdb" }}
       className={cn(
-        "h-12 px-4 text-left align-middle font-medium text-secondary [&:has([role=checkbox])]:pr-0",
+        "h-12 px-4 text-left align-middle font-medium text-secondary dark:!text-gray [&:has([role=checkbox])]:pr-0",
         className,
       )}
       {...props}
@@ -86,7 +86,7 @@ export function TableCell({
   return (
     <td
       className={cn(
-        "p-4 align-middle [&:has([role=checkbox])]:pr-0",
+        "p-4 align-middle text-black dark:!text-white [&:has([role=checkbox])]:pr-0",
         className,
       )}
       {...props}

@@ -91,8 +91,8 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
               <div className="lg:col-span-2 space-y-4">
                 {orderLogData && orderLogData.length > 0 ? (
                   <div>
-                    <h3 className="text-lg font-bold mb-4 text-primary dark:text-primary">Customer Logs</h3>
-                    <div className="bg-white dark:bg-gray-800 border rounded-md p-3 space-y-2">
+                    <h3 className="text-lg font-bold mb-4 text-primary dark:!text-white">Customer Logs</h3>
+                    <div className="bg-white dark:bg-gray-dark border rounded-md p-3 space-y-2">
                       {orderLogData.map((log) => {
                         const isOpen = openId === log.id;
                         const editedBy = log.user ? users[log.user]?.name : "Unknown User";
@@ -102,7 +102,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                             <button
                               type="button"
                               onClick={() => toggle(log.id)}
-                              className="flex w-full items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md transition"
+                              className="flex w-full items-center justify-between p-3 bg-gray-50 dark:bg-gray-dark hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md transition"
                             >
                               <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
                                 {log.action}
@@ -119,7 +119,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                             </button>
 
                             {isOpen && (
-                              <div className="pl-3 dark:bg-gray-800 text-sm space-y-3 p-2">
+                              <div className="pl-3 dark:bg-gray-dark text-sm space-y-3 p-2">
                                 <p className="text-gray-800 dark:text-gray-300">
                                   <span className="font-semibold">Edited by:</span>{" "}
                                   {editedBy ?? "Unknown User"}
@@ -151,7 +151,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
           )}
         </CardContent>
 
-        <CardFooter className="bg-gray-50 dark:bg-gray-800 border-t p-4 print:hidden">
+        <CardFooter className="bg-gray-50 dark:bg-gray-dark border-t p-4 print:hidden">
           <div className="flex justify-end w-full">
             <Button
 

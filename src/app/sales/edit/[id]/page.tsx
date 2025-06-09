@@ -1,4 +1,4 @@
-import Home from "@/app/salesAddEdit";
+import Home from "@/components/sales/home";
 
 
 // For sales edit with dynamic params - use Next.js 15 compatible types

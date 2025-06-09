@@ -86,6 +86,9 @@ export function OrderSummary({
     const fetchData = async () => {
       try {
         const paymentMethodsData = await getPaymentMethods()
+
+        // console.log('paymentMethodsData',paymentMethodsData);
+
         setPaymentMethods(paymentMethodsData)
       } catch (error) {
         console.error("Error fetching data:", error)
@@ -95,6 +98,14 @@ export function OrderSummary({
 
     fetchData()
   }, [])
+
+
+
+
+
+   console.log('paymentMethod',paymentMethod);
+
+
 
   const handlePlaceOrder = () => {
     const newErrors: { paymentMethod?: string; paidAmount?: string } = {}
@@ -120,6 +131,8 @@ export function OrderSummary({
     if (newErrors.paymentMethod) cleanErrors.paymentMethod = newErrors.paymentMethod
     if (newErrors.paidAmount) cleanErrors.paidAmount = newErrors.paidAmount
 
+
+   
     // Call the parent function with data and clean errors
     onPlaceOrder(
       {
@@ -137,17 +150,17 @@ export function OrderSummary({
 
   return (
     <div className="rounded-[10px] p-4 space-y-1 bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
-      <h3 className="font-bold text-lg text-black dark:!text-white border-b pb-2 sticky top-0 z-10">Order Summary</h3>
+      <h3 className="font-bold text-lg  dark:!text-white border-b pb-2 sticky top-0 z-10">Order Summary</h3>
 
       <div className="flex justify-between items-center">
-        <span className="font-semibold text-primary">Price</span>
-        <span className="text-lg text-black dark:!text-white first-letter:font-bold">₹{cart.length ? totalPriceDisplay : "0"}</span>
+        <span className="font-semibold text-primary dark:!text-white">Price</span>
+        <span className="text-lg  dark:!text-white first-letter:font-bold">₹{cart.length ? totalPriceDisplay : "0"}</span>
       </div>
 
       {/* Discount section */}
       <div className="space-y-2">
         <div className="flex justify-between items-center">
-          <label className="font-semibold text-primary">Discount Type</label>
+          <label className="font-semibold text-primary dark:!text-white">Discount Type</label>
           <Select value={discountType} onValueChange={(v) => setDiscountType(v as "flat" | "percentage")}>
             <SelectTrigger className="w-36 h-9 dark:!text-white text-md border">
               <SelectValue placeholder="Type" />
@@ -160,7 +173,7 @@ export function OrderSummary({
         </div>
 
         <div className="flex justify-between items-center">
-          <label className="font-semibold text-primary">
+          <label className="font-semibold text-primary dark:!text-white">
             {discountType === "percentage" ? "Discount (%)" : "Discount (₹)"}
           </label>
           <input
@@ -184,7 +197,7 @@ export function OrderSummary({
 
       {/* Discounted amount */}
       <div className="flex justify-between items-center">
-        <span className="font-semibold text-primary">Discount Amount</span>
+        <span className="font-semibold text-primary dark:!text-white">Discount Amount</span>
         <span className="text-lg font-bold text-red-600">
           -₹{discountAmount % 1 === 0 ? discountAmount : discountAmount.toFixed(2)}
         </span>
@@ -192,14 +205,14 @@ export function OrderSummary({
 
       {/* Total payment after discount */}
       <div className="flex justify-between items-center border-b pb-2">
-        <span className="font-semibold text-primary">Total</span>
+        <span className="font-semibold text-primary dark:!text-white">Total</span>
         <span className="text-lg text-text-gray-400 dark:!text-white font-bold">₹{cart.length ? totalAmount : "0"}</span>
       </div>
 
       {/* Payment method */}
       <div className="space-y-1">
         <div className="flex justify-between items-center">
-          <label className="font-semibold text-primary">Payment Method:</label>
+          <label className="font-semibold text-primary dark:!text-white">Payment Method:</label>
           <Select
             value={paymentMethod}
             onValueChange={(v) => {
@@ -234,7 +247,7 @@ export function OrderSummary({
       {/* Paid amount */}
       <div className="space-y-1">
         <div className="flex justify-between items-center">
-          <label className="font-semibold text-primary">Paid Amount (₹):</label>
+          <label className="font-semibold text-primary dark:!text-white">Paid Amount (₹):</label>
           <input
             type="number"
             min={0}
@@ -252,25 +265,24 @@ export function OrderSummary({
                 })
               }
             }}
-            className={`border rounded text-black dark:!text-white dark:!bg-gray-dark font-bold px-2 py-1 w-32 text-right ${errors.paidAmount ? "border-red-500" : ""}`}
+            className={`border rounded  dark:!text-white dark:!bg-gray-dark font-bold px-2 py-1 w-32 text-right ${errors.paidAmount ? "border-red-500" : ""}`}
           />
         </div>
         {errors.paidAmount && <p className="text-sm text-red-500 mt-1 text-right">{errors.paidAmount}</p>}
       </div>
 
-      {/* Total payable */}
       <div className="flex justify-between items-center">
-        <span className="font-semibold text-primary">Remaining Amount:</span>
-        <span className="text-lg font-bold text-dark-2">₹{cart.length ? remainingAmountDisplay : "0"}</span>
+        <span className="font-semibold text-primary dark:!text-white">Remaining Amount:</span>
+        <span className="text-lg font-bold dark:!text-white">₹{cart.length ? remainingAmountDisplay : "0"}</span>
       </div>
 
       <div className="space-y-2 border-t pt-2">
-        <Label className="text-md font-semibold text-primary">Remarks:</Label>
+        <Label className="text-md font-semibold text-primary dark:!text-white">Remarks:</Label>
         <Textarea
           value={remarks}
           onChange={(e) => setRemarks(e.target.value)}
           placeholder="Add any special instructions or notes here"
-          className="w-full text-black dark:!text-white border rounded"
+          className="w-full  dark:!text-white border rounded"
           rows={3}
         />
       </div>
