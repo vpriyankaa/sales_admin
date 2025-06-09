@@ -611,10 +611,11 @@ export async function getReports(): Promise<Order[]> {
       ...order,
       items: Array.isArray(order.items) ? (order.items as Product[]) : [],
       actual_price: Array.isArray(order.items)
-    ? (order.items as Product[]).reduce((sum, item) => sum + item.actual_price, 0)
-    : 0,
-
-      
+        ? (order.items as Product[]).reduce(
+            (sum, item) => sum + item.actual_price,
+            0,
+          )
+        : 0,
     }));
   } catch (error) {
     console.error("Failed to fetch reports", error);
@@ -634,9 +635,11 @@ export async function getPurchaseList(): Promise<Order[]> {
       ...order,
       items: Array.isArray(order.items) ? (order.items as Product[]) : [],
       actual_price: Array.isArray(order.items)
-    ? (order.items as Product[]).reduce((sum, item) => sum + item.actual_price, 0)
-    : 0,
-
+        ? (order.items as Product[]).reduce(
+            (sum, item) => sum + item.actual_price,
+            0,
+          )
+        : 0,
     }));
   } catch (error) {
     console.error("Failed to fetch purchase orders", error);
@@ -747,10 +750,6 @@ export async function getOrderById(orderId: number): Promise<Order | null> {
     return {
       ...order,
       items: Array.isArray(order.items) ? (order.items as Product[]) : [],
-      actual_price: Array.isArray(order.items)
-    ? (order.items as Product[]).reduce((sum, item) => sum + item.actual_price, 0)
-    : 0,
-
     };
   } catch (error) {
     console.error("Error fetching order by ID:", error);

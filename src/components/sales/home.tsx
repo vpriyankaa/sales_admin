@@ -126,7 +126,7 @@ export default function Home({ id }: Props) {
           try {
             const orderData = await getOrderById(Number.parseInt(id))
 
-            console.log("orderData", orderData);
+            // console.log("orderData", orderData);
 
             if (orderData) {
               setSelectedCustomer(orderData.customerId.toString())
@@ -268,7 +268,7 @@ export default function Home({ id }: Props) {
         customer_id: customer.id,
         customer_name: customer.name,
         date: date || new Date(),
-        vendor_id: "",
+        vendor_id: "0",
         vendor_name: "",
         items: cart.map((item) => ({
           id: item.id,
@@ -302,7 +302,7 @@ export default function Home({ id }: Props) {
         })
         setEditOpen(true)
       } else {
-        console.log("orderInput", orderInput);
+        // console.log("orderInput", orderInput);
         const newOrderId = await addOrder(orderInput)
 
 
