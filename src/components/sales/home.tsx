@@ -375,7 +375,7 @@ export default function Home({ id }: Props) {
                     </PopoverTrigger>
 
                     <PopoverContent
-                      className="w-full sm:w-auto p-0 !z-[100] relative bg-white"
+                      className="w-full sm:w-auto p-0 !z-[100] relative bg-white dark:!bg-dark dark:!text-white"
                       align="start"
                     >
                       <Calendar
@@ -441,7 +441,7 @@ export default function Home({ id }: Props) {
                                 }
                                 setDate(newDate);
                               }}
-                              className="h-8 px-2 border rounded-md text-sm flex-shrink-0" // Added flex-shrink-0
+                              className="h-8 px-2 border rounded-md text-sm flex-shrink-0 dark:!bg-dark dark:!text-white" // Added flex-shrink-0
                             >
                               <option value="AM">AM</option>
                               <option value="PM">PM</option>
