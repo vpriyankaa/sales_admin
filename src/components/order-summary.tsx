@@ -55,7 +55,7 @@ export function OrderSummary({
     }
   }, [isEditMode, editOrderSummary])
 
-  const rawTotalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const rawTotalPrice = cart.reduce((sum, item) => sum + item.actual_price * item.quantity, 0)
   const totalPriceDisplay = rawTotalPrice % 1 === 0 ? rawTotalPrice.toString() : rawTotalPrice.toFixed(2)
 
   // Calculate discount
