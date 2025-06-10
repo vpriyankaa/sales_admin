@@ -69,7 +69,7 @@ export function Purchase({ className }: { className?: string }) {
       const uniqueCustomers = await getVendors()
       const uniqueProducts = await getProducts()
 
-      console.log("reports", reports);
+      // console.log("reports", reports);
       // console.log("uniqueCustomers", uniqueCustomers);
       // console.log("uniqueProducts", uniqueProducts);
 
@@ -291,7 +291,7 @@ export function Purchase({ className }: { className?: string }) {
                 </TableRow>
               ) : (
                 currentData.map((order) => (
-                  <TableRow className="text-center text-base font-medium text-dark dark:!text-white group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" key={order.id}>
+                  <TableRow className="text-center text-base font-medium text-dark dark:!text-white group hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" key={order.id}>
                     <TableCell className="!text-left">
                       <div>
                         {new Date(order.date).toLocaleDateString("en-US", {
@@ -390,7 +390,7 @@ export function Purchase({ className }: { className?: string }) {
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => router.push(`/purchase/edit/${order.id}`)}
-                                  className="h-8 w-8 hover:bg-blue-200 dark:hover:bg-gray-700"
+                                  className="h-8 w-8 hover:bg-blue-200 dark:hover:bg-gray-800"
                                 >
                                   <Edit className="h-4 w-4" />
                                 </Button>
@@ -409,7 +409,7 @@ export function Purchase({ className }: { className?: string }) {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => router.push(`/detail/${order.id}`)}
-                                className="h-8 w-8 hover:bg-blue-200 dark:hover:bg-gray-700"
+                                className="h-8 w-8 hover:bg-blue-200 dark:hover:bg-gray-800"
                               >
                                 <Eye className="h-4 w-4" />
                               </Button>

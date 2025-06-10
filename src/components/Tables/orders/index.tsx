@@ -36,7 +36,7 @@ export function Orders({ className }: { className?: string }) {
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [customers, setCustomers] = useState<any[]>([])
   const [products, setProducts] = useState<any[]>([])
-const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
   const { dateFrom, dateTo } = getTodayDateRange()
 
   // Filter states
@@ -59,7 +59,7 @@ const [loading, setLoading] = useState(true);
       const uniqueCustomers = await getCustomers()
       const uniqueProducts = await getProducts()
 
-      console.log("reports", reports);
+      // console.log("reports", reports);
       // console.log("uniqueProducts", uniqueProducts);
 
       setCustomers(uniqueCustomers)
@@ -69,7 +69,7 @@ const [loading, setLoading] = useState(true);
       setFilteredData(reports)
     }
     fetchData()
-    
+
   }, [])
 
   // Filter logic
@@ -226,13 +226,13 @@ const [loading, setLoading] = useState(true);
                   {/* Clear Filters Button */}
                   <div className="flex-shrink-0">
                     {hasActiveFilters && (
-                     <Button
-                      variant="outline"
-                      onClick={clearFilters}
-                      className="w-full sm:w-auto h-10 px-6 bg-primary text-white hover:bg-primary"
-                    >
-                      Clear Filters
-                    </Button>
+                      <Button
+                        variant="outline"
+                        onClick={clearFilters}
+                        className="w-full sm:w-auto h-10 px-6 bg-primary text-white hover:bg-primary"
+                      >
+                        Clear Filters
+                      </Button>
                     )}
                   </div>
                 </div>
@@ -263,7 +263,7 @@ const [loading, setLoading] = useState(true);
               ) : (
                 currentData.map((order) => (
                   <TableRow
-                    className="text-center text-base font-medium text-dark dark:!text-white group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    className="text-center text-base font-medium text-dark dark:!text-white group hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     key={order.id}
                   >
                     <TableCell className="!text-left">
@@ -352,21 +352,22 @@ const [loading, setLoading] = useState(true);
                         <span>-</span>
                       )}
                     </TableCell>
+
                     <TableCell>
-                      <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 dark:hover:bg-gray-800 transition-opacity duration-200">
+                      <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              {order.status !== "completed" && (
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => router.push(`/sales/edit/${order.id}`)}
-                                  className="h-8 w-8 hover:bg-secondary dark:hover:bg-gray-800"
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                              )}
+
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => router.push(`/sales/edit/${order.id}`)}
+                                className="h-8 w-8 hover:bg-blue-200 dark:hover:bg-gray-800"
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+
                             </TooltipTrigger>
                             <TooltipContent className="bg-white font-medium text-secondary">
                               Edit Sale
@@ -381,7 +382,7 @@ const [loading, setLoading] = useState(true);
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => router.push(`/detail/${order.id}`)}
-                                className="h-8 w-8 hover:bg-secondary dark:!hover:bg-gray-800"
+                                className="h-8 w-8 hover:bg-blue-200 dark:hover:bg-gray-800"
                               >
                                 <Eye className="h-4 w-4" />
                               </Button>
